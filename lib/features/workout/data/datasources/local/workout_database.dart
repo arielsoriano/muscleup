@@ -102,8 +102,14 @@ enum ExerciseCategory {
   fullBody,
 }
 
-@DriftDatabase(
-    tables: [Routines, Exercises, Sets, Sessions, SetLogs, LibraryExercises])
+@DriftDatabase(tables: [
+  Routines,
+  Exercises,
+  Sets,
+  Sessions,
+  SetLogs,
+  LibraryExercises,
+],)
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 

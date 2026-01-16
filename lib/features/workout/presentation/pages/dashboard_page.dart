@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/utils/l10n_extension.dart';
-import '../../../../main.dart';
+import '../../../settings/presentation/cubit/settings_cubit.dart';
 import '../../domain/entities/workout_entities.dart';
 import '../cubit/dashboard_cubit.dart';
 import '../cubit/dashboard_state.dart';
@@ -34,20 +34,40 @@ class _DashboardPageContent extends StatelessWidget {
       appBar: AppBar(
         title: Text(context.l10n.dashboardTitle),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.language_rounded),
-            onPressed: () {
-              final newLocale = currentLocale.languageCode == 'en'
-                  ? const Locale('es', '')
-                  : const Locale('en', '');
-              MuscleupApp.setLocale(context, newLocale);
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert_rounded),
+            onSelected: (value) {
+              if (value == 'routines') {
+                context.push(AppRoutes.routines);
+              } else if (value == 'language') {
+                final newLanguageCode = currentLocale.languageCode == 'en'
+                    ? 'es'
+                    : 'en';
+                context.read<SettingsCubit>().changeLanguage(newLanguageCode);
+              }
             },
-            tooltip: 'Language',
-          ),
-          IconButton(
-            icon: const Icon(Icons.list_alt_rounded),
-            onPressed: () => context.push(AppRoutes.routines),
-            tooltip: context.l10n.routines,
+            itemBuilder: (context) => [
+              PopupMenuItem<String>(
+                value: 'routines',
+                child: Row(
+                  children: [
+                    const Icon(Icons.list_alt_rounded),
+                    const SizedBox(width: 12),
+                    Text(context.l10n.routines),
+                  ],
+                ),
+              ),
+              PopupMenuItem<String>(
+                value: 'language',
+                child: Row(
+                  children: [
+                    const Icon(Icons.language_rounded),
+                    const SizedBox(width: 12),
+                    Text(context.l10n.language),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -105,7 +125,10 @@ class _DashboardPageContent extends StatelessWidget {
     );
   }
 
-  Widget _buildWeeklyCalendarStrip(BuildContext context, DateTime selectedDate) {
+  Widget _buildWeeklyCalendarStrip(
+    BuildContext context,
+    DateTime selectedDate,
+  ) {
     final weekDays = _getWeekDaysFromDate(selectedDate);
     final today = DateTime.now();
     final normalizedToday = DateTime(today.year, today.month, today.day);
@@ -142,14 +165,12 @@ class _DashboardPageContent extends StatelessWidget {
         width: 64,
         margin: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
-          color: isSelected
-              ? colorScheme.primaryContainer
-              : colorScheme.surface,
+          color:
+              isSelected ? colorScheme.primaryContainer : colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected
-                ? colorScheme.primary
-                : colorScheme.outlineVariant,
+            color:
+                isSelected ? colorScheme.primary : colorScheme.outlineVariant,
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -157,7 +178,8 @@ class _DashboardPageContent extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              DateFormat.E(Localizations.localeOf(context).languageCode).format(date),
+              DateFormat.E(Localizations.localeOf(context).languageCode)
+                  .format(date),
               style: textTheme.bodySmall?.copyWith(
                 color: isSelected
                     ? colorScheme.onPrimaryContainer
@@ -194,7 +216,10 @@ class _DashboardPageContent extends StatelessWidget {
     );
   }
 
-  Widget _buildSessionsList(BuildContext context, List<WorkoutSession> sessions) {
+  Widget _buildSessionsList(
+    BuildContext context,
+    List<WorkoutSession> sessions,
+  ) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: sessions.length,
@@ -242,7 +267,9 @@ class _DashboardPageContent extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          DateFormat.yMMMd(Localizations.localeOf(context).languageCode).format(session.date),
+                          DateFormat.yMMMd(
+                            Localizations.localeOf(context).languageCode,
+                          ).format(session.date),
                           style: textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
@@ -288,7 +315,9 @@ class _DashboardPageContent extends StatelessWidget {
             Icon(
               Icons.event_available_rounded,
               size: 80,
-              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+              color: colorScheme.onSurfaceVariant.withValues(
+                alpha: 0.5,
+              ),
             ),
             const SizedBox(height: 24),
             Text(
@@ -313,7 +342,7 @@ class _DashboardPageContent extends StatelessWidget {
   List<DateTime> _getWeekDaysFromDate(DateTime date) {
     final weekday = date.weekday;
     final firstDayOfWeek = date.subtract(Duration(days: weekday - 1));
-    
+
     return List.generate(7, (index) {
       return firstDayOfWeek.add(Duration(days: index));
     });

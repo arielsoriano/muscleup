@@ -81,8 +81,12 @@ class RoutineFormCubit extends Cubit<RoutineFormState> {
     );
   }
 
-  void updateExercise(String exerciseId,
-      {String? name, String? notes, int? restTimeSeconds}) {
+  void updateExercise(
+    String exerciseId, {
+    String? name,
+    String? notes,
+    int? restTimeSeconds,
+  }) {
     final currentRoutine = state.routine;
     final updatedExercises = currentRoutine.exercises.map((exercise) {
       if (exercise.id == exerciseId) {
@@ -226,7 +230,10 @@ class RoutineFormCubit extends Cubit<RoutineFormState> {
     String query,
     String languageCode,
   ) async {
-    return await _repository.searchLibraryExercises(query, languageCode);
+    return await _repository.searchLibraryExercises(
+      query,
+      languageCode,
+    );
   }
 
   List<T> _reorderList<T>(List<T> items) {

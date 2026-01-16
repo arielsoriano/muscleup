@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../features/workout/data/datasources/local/workout_database.dart';
 import '../../features/workout/data/repositories/workout_repository_impl.dart';
@@ -14,11 +15,13 @@ import '../../features/workout/domain/usecases/save_set_log_usecase.dart';
 import '../../features/workout/domain/usecases/update_routine_order_usecase.dart';
 import '../../features/workout/domain/usecases/watch_routines_usecase.dart';
 import '../../features/workout/domain/usecases/watch_sessions_usecase.dart';
+import '../../features/settings/presentation/cubit/settings_cubit.dart';
 import '../../features/workout/presentation/cubit/active_workout_cubit.dart';
 import '../../features/workout/presentation/cubit/dashboard_cubit.dart';
 import '../../features/workout/presentation/cubit/routine_form_cubit.dart';
 import '../../features/workout/presentation/cubit/workout_cubit.dart';
 import '../router/app_router.dart';
+import '../settings/settings_data_source.dart';
 
 final serviceLocator = GetIt.instance;
 
@@ -29,8 +32,15 @@ Future<void> initialize() async {
 }
 
 Future<void> _initializeCore() async {
+  final sharedPreferences = await SharedPreferences.getInstance();
+  serviceLocator.registerSingleton<SharedPreferences>(sharedPreferences);
+
+  serviceLocator.registerLazySingleton<SettingsDataSource>(
+    () => SettingsDataSource(serviceLocator()),
+  );
+
   serviceLocator.registerLazySingleton<AppDatabase>(() => AppDatabase());
-  
+
   serviceLocator.registerSingleton<GoRouter>(createAppRouter());
 }
 
@@ -77,6 +87,10 @@ Future<void> _initializeDomain() async {
 }
 
 Future<void> _initializePresentation() async {
+  serviceLocator.registerSingleton<SettingsCubit>(
+    SettingsCubit(serviceLocator()),
+  );
+
   serviceLocator.registerFactory(
     () => WorkoutCubit(
       watchRoutinesUseCase: serviceLocator(),

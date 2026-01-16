@@ -225,5 +225,9 @@
         "type": "int"
       }
     }
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Language menu item"
   }
 }

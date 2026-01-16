@@ -52,5 +52,6 @@
   "unitKm": "km",
   "unitMeters": "m",
   "unitNone": "ninguno",
-  "setsCount": "{count} series"
+  "setsCount": "{count} series",
+  "language": "Idioma"
 }

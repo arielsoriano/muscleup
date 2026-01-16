@@ -172,4 +172,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String setsCount(int count) {
     return '$count series';
   }
+
+  @override
+  String get language => 'Idioma';
 }
