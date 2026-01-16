@@ -39,6 +39,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get addRoutine => 'Añadir Rutina';
 
   @override
+  String get addExercise => 'Añadir Ejercicio';
+
+  @override
   String get save => 'Guardar';
 
   @override
@@ -88,4 +91,22 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get actual => 'Real';
+
+  @override
+  String get routineName => 'Nombre de Rutina';
+
+  @override
+  String get exerciseName => 'Nombre de Ejercicio';
+
+  @override
+  String get removeExercise => 'Eliminar Ejercicio';
+
+  @override
+  String get addSet => 'Añadir Serie';
+
+  @override
+  String get saveRoutineSuccess => '¡Rutina guardada exitosamente!';
+
+  @override
+  String get editRoutine => 'Editar Rutina';
 }

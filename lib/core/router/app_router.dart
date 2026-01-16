@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/workout/presentation/pages/active_workout_page.dart';
 import '../../features/workout/presentation/pages/dashboard_page.dart';
+import '../../features/workout/presentation/pages/routine_form_page.dart';
 import '../../features/workout/presentation/pages/routines_page.dart';
 import '../../features/workout/presentation/pages/workout_details_page.dart';
 
@@ -11,9 +12,12 @@ class AppRoutes {
   static const String routines = '/routines';
   static const String routineDetails = '/routine/:id';
   static const String activeWorkout = '/active-workout/:routineId';
+  static const String manageRoutine = '/manage-routine';
+  static const String editRoutine = '/edit-routine/:id';
   
   static String routineDetailsPath(String id) => '/routine/$id';
   static String activeWorkoutPath(String routineId) => '/active-workout/$routineId';
+  static String editRoutinePath(String id) => '/edit-routine/$id';
 }
 
 GoRouter createAppRouter() {
@@ -47,6 +51,29 @@ GoRouter createAppRouter() {
             context: context,
             state: state,
             child: ActiveWorkoutPage(
+              routine: routine as dynamic,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.manageRoutine,
+        pageBuilder: (context, state) {
+          return _buildFadeTransitionPage(
+            context: context,
+            state: state,
+            child: const RoutineFormPage(),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.editRoutine,
+        pageBuilder: (context, state) {
+          final routine = state.extra;
+          return _buildFadeTransitionPage(
+            context: context,
+            state: state,
+            child: RoutineFormPage(
               routine: routine as dynamic,
             ),
           );

@@ -16,6 +16,7 @@ import '../../features/workout/domain/usecases/watch_routines_usecase.dart';
 import '../../features/workout/domain/usecases/watch_sessions_usecase.dart';
 import '../../features/workout/presentation/cubit/active_workout_cubit.dart';
 import '../../features/workout/presentation/cubit/dashboard_cubit.dart';
+import '../../features/workout/presentation/cubit/routine_form_cubit.dart';
 import '../../features/workout/presentation/cubit/workout_cubit.dart';
 import '../router/app_router.dart';
 
@@ -94,6 +95,13 @@ Future<void> _initializePresentation() async {
       routine: routine,
       saveSessionUseCase: serviceLocator(),
       saveSetLogUseCase: serviceLocator(),
+    ),
+  );
+
+  serviceLocator.registerFactoryParam<RoutineFormCubit, WorkoutRoutine?, void>(
+    (routine, _) => RoutineFormCubit(
+      routine: routine,
+      saveRoutineUseCase: serviceLocator(),
     ),
   );
 }

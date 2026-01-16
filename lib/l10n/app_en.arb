@@ -40,6 +40,10 @@
   "@addRoutine": {
     "description": "Add routine action"
   },
+  "addExercise": "Add Exercise",
+  "@addExercise": {
+    "description": "Add exercise action"
+  },
   "save": "Save",
   "@save": {
     "description": "Save action"
@@ -107,5 +111,29 @@
   "actual": "Actual",
   "@actual": {
     "description": "Actual label for workout"
+  },
+  "routineName": "Routine Name",
+  "@routineName": {
+    "description": "Routine name label"
+  },
+  "exerciseName": "Exercise Name",
+  "@exerciseName": {
+    "description": "Exercise name label"
+  },
+  "removeExercise": "Remove Exercise",
+  "@removeExercise": {
+    "description": "Remove exercise action"
+  },
+  "addSet": "Add Set",
+  "@addSet": {
+    "description": "Add set action"
+  },
+  "saveRoutineSuccess": "Routine saved successfully!",
+  "@saveRoutineSuccess": {
+    "description": "Success message when routine is saved"
+  },
+  "editRoutine": "Edit Routine",
+  "@editRoutine": {
+    "description": "Edit routine title"
   }
 }

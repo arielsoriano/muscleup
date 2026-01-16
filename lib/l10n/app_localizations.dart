@@ -158,6 +158,12 @@ abstract class AppLocalizations {
   /// **'Add Routine'**
   String get addRoutine;
 
+  /// Add exercise action
+  ///
+  /// In en, this message translates to:
+  /// **'Add Exercise'**
+  String get addExercise;
+
   /// Save action
   ///
   /// In en, this message translates to:
@@ -259,6 +265,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Actual'**
   String get actual;
+
+  /// Routine name label
+  ///
+  /// In en, this message translates to:
+  /// **'Routine Name'**
+  String get routineName;
+
+  /// Exercise name label
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise Name'**
+  String get exerciseName;
+
+  /// Remove exercise action
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Exercise'**
+  String get removeExercise;
+
+  /// Add set action
+  ///
+  /// In en, this message translates to:
+  /// **'Add Set'**
+  String get addSet;
+
+  /// Success message when routine is saved
+  ///
+  /// In en, this message translates to:
+  /// **'Routine saved successfully!'**
+  String get saveRoutineSuccess;
+
+  /// Edit routine title
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Routine'**
+  String get editRoutine;
 }
 
 class _AppLocalizationsDelegate

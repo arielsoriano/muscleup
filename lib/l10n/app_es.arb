@@ -10,6 +10,7 @@
   "weight": "Peso",
   "reps": "Repeticiones",
   "addRoutine": "Añadir Rutina",
+  "addExercise": "Añadir Ejercicio",
   "save": "Guardar",
   "cancel": "Cancelar",
   "back": "Atrás",
@@ -26,5 +27,11 @@
   "activeWorkoutTitle": "Entrenamiento Activo",
   "set": "Serie",
   "target": "Objetivo",
-  "actual": "Real"
+  "actual": "Real",
+  "routineName": "Nombre de Rutina",
+  "exerciseName": "Nombre de Ejercicio",
+  "removeExercise": "Eliminar Ejercicio",
+  "addSet": "Añadir Serie",
+  "saveRoutineSuccess": "¡Rutina guardada exitosamente!",
+  "editRoutine": "Editar Rutina"
 }
