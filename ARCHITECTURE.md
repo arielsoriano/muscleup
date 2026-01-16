@@ -980,6 +980,394 @@ serviceLocator.registerFactory(() => SaveRoutineUseCase(serviceLocator()));
 // ... 7 more use cases
 ```
 
+## Phase 4: Presentation Layer (UI Logic)
+
+### State Management
+
+**Technology**: Cubit (simplified BLoC pattern)
+
+**Implementation**: `lib/features/workout/presentation/cubit/`
+
+**Architecture**:
+
+1. **Cubit Pattern for Reactive UI**:
+   ```dart
+   class WorkoutCubit extends Cubit<WorkoutState> {
+     WorkoutCubit({
+       required WatchRoutinesUseCase watchRoutinesUseCase,
+       required DeleteRoutineUseCase deleteRoutineUseCase,
+     }) : super(const WorkoutState.initial()) {
+       _initializeRoutinesStream();
+     }
+   }
+   ```
+   
+   **Design Rationale**:
+   - **Cubit over BLoC**: Simpler API for straightforward state transitions
+   - **No Event Classes**: Direct method calls reduce boilerplate
+   - **Reactive Streams**: Subscribes to domain use cases in constructor
+   - **Clean Dependency**: Only communicates with use cases, never repositories
+   - **Lifecycle Management**: Properly disposes StreamSubscription in close()
+   
+   **Benefits**:
+   - Less boilerplate than full BLoC pattern
+   - Type-safe state transitions with Freezed
+   - Testable without UI dependencies
+   - Automatic UI updates via BlocBuilder
+
+2. **Freezed State Classes**:
+   ```dart
+   @freezed
+   class WorkoutState with _$WorkoutState {
+     const factory WorkoutState.initial() = WorkoutStateInitial;
+     const factory WorkoutState.loading() = WorkoutStateLoading;
+     const factory WorkoutState.success({required List<WorkoutRoutine> routines}) = WorkoutStateSuccess;
+     const factory WorkoutState.error({required String message}) = WorkoutStateError;
+   }
+   ```
+   
+   **Design Pattern**:
+   - **Four Distinct States**: Initial, loading, success, error
+   - **Pattern Matching**: Exhaustive state handling with when/map
+   - **Type Safety**: Compiler enforces handling all states
+   - **Immutability**: Prevents accidental state mutations
+   - **Value Equality**: Easy comparison in tests
+   
+   **State Transitions**:
+   ```
+   initial → loading → success (with routines)
+                    ↘ error (with message)
+   ```
+
+3. **Stream Subscription Management**:
+   ```dart
+   void _initializeRoutinesStream() {
+     emit(const WorkoutState.loading());
+     
+     _routinesSubscription = _watchRoutinesUseCase(NoParams()).listen(
+       (either) {
+         either.fold(
+           (failure) => emit(WorkoutState.error(message: _mapFailureToMessage(failure))),
+           (routines) => emit(WorkoutState.success(routines: routines)),
+         );
+       },
+     );
+   }
+   
+   @override
+   Future<void> close() {
+     _routinesSubscription?.cancel();
+     return super.close();
+   }
+   ```
+   
+   **Design Philosophy**:
+   - **Automatic Reactivity**: Stream emits on database changes
+   - **Memory Safety**: Subscription cancelled in close() prevents leaks
+   - **Error Mapping**: Converts domain Failures to user-friendly messages
+   - **Functional Handling**: Either monad pattern maintained through layers
+   - **UI Synchronization**: No manual refresh needed
+
+4. **Failure to Message Mapping**:
+   ```dart
+   String _mapFailureToMessage(Failure failure) {
+     if (failure is DatabaseFailure) {
+       return failure.message;
+     } else if (failure is UnexpectedFailure) {
+       return failure.message;
+     } else {
+       return 'An unexpected error occurred';
+     }
+   }
+   ```
+   
+   **Pattern**:
+   - Type-safe pattern matching on Failure subtypes
+   - Presentation layer translates technical errors to user-facing messages
+   - Extensible for new failure types
+   - Localization-ready (can be enhanced with l10n keys)
+
+### Navigation System
+
+**Technology**: GoRouter (declarative routing)
+
+**Implementation**: `lib/core/router/app_router.dart`
+
+**Architecture**:
+
+1. **Route Configuration**:
+   ```dart
+   class AppRoutes {
+     static const String routines = '/';
+     static const String routineDetails = '/routine/:id';
+     
+     static String routineDetailsPath(String id) => '/routine/$id';
+   }
+   ```
+   
+   **Design Rationale**:
+   - **Centralized Routes**: All paths defined as constants
+   - **Type-Safe Helpers**: routineDetailsPath() prevents typos
+   - **Parameter Handling**: :id syntax for path parameters
+   - **Deep Linking Ready**: URL-based navigation supports web/mobile
+   
+   **Benefits**:
+   - Single source of truth for navigation
+   - Compile-time route validation
+   - Easy refactoring (change once, update everywhere)
+   - IDE autocomplete for route names
+
+2. **Custom Transitions**:
+   ```dart
+   CustomTransitionPage _buildFadeTransitionPage({
+     required BuildContext context,
+     required GoRouterState state,
+     required Widget child,
+   }) {
+     return CustomTransitionPage(
+       key: state.pageKey,
+       child: child,
+       transitionsBuilder: (context, animation, secondaryAnimation, child) {
+         return FadeTransition(
+           opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+           child: child,
+         );
+       },
+     );
+   }
+   ```
+   
+   **Design Philosophy**:
+   - **Material 3 Compliance**: Fade transition feels native and smooth
+   - **Customizable**: Easy to change transition type per route
+   - **Performance**: Efficient animation with CurveTween
+   - **Professional UX**: Consistent transitions across app
+   
+   **Alternative Patterns**:
+   - Slide transitions for hierarchical navigation
+   - Scale transitions for modal presentations
+   - Custom Hero animations for shared elements
+
+3. **Parameter Extraction**:
+   ```dart
+   GoRoute(
+     path: AppRoutes.routineDetails,
+     pageBuilder: (context, state) {
+       final routineId = state.pathParameters['id'] ?? '';
+       return _buildFadeTransitionPage(
+         context: context,
+         state: state,
+         child: WorkoutDetailsPage(routineId: routineId),
+       );
+     },
+   )
+   ```
+   
+   **Pattern**:
+   - state.pathParameters extracts URL parameters
+   - Fallback to empty string prevents null errors
+   - Type-safe parameter passing to widgets
+   - Supports query parameters and extra state
+
+### UI Pattern: BlocProvider/BlocBuilder
+
+**Implementation**: `lib/features/workout/presentation/pages/routines_page.dart`
+
+**Architecture**:
+
+1. **Provider Pattern (Dependency Injection)**:
+   ```dart
+   class RoutinesPage extends StatelessWidget {
+     @override
+     Widget build(BuildContext context) {
+       return BlocProvider(
+         create: (context) => serviceLocator<WorkoutCubit>(),
+         child: const _RoutinesPageContent(),
+       );
+     }
+   }
+   ```
+   
+   **Design Rationale**:
+   - **Scoped State**: Cubit lifecycle tied to page widget
+   - **Automatic Disposal**: BlocProvider calls close() when disposed
+   - **Service Locator Integration**: Cubit resolved from Get_It
+   - **Single Responsibility**: Page handles DI, content handles UI
+   
+   **Benefits**:
+   - No manual stream management in UI
+   - Testable (can override provider in tests)
+   - Memory efficient (automatic cleanup)
+   - Clear separation of concerns
+
+2. **Builder Pattern (Reactive UI)**:
+   ```dart
+   BlocBuilder<WorkoutCubit, WorkoutState>(
+     builder: (context, state) {
+       return state.when(
+         initial: () => const SizedBox.shrink(),
+         loading: () => const Center(child: CircularProgressIndicator()),
+         success: (routines) => _buildRoutinesList(routines),
+         error: (message) => _buildErrorState(message),
+       );
+     },
+   )
+   ```
+   
+   **Design Philosophy**:
+   - **Declarative UI**: UI is pure function of state
+   - **Exhaustive Handling**: when() forces handling all states
+   - **Type Safety**: Compiler catches missing state handlers
+   - **Reactive**: Rebuilds automatically on state changes
+   - **Predictable**: Same state always produces same UI
+   
+   **State-to-UI Mapping**:
+   - **initial**: Empty container (brief pre-loading state)
+   - **loading**: Material 3 circular progress indicator
+   - **success**: ListView with routine cards or empty state
+   - **error**: Error message with retry button
+
+3. **Material 3 UI Components**:
+   ```dart
+   Card(
+     margin: const EdgeInsets.only(bottom: 12),
+     child: ListTile(
+       title: Text(routine.name),
+       subtitle: Text('${routine.exercises.length} ${context.l10n.exercises}'),
+       trailing: const Icon(Icons.chevron_right),
+       onTap: () => context.push(AppRoutes.routineDetailsPath(routine.id)),
+     ),
+   )
+   ```
+   
+   **Design Elements**:
+   - **Card Elevation**: Material 3 default elevation and shape
+   - **ListTile**: Standard interactive list item pattern
+   - **Chevron Icon**: Visual affordance for navigation
+   - **Localized Text**: All strings via context.l10n
+   - **Tap Navigation**: context.push() for declarative routing
+   
+   **Accessibility**:
+   - Semantic labels from localization
+   - Proper contrast ratios (theme-managed)
+   - Touch target sizes (Material standards)
+   - Screen reader support (automatic)
+
+4. **Error Recovery Pattern**:
+   ```dart
+   error: (message) => Center(
+     child: Column(
+       mainAxisAlignment: MainAxisAlignment.center,
+       children: [
+         Text(
+           context.l10n.errorLoading,
+           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+             color: Theme.of(context).colorScheme.error,
+           ),
+         ),
+         const SizedBox(height: 16),
+         FilledButton(
+           onPressed: () => context.read<WorkoutCubit>(),
+           child: Text(context.l10n.retry),
+         ),
+       ],
+     ),
+   )
+   ```
+   
+   **Design Philosophy**:
+   - **User Empowerment**: Retry button enables self-recovery
+   - **Visual Feedback**: Error color from theme system
+   - **Localized Messages**: User-friendly error text
+   - **Cubit Access**: context.read() for one-time actions
+   - **Material 3 Button**: FilledButton for primary action
+
+### Dependency Injection Integration
+
+**Registration Pattern**: `lib/core/di/injection_container.dart`
+
+**Presentation Layer Setup**:
+```dart
+Future<void> _initializePresentation() async {
+  serviceLocator.registerFactory(
+    () => WorkoutCubit(
+      watchRoutinesUseCase: serviceLocator(),
+      deleteRoutineUseCase: serviceLocator(),
+    ),
+  );
+}
+```
+
+**Design Decisions**:
+- **Factory Registration**: New cubit instance per BlocProvider
+- **Named Parameters**: Explicit dependency injection
+- **Use Case Dependencies**: Only domain layer references
+- **Automatic Resolution**: Get_It resolves nested dependencies
+
+**Router Registration**:
+```dart
+Future<void> _initializeCore() async {
+  serviceLocator.registerLazySingleton<AppDatabase>(() => AppDatabase());
+  serviceLocator.registerSingleton<GoRouter>(createAppRouter());
+}
+```
+
+**Design Rationale**:
+- **Singleton Router**: Single navigation state for entire app
+- **Core Infrastructure**: Router alongside database
+- **Early Initialization**: Available before feature modules
+- **Testable**: Can mock router in widget tests
+
+### Localization Integration
+
+**Pattern**: BuildContext extension for ergonomic access
+
+**Usage Throughout Presentation Layer**:
+```dart
+context.l10n.routines
+context.l10n.noRoutines
+context.l10n.errorLoading
+context.l10n.retry
+```
+
+**ARB Keys Added**:
+- **noRoutines**: Empty state message
+- **errorLoading**: Error state message
+- **retry**: Recovery action button
+- **routineDetailsTitle**: Details page title
+- **back**: Navigation back action
+
+**Benefits**:
+- Concise syntax throughout UI code
+- Type-safe translation keys
+- Compile-time validation
+- Easy language switching
+- Consistent terminology
+
+### Material 3 Design System
+
+**Theme Integration**:
+- FlexColorScheme provides Material 3 color schemes
+- Typography from theme system (textTheme.bodyLarge, etc.)
+- Color roles (colorScheme.error, colorScheme.primary)
+- Elevation and shape from Material 3 defaults
+- Dark/light mode automatic switching
+
+**Component Usage**:
+- **Card**: Container for routine items
+- **ListTile**: Interactive list item pattern
+- **CircularProgressIndicator**: Loading feedback
+- **FilledButton**: Primary action button
+- **AppBar**: Top navigation bar
+- **Scaffold**: Page structure
+
+**Accessibility Compliance**:
+- Color contrast ratios meet WCAG AA
+- Touch targets minimum 48x48dp
+- Semantic labels from localization
+- Screen reader support automatic
+- Focus indicators from theme
+
 ## Testing Strategy
 
 ### Unit Tests
