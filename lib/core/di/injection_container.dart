@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../features/workout/data/datasources/local/workout_database.dart';
 import '../../features/workout/data/repositories/workout_repository_impl.dart';
@@ -12,19 +13,23 @@ import '../../features/workout/domain/usecases/save_set_log_usecase.dart';
 import '../../features/workout/domain/usecases/update_routine_order_usecase.dart';
 import '../../features/workout/domain/usecases/watch_routines_usecase.dart';
 import '../../features/workout/domain/usecases/watch_sessions_usecase.dart';
+import '../router/app_router.dart';
 
 final serviceLocator = GetIt.instance;
 
 Future<void> initialize() async {
   await _initializeCore();
-  await _initializeFeatures();
+  await _initializeDomain();
+  await _initializePresentation();
 }
 
 Future<void> _initializeCore() async {
   serviceLocator.registerLazySingleton<AppDatabase>(() => AppDatabase());
+  
+  serviceLocator.registerSingleton<GoRouter>(createAppRouter());
 }
 
-Future<void> _initializeFeatures() async {
+Future<void> _initializeDomain() async {
   serviceLocator.registerLazySingleton<WorkoutRepository>(
     () => WorkoutRepositoryImpl(serviceLocator()),
   );
@@ -64,4 +69,7 @@ Future<void> _initializeFeatures() async {
   serviceLocator.registerFactory(
     () => GetLogsForSessionUseCase(serviceLocator()),
   );
+}
+
+Future<void> _initializePresentation() async {
 }
