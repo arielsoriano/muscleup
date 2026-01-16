@@ -32,11 +32,19 @@ A minimalist, privacy-focused workout tracking application built with Flutter. O
 - Error handling patterns defined
 - Core utilities and constants
 
-### Phase 2: Domain Layer (In Progress)
+### Phase 2: Domain Layer ✅
 
-- Entity definitions
-- Repository contracts
-- Use case implementations
+- Immutable entities with Freezed (WorkoutRoutine, WorkoutExercise, WorkoutSet)
+- Flexible unit design supporting multiple workout types
+- Repository contract with Stream-based reactivity
+- Five use cases implementing business logic
+- Complete SOLID compliance with Dependency Inversion
+
+### Phase 3: Data Layer (In Progress)
+
+- Database schema with Drift
+- Repository implementation
+- Data models and mappers
 
 ## Getting Started
 
