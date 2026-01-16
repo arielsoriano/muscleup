@@ -258,6 +258,17 @@ Exception    →    Repository catches   →   Either<Failure, T>
 
 2. **Flexible Unit Design (WorkoutSet)**:
    ```dart
+   enum WorkoutUnit {
+     kilograms,
+     pounds,
+     repetitions,
+     seconds,
+     minutes,
+     kilometers,
+     meters,
+     none,
+   }
+   
    @freezed
    class WorkoutSet with _$WorkoutSet {
      const factory WorkoutSet({
@@ -265,19 +276,78 @@ Exception    →    Repository catches   →   Either<Failure, T>
        required int sortOrder,
        double? targetValue1,
        double? targetValue2,
-       String? unit1,
-       String? unit2,
+       WorkoutUnit? unit1,
+       WorkoutUnit? unit2,
      }) = _WorkoutSet;
    }
    ```
    
    **Design Philosophy**:
    - **Universal Flexibility**: Single entity supports multiple workout types
-   - **Weight Training**: `targetValue1=weight, unit1='kg', targetValue2=reps, unit2='reps'`
-   - **Cardio (Time)**: `targetValue1=duration, unit1='seconds'`
-   - **Cardio (Distance)**: `targetValue1=distance, unit1='km', targetValue2=time, unit2='seconds'`
-   - **Bodyweight**: `targetValue1=reps, unit1='reps'`
+   - **Type Safety**: WorkoutUnit enum eliminates magic strings and prevents typos
+   - **Weight Training**: `targetValue1=weight, unit1=kilograms, targetValue2=reps, unit2=repetitions`
+   - **Cardio (Time)**: `targetValue1=duration, unit1=seconds`
+   - **Cardio (Distance)**: `targetValue1=distance, unit1=kilometers, targetValue2=time, unit2=seconds`
+   - **Bodyweight**: `targetValue1=reps, unit1=repetitions`
    - **Scalability**: No schema changes needed for new workout types
+   - **Data Consistency**: Compile-time guarantees for unit values
+
+3. **Session and Log Entities (Progress Tracking)**:
+   ```dart
+   @freezed
+   class WorkoutSession with _$WorkoutSession {
+     const factory WorkoutSession({
+       required String id,
+       required String routineId,
+       required DateTime date,
+       String? notes,
+     }) = _WorkoutSession;
+   }
+   
+   @freezed
+   class SetLog with _$SetLog {
+     const factory SetLog({
+       required String id,
+       required String sessionId,
+       required String workoutExerciseId,
+       required int setNumber,
+       double? actualValue1,
+       double? actualValue2,
+       WorkoutUnit? unit1,
+       WorkoutUnit? unit2,
+       required bool isCompleted,
+       required DateTime timestamp,
+     }) = _SetLog;
+   }
+   ```
+   
+   **Architecture Pattern**:
+   - **Two-Layer Tracking**: Session as container, SetLog as granular performance record
+   - **WorkoutSession**: Represents a single training day instance
+     - Links to WorkoutRoutine via routineId (template reference)
+     - Captures training date and session-level notes
+     - Acts as parent entity for all SetLog records
+   - **SetLog**: Records actual performance for each set
+     - Links to specific WorkoutExercise being performed
+     - Tracks actual values vs template targets
+     - Completion status enables partial workout tracking
+     - Timestamp allows temporal analysis and rest period calculations
+   
+   **Data Flow**:
+   ```
+   WorkoutRoutine (Template)
+         ↓
+   WorkoutSession (Instance)
+         ↓
+   SetLog (Performance)
+   ```
+   
+   **Design Benefits**:
+   - Historical tracking without modifying routine templates
+   - Progress comparison across multiple sessions
+   - Flexible partial completion (skip sets, stop early)
+   - Support for progressive overload analysis
+   - Independent session editing without affecting templates
    - **UI Simplicity**: Single component handles all set types
 
 **Benefits**:
@@ -396,6 +466,16 @@ Exception    →    Repository catches   →   Either<Failure, T>
        return repository.watchRoutines();
      }
    }
+   
+   class WatchSessionsUseCase extends StreamUseCase<List<WorkoutSession>, NoParams> {
+     WatchSessionsUseCase(this.repository);
+     final WorkoutRepository repository;
+     
+     @override
+     Stream<Either<Failure, List<WorkoutSession>>> call(NoParams params) {
+       return repository.watchSessions();
+     }
+   }
    ```
    
    **Design Extension**:
@@ -403,6 +483,9 @@ Exception    →    Repository catches   →   Either<Failure, T>
    - Enables reactive data flows through architecture layers
    - Stream management encapsulated at domain boundary
    - BLoCs consume streams without knowing data source
+   - **Advanced Application**: Both routines (templates) and sessions (instances) use reactive streams
+   - Real-time synchronization between planning and execution views
+   - Automatic UI updates when completing sets during workout
 
 **Implemented Use Cases**:
 
@@ -413,6 +496,10 @@ Exception    →    Repository catches   →   Either<Failure, T>
 | **SaveRoutineUseCase** | Future | Create or update routine | routine: WorkoutRoutine |
 | **DeleteRoutineUseCase** | Future | Remove routine | id: String |
 | **UpdateRoutineOrderUseCase** | Future | Persist drag-and-drop changes | routines: List<WorkoutRoutine> |
+| **WatchSessionsUseCase** | Stream | Real-time session list updates | None |
+| **SaveSessionUseCase** | Future | Create or update session | session: WorkoutSession |
+| **SaveSetLogUseCase** | Future | Record set performance | log: SetLog |
+| **GetLogsForSessionUseCase** | Future | Retrieve session performance history | sessionId: String |
 
 **Benefits**:
 - **Business Logic Isolation**: All domain rules in one testable layer

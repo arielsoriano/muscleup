@@ -34,11 +34,13 @@ A minimalist, privacy-focused workout tracking application built with Flutter. O
 
 ### Phase 2: Domain Layer ✅
 
-- Immutable entities with Freezed (WorkoutRoutine, WorkoutExercise, WorkoutSet)
-- Flexible unit design supporting multiple workout types
-- Repository contract with Stream-based reactivity
-- Five use cases implementing business logic
+- Immutable entities with Freezed (WorkoutRoutine, WorkoutExercise, WorkoutSet, WorkoutSession, SetLog)
+- WorkoutUnit enum for type-safe unit handling (kilograms, pounds, repetitions, seconds, etc.)
+- Flexible unit design supporting weight training, cardio, and bodyweight exercises
+- Repository contract with Stream-based reactivity for routines and sessions
+- Nine use cases implementing complete workout lifecycle (planning, execution, tracking)
 - Complete SOLID compliance with Dependency Inversion
+- Session/Log architecture for progress tracking without modifying templates
 
 ### Phase 3: Data Layer (In Progress)
 
