@@ -1,0 +1,23 @@
+{
+  "@@locale": "en",
+  "appTitle": "Muscleup",
+  "@appTitle": {
+    "description": "The application title"
+  },
+  "workouts": "Workouts",
+  "@workouts": {
+    "description": "Workouts label"
+  },
+  "exercises": "Exercises",
+  "@exercises": {
+    "description": "Exercises label"
+  },
+  "history": "History",
+  "@history": {
+    "description": "History label"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings label"
+  }
+}
