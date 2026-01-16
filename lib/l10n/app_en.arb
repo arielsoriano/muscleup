@@ -67,5 +67,21 @@
   "retry": "Retry",
   "@retry": {
     "description": "Retry action"
+  },
+  "dashboardTitle": "Dashboard",
+  "@dashboardTitle": {
+    "description": "Dashboard page title"
+  },
+  "today": "Today",
+  "@today": {
+    "description": "Today label"
+  },
+  "noWorkoutToday": "No workout recorded for this day",
+  "@noWorkoutToday": {
+    "description": "Empty state message when no workout exists for selected day"
+  },
+  "startWorkout": "Start a Routine",
+  "@startWorkout": {
+    "description": "Start workout action"
   }
 }

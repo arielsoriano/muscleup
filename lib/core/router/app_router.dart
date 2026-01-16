@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/workout/presentation/pages/dashboard_page.dart';
 import '../../features/workout/presentation/pages/routines_page.dart';
 import '../../features/workout/presentation/pages/workout_details_page.dart';
 
 class AppRoutes {
-  static const String routines = '/';
+  static const String dashboard = '/';
+  static const String routines = '/routines';
   static const String routineDetails = '/routine/:id';
   
   static String routineDetailsPath(String id) => '/routine/$id';
@@ -13,8 +15,12 @@ class AppRoutes {
 
 GoRouter createAppRouter() {
   return GoRouter(
-    initialLocation: AppRoutes.routines,
+    initialLocation: AppRoutes.dashboard,
     routes: [
+      GoRoute(
+        path: AppRoutes.dashboard,
+        builder: (context, state) => const DashboardPage(),
+      ),
       GoRoute(
         path: AppRoutes.routines,
         builder: (context, state) => const RoutinesPage(),

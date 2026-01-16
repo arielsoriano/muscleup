@@ -58,4 +58,16 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get retry => 'Reintentar';
+
+  @override
+  String get dashboardTitle => 'Panel Principal';
+
+  @override
+  String get today => 'Hoy';
+
+  @override
+  String get noWorkoutToday => 'No hay entrenamiento registrado para este día';
+
+  @override
+  String get startWorkout => 'Iniciar una Rutina';
 }

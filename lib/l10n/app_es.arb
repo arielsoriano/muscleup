@@ -16,5 +16,9 @@
   "routineDetailsTitle": "Detalles de Rutina",
   "noRoutines": "No se encontraron rutinas",
   "errorLoading": "Error al cargar las rutinas",
-  "retry": "Reintentar"
+  "retry": "Reintentar",
+  "dashboardTitle": "Panel Principal",
+  "today": "Hoy",
+  "noWorkoutToday": "No hay entrenamiento registrado para este día",
+  "startWorkout": "Iniciar una Rutina"
 }

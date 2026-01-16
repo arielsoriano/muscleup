@@ -199,6 +199,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get retry;
+
+  /// Dashboard page title
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get dashboardTitle;
+
+  /// Today label
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// Empty state message when no workout exists for selected day
+  ///
+  /// In en, this message translates to:
+  /// **'No workout recorded for this day'**
+  String get noWorkoutToday;
+
+  /// Start workout action
+  ///
+  /// In en, this message translates to:
+  /// **'Start a Routine'**
+  String get startWorkout;
 }
 
 class _AppLocalizationsDelegate

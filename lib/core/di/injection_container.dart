@@ -13,6 +13,7 @@ import '../../features/workout/domain/usecases/save_set_log_usecase.dart';
 import '../../features/workout/domain/usecases/update_routine_order_usecase.dart';
 import '../../features/workout/domain/usecases/watch_routines_usecase.dart';
 import '../../features/workout/domain/usecases/watch_sessions_usecase.dart';
+import '../../features/workout/presentation/cubit/dashboard_cubit.dart';
 import '../../features/workout/presentation/cubit/workout_cubit.dart';
 import '../router/app_router.dart';
 
@@ -77,6 +78,12 @@ Future<void> _initializePresentation() async {
     () => WorkoutCubit(
       watchRoutinesUseCase: serviceLocator(),
       deleteRoutineUseCase: serviceLocator(),
+    ),
+  );
+
+  serviceLocator.registerFactory(
+    () => DashboardCubit(
+      watchSessionsUseCase: serviceLocator(),
     ),
   );
 }

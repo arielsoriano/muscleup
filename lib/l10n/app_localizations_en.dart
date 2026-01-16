@@ -58,4 +58,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get retry => 'Retry';
+
+  @override
+  String get dashboardTitle => 'Dashboard';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get noWorkoutToday => 'No workout recorded for this day';
+
+  @override
+  String get startWorkout => 'Start a Routine';
 }
