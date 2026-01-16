@@ -1,5 +1,8 @@
 import 'package:get_it/get_it.dart';
 
+import '../../features/workout/data/datasources/local/workout_database.dart';
+import '../../features/workout/data/repositories/workout_repository_impl.dart';
+import '../../features/workout/domain/repositories/workout_repository.dart';
 import '../../features/workout/domain/usecases/delete_routine_usecase.dart';
 import '../../features/workout/domain/usecases/get_logs_for_session_usecase.dart';
 import '../../features/workout/domain/usecases/get_routine_by_id_usecase.dart';
@@ -17,9 +20,15 @@ Future<void> initialize() async {
   await _initializeFeatures();
 }
 
-Future<void> _initializeCore() async {}
+Future<void> _initializeCore() async {
+  serviceLocator.registerLazySingleton<AppDatabase>(() => AppDatabase());
+}
 
 Future<void> _initializeFeatures() async {
+  serviceLocator.registerLazySingleton<WorkoutRepository>(
+    () => WorkoutRepositoryImpl(serviceLocator()),
+  );
+
   serviceLocator.registerFactory(
     () => WatchRoutinesUseCase(serviceLocator()),
   );
