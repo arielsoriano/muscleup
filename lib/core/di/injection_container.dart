@@ -13,6 +13,7 @@ import '../../features/workout/domain/usecases/save_set_log_usecase.dart';
 import '../../features/workout/domain/usecases/update_routine_order_usecase.dart';
 import '../../features/workout/domain/usecases/watch_routines_usecase.dart';
 import '../../features/workout/domain/usecases/watch_sessions_usecase.dart';
+import '../../features/workout/presentation/cubit/workout_cubit.dart';
 import '../router/app_router.dart';
 
 final serviceLocator = GetIt.instance;
@@ -72,4 +73,10 @@ Future<void> _initializeDomain() async {
 }
 
 Future<void> _initializePresentation() async {
+  serviceLocator.registerFactory(
+    () => WorkoutCubit(
+      watchRoutinesUseCase: serviceLocator(),
+      deleteRoutineUseCase: serviceLocator(),
+    ),
+  );
 }
