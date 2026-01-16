@@ -14,4 +14,12 @@ abstract class WorkoutRepository {
   Future<Either<Failure, void>> updateRoutineOrder(
     List<WorkoutRoutine> routines,
   );
+
+  Stream<Either<Failure, List<WorkoutSession>>> watchSessions();
+
+  Future<Either<Failure, void>> saveSession(WorkoutSession session);
+
+  Future<Either<Failure, void>> saveSetLog(SetLog log);
+
+  Future<Either<Failure, List<SetLog>>> getLogsForSession(String sessionId);
 }

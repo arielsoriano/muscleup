@@ -459,8 +459,8 @@ mixin _$WorkoutSet {
   int get sortOrder => throw _privateConstructorUsedError;
   double? get targetValue1 => throw _privateConstructorUsedError;
   double? get targetValue2 => throw _privateConstructorUsedError;
-  String? get unit1 => throw _privateConstructorUsedError;
-  String? get unit2 => throw _privateConstructorUsedError;
+  WorkoutUnit? get unit1 => throw _privateConstructorUsedError;
+  WorkoutUnit? get unit2 => throw _privateConstructorUsedError;
 
   /// Create a copy of WorkoutSet
   /// with the given fields replaced by the non-null parameter values.
@@ -480,8 +480,8 @@ abstract class $WorkoutSetCopyWith<$Res> {
       int sortOrder,
       double? targetValue1,
       double? targetValue2,
-      String? unit1,
-      String? unit2});
+      WorkoutUnit? unit1,
+      WorkoutUnit? unit2});
 }
 
 /// @nodoc
@@ -526,11 +526,11 @@ class _$WorkoutSetCopyWithImpl<$Res, $Val extends WorkoutSet>
       unit1: freezed == unit1
           ? _value.unit1
           : unit1 // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as WorkoutUnit?,
       unit2: freezed == unit2
           ? _value.unit2
           : unit2 // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as WorkoutUnit?,
     ) as $Val);
   }
 }
@@ -548,8 +548,8 @@ abstract class _$$WorkoutSetImplCopyWith<$Res>
       int sortOrder,
       double? targetValue1,
       double? targetValue2,
-      String? unit1,
-      String? unit2});
+      WorkoutUnit? unit1,
+      WorkoutUnit? unit2});
 }
 
 /// @nodoc
@@ -592,11 +592,11 @@ class __$$WorkoutSetImplCopyWithImpl<$Res>
       unit1: freezed == unit1
           ? _value.unit1
           : unit1 // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as WorkoutUnit?,
       unit2: freezed == unit2
           ? _value.unit2
           : unit2 // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as WorkoutUnit?,
     ));
   }
 }
@@ -621,9 +621,9 @@ class _$WorkoutSetImpl implements _WorkoutSet {
   @override
   final double? targetValue2;
   @override
-  final String? unit1;
+  final WorkoutUnit? unit1;
   @override
-  final String? unit2;
+  final WorkoutUnit? unit2;
 
   @override
   String toString() {
@@ -665,8 +665,8 @@ abstract class _WorkoutSet implements WorkoutSet {
       required final int sortOrder,
       final double? targetValue1,
       final double? targetValue2,
-      final String? unit1,
-      final String? unit2}) = _$WorkoutSetImpl;
+      final WorkoutUnit? unit1,
+      final WorkoutUnit? unit2}) = _$WorkoutSetImpl;
 
   @override
   String get id;
@@ -677,14 +677,527 @@ abstract class _WorkoutSet implements WorkoutSet {
   @override
   double? get targetValue2;
   @override
-  String? get unit1;
+  WorkoutUnit? get unit1;
   @override
-  String? get unit2;
+  WorkoutUnit? get unit2;
 
   /// Create a copy of WorkoutSet
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$WorkoutSetImplCopyWith<_$WorkoutSetImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+mixin _$WorkoutSession {
+  String get id => throw _privateConstructorUsedError;
+  String get routineId => throw _privateConstructorUsedError;
+  DateTime get date => throw _privateConstructorUsedError;
+  String? get notes => throw _privateConstructorUsedError;
+
+  /// Create a copy of WorkoutSession
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $WorkoutSessionCopyWith<WorkoutSession> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $WorkoutSessionCopyWith<$Res> {
+  factory $WorkoutSessionCopyWith(
+          WorkoutSession value, $Res Function(WorkoutSession) then) =
+      _$WorkoutSessionCopyWithImpl<$Res, WorkoutSession>;
+  @useResult
+  $Res call({String id, String routineId, DateTime date, String? notes});
+}
+
+/// @nodoc
+class _$WorkoutSessionCopyWithImpl<$Res, $Val extends WorkoutSession>
+    implements $WorkoutSessionCopyWith<$Res> {
+  _$WorkoutSessionCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of WorkoutSession
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? routineId = null,
+    Object? date = null,
+    Object? notes = freezed,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      routineId: null == routineId
+          ? _value.routineId
+          : routineId // ignore: cast_nullable_to_non_nullable
+              as String,
+      date: null == date
+          ? _value.date
+          : date // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$WorkoutSessionImplCopyWith<$Res>
+    implements $WorkoutSessionCopyWith<$Res> {
+  factory _$$WorkoutSessionImplCopyWith(_$WorkoutSessionImpl value,
+          $Res Function(_$WorkoutSessionImpl) then) =
+      __$$WorkoutSessionImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String id, String routineId, DateTime date, String? notes});
+}
+
+/// @nodoc
+class __$$WorkoutSessionImplCopyWithImpl<$Res>
+    extends _$WorkoutSessionCopyWithImpl<$Res, _$WorkoutSessionImpl>
+    implements _$$WorkoutSessionImplCopyWith<$Res> {
+  __$$WorkoutSessionImplCopyWithImpl(
+      _$WorkoutSessionImpl _value, $Res Function(_$WorkoutSessionImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of WorkoutSession
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? routineId = null,
+    Object? date = null,
+    Object? notes = freezed,
+  }) {
+    return _then(_$WorkoutSessionImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      routineId: null == routineId
+          ? _value.routineId
+          : routineId // ignore: cast_nullable_to_non_nullable
+              as String,
+      date: null == date
+          ? _value.date
+          : date // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$WorkoutSessionImpl implements _WorkoutSession {
+  const _$WorkoutSessionImpl(
+      {required this.id,
+      required this.routineId,
+      required this.date,
+      this.notes});
+
+  @override
+  final String id;
+  @override
+  final String routineId;
+  @override
+  final DateTime date;
+  @override
+  final String? notes;
+
+  @override
+  String toString() {
+    return 'WorkoutSession(id: $id, routineId: $routineId, date: $date, notes: $notes)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$WorkoutSessionImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.routineId, routineId) ||
+                other.routineId == routineId) &&
+            (identical(other.date, date) || other.date == date) &&
+            (identical(other.notes, notes) || other.notes == notes));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, id, routineId, date, notes);
+
+  /// Create a copy of WorkoutSession
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$WorkoutSessionImplCopyWith<_$WorkoutSessionImpl> get copyWith =>
+      __$$WorkoutSessionImplCopyWithImpl<_$WorkoutSessionImpl>(
+          this, _$identity);
+}
+
+abstract class _WorkoutSession implements WorkoutSession {
+  const factory _WorkoutSession(
+      {required final String id,
+      required final String routineId,
+      required final DateTime date,
+      final String? notes}) = _$WorkoutSessionImpl;
+
+  @override
+  String get id;
+  @override
+  String get routineId;
+  @override
+  DateTime get date;
+  @override
+  String? get notes;
+
+  /// Create a copy of WorkoutSession
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$WorkoutSessionImplCopyWith<_$WorkoutSessionImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+mixin _$SetLog {
+  String get id => throw _privateConstructorUsedError;
+  String get sessionId => throw _privateConstructorUsedError;
+  String get workoutExerciseId => throw _privateConstructorUsedError;
+  int get setNumber => throw _privateConstructorUsedError;
+  double? get actualValue1 => throw _privateConstructorUsedError;
+  double? get actualValue2 => throw _privateConstructorUsedError;
+  WorkoutUnit? get unit1 => throw _privateConstructorUsedError;
+  WorkoutUnit? get unit2 => throw _privateConstructorUsedError;
+  bool get isCompleted => throw _privateConstructorUsedError;
+  DateTime get timestamp => throw _privateConstructorUsedError;
+
+  /// Create a copy of SetLog
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $SetLogCopyWith<SetLog> get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $SetLogCopyWith<$Res> {
+  factory $SetLogCopyWith(SetLog value, $Res Function(SetLog) then) =
+      _$SetLogCopyWithImpl<$Res, SetLog>;
+  @useResult
+  $Res call(
+      {String id,
+      String sessionId,
+      String workoutExerciseId,
+      int setNumber,
+      double? actualValue1,
+      double? actualValue2,
+      WorkoutUnit? unit1,
+      WorkoutUnit? unit2,
+      bool isCompleted,
+      DateTime timestamp});
+}
+
+/// @nodoc
+class _$SetLogCopyWithImpl<$Res, $Val extends SetLog>
+    implements $SetLogCopyWith<$Res> {
+  _$SetLogCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of SetLog
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? sessionId = null,
+    Object? workoutExerciseId = null,
+    Object? setNumber = null,
+    Object? actualValue1 = freezed,
+    Object? actualValue2 = freezed,
+    Object? unit1 = freezed,
+    Object? unit2 = freezed,
+    Object? isCompleted = null,
+    Object? timestamp = null,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      sessionId: null == sessionId
+          ? _value.sessionId
+          : sessionId // ignore: cast_nullable_to_non_nullable
+              as String,
+      workoutExerciseId: null == workoutExerciseId
+          ? _value.workoutExerciseId
+          : workoutExerciseId // ignore: cast_nullable_to_non_nullable
+              as String,
+      setNumber: null == setNumber
+          ? _value.setNumber
+          : setNumber // ignore: cast_nullable_to_non_nullable
+              as int,
+      actualValue1: freezed == actualValue1
+          ? _value.actualValue1
+          : actualValue1 // ignore: cast_nullable_to_non_nullable
+              as double?,
+      actualValue2: freezed == actualValue2
+          ? _value.actualValue2
+          : actualValue2 // ignore: cast_nullable_to_non_nullable
+              as double?,
+      unit1: freezed == unit1
+          ? _value.unit1
+          : unit1 // ignore: cast_nullable_to_non_nullable
+              as WorkoutUnit?,
+      unit2: freezed == unit2
+          ? _value.unit2
+          : unit2 // ignore: cast_nullable_to_non_nullable
+              as WorkoutUnit?,
+      isCompleted: null == isCompleted
+          ? _value.isCompleted
+          : isCompleted // ignore: cast_nullable_to_non_nullable
+              as bool,
+      timestamp: null == timestamp
+          ? _value.timestamp
+          : timestamp // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$SetLogImplCopyWith<$Res> implements $SetLogCopyWith<$Res> {
+  factory _$$SetLogImplCopyWith(
+          _$SetLogImpl value, $Res Function(_$SetLogImpl) then) =
+      __$$SetLogImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String id,
+      String sessionId,
+      String workoutExerciseId,
+      int setNumber,
+      double? actualValue1,
+      double? actualValue2,
+      WorkoutUnit? unit1,
+      WorkoutUnit? unit2,
+      bool isCompleted,
+      DateTime timestamp});
+}
+
+/// @nodoc
+class __$$SetLogImplCopyWithImpl<$Res>
+    extends _$SetLogCopyWithImpl<$Res, _$SetLogImpl>
+    implements _$$SetLogImplCopyWith<$Res> {
+  __$$SetLogImplCopyWithImpl(
+      _$SetLogImpl _value, $Res Function(_$SetLogImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of SetLog
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? sessionId = null,
+    Object? workoutExerciseId = null,
+    Object? setNumber = null,
+    Object? actualValue1 = freezed,
+    Object? actualValue2 = freezed,
+    Object? unit1 = freezed,
+    Object? unit2 = freezed,
+    Object? isCompleted = null,
+    Object? timestamp = null,
+  }) {
+    return _then(_$SetLogImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      sessionId: null == sessionId
+          ? _value.sessionId
+          : sessionId // ignore: cast_nullable_to_non_nullable
+              as String,
+      workoutExerciseId: null == workoutExerciseId
+          ? _value.workoutExerciseId
+          : workoutExerciseId // ignore: cast_nullable_to_non_nullable
+              as String,
+      setNumber: null == setNumber
+          ? _value.setNumber
+          : setNumber // ignore: cast_nullable_to_non_nullable
+              as int,
+      actualValue1: freezed == actualValue1
+          ? _value.actualValue1
+          : actualValue1 // ignore: cast_nullable_to_non_nullable
+              as double?,
+      actualValue2: freezed == actualValue2
+          ? _value.actualValue2
+          : actualValue2 // ignore: cast_nullable_to_non_nullable
+              as double?,
+      unit1: freezed == unit1
+          ? _value.unit1
+          : unit1 // ignore: cast_nullable_to_non_nullable
+              as WorkoutUnit?,
+      unit2: freezed == unit2
+          ? _value.unit2
+          : unit2 // ignore: cast_nullable_to_non_nullable
+              as WorkoutUnit?,
+      isCompleted: null == isCompleted
+          ? _value.isCompleted
+          : isCompleted // ignore: cast_nullable_to_non_nullable
+              as bool,
+      timestamp: null == timestamp
+          ? _value.timestamp
+          : timestamp // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$SetLogImpl implements _SetLog {
+  const _$SetLogImpl(
+      {required this.id,
+      required this.sessionId,
+      required this.workoutExerciseId,
+      required this.setNumber,
+      this.actualValue1,
+      this.actualValue2,
+      this.unit1,
+      this.unit2,
+      required this.isCompleted,
+      required this.timestamp});
+
+  @override
+  final String id;
+  @override
+  final String sessionId;
+  @override
+  final String workoutExerciseId;
+  @override
+  final int setNumber;
+  @override
+  final double? actualValue1;
+  @override
+  final double? actualValue2;
+  @override
+  final WorkoutUnit? unit1;
+  @override
+  final WorkoutUnit? unit2;
+  @override
+  final bool isCompleted;
+  @override
+  final DateTime timestamp;
+
+  @override
+  String toString() {
+    return 'SetLog(id: $id, sessionId: $sessionId, workoutExerciseId: $workoutExerciseId, setNumber: $setNumber, actualValue1: $actualValue1, actualValue2: $actualValue2, unit1: $unit1, unit2: $unit2, isCompleted: $isCompleted, timestamp: $timestamp)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$SetLogImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.sessionId, sessionId) ||
+                other.sessionId == sessionId) &&
+            (identical(other.workoutExerciseId, workoutExerciseId) ||
+                other.workoutExerciseId == workoutExerciseId) &&
+            (identical(other.setNumber, setNumber) ||
+                other.setNumber == setNumber) &&
+            (identical(other.actualValue1, actualValue1) ||
+                other.actualValue1 == actualValue1) &&
+            (identical(other.actualValue2, actualValue2) ||
+                other.actualValue2 == actualValue2) &&
+            (identical(other.unit1, unit1) || other.unit1 == unit1) &&
+            (identical(other.unit2, unit2) || other.unit2 == unit2) &&
+            (identical(other.isCompleted, isCompleted) ||
+                other.isCompleted == isCompleted) &&
+            (identical(other.timestamp, timestamp) ||
+                other.timestamp == timestamp));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      sessionId,
+      workoutExerciseId,
+      setNumber,
+      actualValue1,
+      actualValue2,
+      unit1,
+      unit2,
+      isCompleted,
+      timestamp);
+
+  /// Create a copy of SetLog
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$SetLogImplCopyWith<_$SetLogImpl> get copyWith =>
+      __$$SetLogImplCopyWithImpl<_$SetLogImpl>(this, _$identity);
+}
+
+abstract class _SetLog implements SetLog {
+  const factory _SetLog(
+      {required final String id,
+      required final String sessionId,
+      required final String workoutExerciseId,
+      required final int setNumber,
+      final double? actualValue1,
+      final double? actualValue2,
+      final WorkoutUnit? unit1,
+      final WorkoutUnit? unit2,
+      required final bool isCompleted,
+      required final DateTime timestamp}) = _$SetLogImpl;
+
+  @override
+  String get id;
+  @override
+  String get sessionId;
+  @override
+  String get workoutExerciseId;
+  @override
+  int get setNumber;
+  @override
+  double? get actualValue1;
+  @override
+  double? get actualValue2;
+  @override
+  WorkoutUnit? get unit1;
+  @override
+  WorkoutUnit? get unit2;
+  @override
+  bool get isCompleted;
+  @override
+  DateTime get timestamp;
+
+  /// Create a copy of SetLog
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$SetLogImplCopyWith<_$SetLogImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
