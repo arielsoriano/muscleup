@@ -4,5 +4,12 @@
   "workouts": "Entrenamientos",
   "exercises": "Ejercicios",
   "history": "Historial",
-  "settings": "Ajustes"
+  "settings": "Ajustes",
+  "routines": "Rutinas",
+  "sets": "Series",
+  "weight": "Peso",
+  "reps": "Repeticiones",
+  "addRoutine": "Añadir Rutina",
+  "save": "Guardar",
+  "cancel": "Cancelar"
 }

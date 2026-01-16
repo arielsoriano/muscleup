@@ -127,6 +127,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Settings'**
   String get settings;
+
+  /// Routines label
+  ///
+  /// In en, this message translates to:
+  /// **'Routines'**
+  String get routines;
+
+  /// Sets label
+  ///
+  /// In en, this message translates to:
+  /// **'Sets'**
+  String get sets;
+
+  /// Weight label
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get weight;
+
+  /// Reps label
+  ///
+  /// In en, this message translates to:
+  /// **'Reps'**
+  String get reps;
+
+  /// Add routine action
+  ///
+  /// In en, this message translates to:
+  /// **'Add Routine'**
+  String get addRoutine;
+
+  /// Save action
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// Cancel action
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
 }
 
 class _AppLocalizationsDelegate

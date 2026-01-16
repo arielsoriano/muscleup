@@ -19,5 +19,33 @@
   "settings": "Settings",
   "@settings": {
     "description": "Settings label"
+  },
+  "routines": "Routines",
+  "@routines": {
+    "description": "Routines label"
+  },
+  "sets": "Sets",
+  "@sets": {
+    "description": "Sets label"
+  },
+  "weight": "Weight",
+  "@weight": {
+    "description": "Weight label"
+  },
+  "reps": "Reps",
+  "@reps": {
+    "description": "Reps label"
+  },
+  "addRoutine": "Add Routine",
+  "@addRoutine": {
+    "description": "Add routine action"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Save action"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel action"
   }
 }

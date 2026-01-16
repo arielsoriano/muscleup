@@ -22,4 +22,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings => 'Settings';
+
+  @override
+  String get routines => 'Routines';
+
+  @override
+  String get sets => 'Sets';
+
+  @override
+  String get weight => 'Weight';
+
+  @override
+  String get reps => 'Reps';
+
+  @override
+  String get addRoutine => 'Add Routine';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get cancel => 'Cancel';
 }

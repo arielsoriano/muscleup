@@ -22,4 +22,25 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settings => 'Ajustes';
+
+  @override
+  String get routines => 'Rutinas';
+
+  @override
+  String get sets => 'Series';
+
+  @override
+  String get weight => 'Peso';
+
+  @override
+  String get reps => 'Repeticiones';
+
+  @override
+  String get addRoutine => 'Añadir Rutina';
+
+  @override
+  String get save => 'Guardar';
+
+  @override
+  String get cancel => 'Cancelar';
 }
