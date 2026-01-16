@@ -43,4 +43,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cancel => 'Cancel';
+
+  @override
+  String get back => 'Back';
+
+  @override
+  String get routineDetailsTitle => 'Routine Details';
+
+  @override
+  String get noRoutines => 'No routines found';
+
+  @override
+  String get errorLoading => 'Error loading routines';
+
+  @override
+  String get retry => 'Retry';
 }

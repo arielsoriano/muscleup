@@ -11,5 +11,10 @@
   "reps": "Repeticiones",
   "addRoutine": "Añadir Rutina",
   "save": "Guardar",
-  "cancel": "Cancelar"
+  "cancel": "Cancelar",
+  "back": "Atrás",
+  "routineDetailsTitle": "Detalles de Rutina",
+  "noRoutines": "No se encontraron rutinas",
+  "errorLoading": "Error al cargar las rutinas",
+  "retry": "Reintentar"
 }

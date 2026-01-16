@@ -43,4 +43,19 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get cancel => 'Cancelar';
+
+  @override
+  String get back => 'Atrás';
+
+  @override
+  String get routineDetailsTitle => 'Detalles de Rutina';
+
+  @override
+  String get noRoutines => 'No se encontraron rutinas';
+
+  @override
+  String get errorLoading => 'Error al cargar las rutinas';
+
+  @override
+  String get retry => 'Reintentar';
 }

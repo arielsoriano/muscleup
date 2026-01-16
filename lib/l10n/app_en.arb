@@ -47,5 +47,25 @@
   "cancel": "Cancel",
   "@cancel": {
     "description": "Cancel action"
+  },
+  "back": "Back",
+  "@back": {
+    "description": "Back action"
+  },
+  "routineDetailsTitle": "Routine Details",
+  "@routineDetailsTitle": {
+    "description": "Routine details page title"
+  },
+  "noRoutines": "No routines found",
+  "@noRoutines": {
+    "description": "Empty state message when no routines exist"
+  },
+  "errorLoading": "Error loading routines",
+  "@errorLoading": {
+    "description": "Error message when routines fail to load"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry action"
   }
 }
