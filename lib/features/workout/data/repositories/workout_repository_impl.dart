@@ -1,8 +1,9 @@
 import 'package:drift/drift.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
-import '../../domain/entities/workout_entities.dart';
+ import '../../domain/entities/workout_entities.dart';
 import '../../domain/repositories/workout_repository.dart';
 import '../datasources/local/workout_database.dart';
 
@@ -316,5 +317,88 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
       isCompleted: data.isCompleted,
       timestamp: data.timestamp,
     );
+  }
+
+  @override
+  Future<Either<Failure, List<LibraryExerciseEntity>>> getLibraryExercises() async {
+    try {
+      final data = await database.select(database.libraryExercises).get();
+      final exercises = data.map((exerciseData) {
+        return LibraryExerciseEntity(
+          id: exerciseData.id,
+          name: exerciseData.name,
+          nameEn: exerciseData.nameEn,
+          nameEs: exerciseData.nameEs,
+          isCustom: exerciseData.isCustom,
+        );
+      }).toList();
+      return Either<Failure, List<LibraryExerciseEntity>>.right(exercises);
+    } catch (e) {
+      return Either<Failure, List<LibraryExerciseEntity>>.left(
+        DatabaseFailure(e.toString()),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> saveLibraryExercise(
+    String name, {
+    String? nameEn,
+    String? nameEs,
+  }) async {
+    try {
+      final id = const Uuid().v4();
+      final localizedNameEn = nameEn ?? name;
+      final localizedNameEs = nameEs ?? name;
+
+      await database.into(database.libraryExercises).insert(
+            LibraryExercisesCompanion.insert(
+              id: id,
+              name: name,
+              nameEn: localizedNameEn,
+              nameEs: localizedNameEs,
+              isCustom: true,
+              category: const Value(null),
+            ),
+            mode: InsertMode.insertOrIgnore,
+          );
+      return const Either<Failure, void>.right(null);
+    } catch (e) {
+      return Either<Failure, void>.left(DatabaseFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<LibraryExerciseEntity>>> searchLibraryExercises(
+    String query,
+    String languageCode,
+  ) async {
+    try {
+      final allExercises = await database.select(database.libraryExercises).get();
+      final lowerQuery = query.toLowerCase();
+
+      final filtered = allExercises.where((exercise) {
+        final searchName = languageCode == 'es' 
+            ? exercise.nameEs.toLowerCase() 
+            : exercise.nameEn.toLowerCase();
+        return searchName.contains(lowerQuery);
+      }).toList();
+
+      final exercises = filtered.map((exerciseData) {
+        return LibraryExerciseEntity(
+          id: exerciseData.id,
+          name: exerciseData.name,
+          nameEn: exerciseData.nameEn,
+          nameEs: exerciseData.nameEs,
+          isCustom: exerciseData.isCustom,
+        );
+      }).toList();
+
+      return Either<Failure, List<LibraryExerciseEntity>>.right(exercises);
+    } catch (e) {
+      return Either<Failure, List<LibraryExerciseEntity>>.left(
+        DatabaseFailure(e.toString()),
+      );
+    }
   }
 }

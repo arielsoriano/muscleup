@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/utils/l10n_extension.dart';
+import '../../../../main.dart';
 import '../../domain/entities/workout_entities.dart';
 import '../cubit/dashboard_cubit.dart';
 import '../cubit/dashboard_state.dart';
@@ -27,10 +28,22 @@ class _DashboardPageContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentLocale = Localizations.localeOf(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.dashboardTitle),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.language_rounded),
+            onPressed: () {
+              final newLocale = currentLocale.languageCode == 'en'
+                  ? const Locale('es', '')
+                  : const Locale('en', '');
+              MuscleupApp.setLocale(context, newLocale);
+            },
+            tooltip: 'Language',
+          ),
           IconButton(
             icon: const Icon(Icons.list_alt_rounded),
             onPressed: () => context.push(AppRoutes.routines),
@@ -144,7 +157,7 @@ class _DashboardPageContent extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              DateFormat.E().format(date),
+              DateFormat.E(Localizations.localeOf(context).languageCode).format(date),
               style: textTheme.bodySmall?.copyWith(
                 color: isSelected
                     ? colorScheme.onPrimaryContainer
@@ -229,7 +242,7 @@ class _DashboardPageContent extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          DateFormat.yMMMd().format(session.date),
+                          DateFormat.yMMMd(Localizations.localeOf(context).languageCode).format(session.date),
                           style: textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),

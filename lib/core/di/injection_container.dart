@@ -102,6 +102,7 @@ Future<void> _initializePresentation() async {
     (routine, _) => RoutineFormCubit(
       routine: routine,
       saveRoutineUseCase: serviceLocator(),
+      repository: serviceLocator(),
     ),
   );
 }

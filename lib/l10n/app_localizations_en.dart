@@ -109,4 +109,67 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editRoutine => 'Edit Routine';
+
+  @override
+  String get routineNameHint => 'e.g. Leg Day, Monday';
+
+  @override
+  String get searchExercises => 'Search exercises...';
+
+  @override
+  String get noResults => 'No exercises found';
+
+  @override
+  String get noExercisesAdded => 'No exercises added yet';
+
+  @override
+  String addCustomExercise(String name) {
+    return 'Add \'$name\'';
+  }
+
+  @override
+  String get searchHelper => 'Type to search or add...';
+
+  @override
+  String get noSetsAdded => 'No sets added';
+
+  @override
+  String get restTimeSeconds => 'Rest Time (seconds)';
+
+  @override
+  String removeConfirmation(String name) {
+    return 'Are you sure you want to remove $name?';
+  }
+
+  @override
+  String get remove => 'Remove';
+
+  @override
+  String get unitKg => 'kg';
+
+  @override
+  String get unitLb => 'lb';
+
+  @override
+  String get unitReps => 'reps';
+
+  @override
+  String get unitSeconds => 's';
+
+  @override
+  String get unitMinutes => 'min';
+
+  @override
+  String get unitKm => 'km';
+
+  @override
+  String get unitMeters => 'm';
+
+  @override
+  String get unitNone => 'none';
+
+  @override
+  String setsCount(int count) {
+    return '$count sets';
+  }
 }

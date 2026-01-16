@@ -134,6 +134,96 @@
   },
   "editRoutine": "Edit Routine",
   "@editRoutine": {
-    "description": "Edit routine title"
+    "description": "Edit routine title"  },
+  "routineNameHint": "e.g. Leg Day, Monday",
+  "@routineNameHint": {
+    "description": "Hint text for routine name field"
+  },
+  "searchExercises": "Search exercises...",
+  "@searchExercises": {
+    "description": "Hint text for exercise search"
+  },
+  "noResults": "No exercises found",
+  "@noResults": {
+    "description": "Empty state when no search results"
+  },
+  "noExercisesAdded": "No exercises added yet",
+  "@noExercisesAdded": {
+    "description": "Empty state when no exercises in routine"
+  },
+  "addCustomExercise": "Add '{name}'",
+  "@addCustomExercise": {
+    "description": "Option to add custom exercise name",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "searchHelper": "Type to search or add...",
+  "@searchHelper": {
+    "description": "Helper text for exercise search when empty"
+  },
+  "noSetsAdded": "No sets added",
+  "@noSetsAdded": {
+    "description": "Empty state when no sets in exercise"
+  },
+  "restTimeSeconds": "Rest Time (seconds)",
+  "@restTimeSeconds": {
+    "description": "Label for rest time input field"
+  },
+  "removeConfirmation": "Are you sure you want to remove {name}?",
+  "@removeConfirmation": {
+    "description": "Confirmation message for removing an exercise",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "remove": "Remove",
+  "@remove": {
+    "description": "Remove action"
+  },
+  "unitKg": "kg",
+  "@unitKg": {
+    "description": "Kilograms unit"
+  },
+  "unitLb": "lb",
+  "@unitLb": {
+    "description": "Pounds unit"
+  },
+  "unitReps": "reps",
+  "@unitReps": {
+    "description": "Repetitions unit"
+  },
+  "unitSeconds": "s",
+  "@unitSeconds": {
+    "description": "Seconds unit"
+  },
+  "unitMinutes": "min",
+  "@unitMinutes": {
+    "description": "Minutes unit"
+  },
+  "unitKm": "km",
+  "@unitKm": {
+    "description": "Kilometers unit"
+  },
+  "unitMeters": "m",
+  "@unitMeters": {
+    "description": "Meters unit"
+  },
+  "unitNone": "none",
+  "@unitNone": {
+    "description": "No unit"
+  },
+  "setsCount": "{count} sets",
+  "@setsCount": {
+    "description": "Number of sets in exercise",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

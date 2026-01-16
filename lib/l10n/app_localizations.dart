@@ -301,6 +301,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit Routine'**
   String get editRoutine;
+
+  /// Hint text for routine name field
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Leg Day, Monday'**
+  String get routineNameHint;
+
+  /// Hint text for exercise search
+  ///
+  /// In en, this message translates to:
+  /// **'Search exercises...'**
+  String get searchExercises;
+
+  /// Empty state when no search results
+  ///
+  /// In en, this message translates to:
+  /// **'No exercises found'**
+  String get noResults;
+
+  /// Empty state when no exercises in routine
+  ///
+  /// In en, this message translates to:
+  /// **'No exercises added yet'**
+  String get noExercisesAdded;
+
+  /// Option to add custom exercise name
+  ///
+  /// In en, this message translates to:
+  /// **'Add \'{name}\''**
+  String addCustomExercise(String name);
+
+  /// Helper text for exercise search when empty
+  ///
+  /// In en, this message translates to:
+  /// **'Type to search or add...'**
+  String get searchHelper;
+
+  /// Empty state when no sets in exercise
+  ///
+  /// In en, this message translates to:
+  /// **'No sets added'**
+  String get noSetsAdded;
+
+  /// Label for rest time input field
+  ///
+  /// In en, this message translates to:
+  /// **'Rest Time (seconds)'**
+  String get restTimeSeconds;
+
+  /// Confirmation message for removing an exercise
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove {name}?'**
+  String removeConfirmation(String name);
+
+  /// Remove action
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
+
+  /// Kilograms unit
+  ///
+  /// In en, this message translates to:
+  /// **'kg'**
+  String get unitKg;
+
+  /// Pounds unit
+  ///
+  /// In en, this message translates to:
+  /// **'lb'**
+  String get unitLb;
+
+  /// Repetitions unit
+  ///
+  /// In en, this message translates to:
+  /// **'reps'**
+  String get unitReps;
+
+  /// Seconds unit
+  ///
+  /// In en, this message translates to:
+  /// **'s'**
+  String get unitSeconds;
+
+  /// Minutes unit
+  ///
+  /// In en, this message translates to:
+  /// **'min'**
+  String get unitMinutes;
+
+  /// Kilometers unit
+  ///
+  /// In en, this message translates to:
+  /// **'km'**
+  String get unitKm;
+
+  /// Meters unit
+  ///
+  /// In en, this message translates to:
+  /// **'m'**
+  String get unitMeters;
+
+  /// No unit
+  ///
+  /// In en, this message translates to:
+  /// **'none'**
+  String get unitNone;
+
+  /// Number of sets in exercise
+  ///
+  /// In en, this message translates to:
+  /// **'{count} sets'**
+  String setsCount(int count);
 }
 
 class _AppLocalizationsDelegate

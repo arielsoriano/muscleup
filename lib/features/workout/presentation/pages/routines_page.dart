@@ -58,7 +58,20 @@ class _RoutinesPageContent extends StatelessWidget {
                       subtitle: Text(
                         '${routine.exercises.length} ${context.l10n.exercises}',
                       ),
-                      trailing: const Icon(Icons.chevron_right),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.play_arrow_rounded),
+                            onPressed: () => context.push(
+                              AppRoutes.activeWorkout,
+                              extra: routine,
+                            ),
+                            tooltip: context.l10n.startWorkout,
+                          ),
+                          const Icon(Icons.chevron_right),
+                        ],
+                      ),
                       onTap: () => context.push(
                         AppRoutes.routineDetailsPath(routine.id),
                       ),
@@ -87,6 +100,11 @@ class _RoutinesPageContent extends StatelessWidget {
             ),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => context.push(AppRoutes.manageRoutine),
+        icon: const Icon(Icons.add_rounded),
+        label: Text(context.l10n.addRoutine),
       ),
     );
   }

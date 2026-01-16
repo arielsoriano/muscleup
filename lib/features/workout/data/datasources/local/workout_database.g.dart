@@ -1795,6 +1795,361 @@ class SetLogsCompanion extends UpdateCompanion<SetLogData> {
   }
 }
 
+class $LibraryExercisesTable extends LibraryExercises
+    with TableInfo<$LibraryExercisesTable, LibraryExerciseData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LibraryExercisesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameEnMeta = const VerificationMeta('nameEn');
+  @override
+  late final GeneratedColumn<String> nameEn = GeneratedColumn<String>(
+      'name_en', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameEsMeta = const VerificationMeta('nameEs');
+  @override
+  late final GeneratedColumn<String> nameEs = GeneratedColumn<String>(
+      'name_es', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _isCustomMeta =
+      const VerificationMeta('isCustom');
+  @override
+  late final GeneratedColumn<bool> isCustom = GeneratedColumn<bool>(
+      'is_custom', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_custom" IN (0, 1))'));
+  @override
+  late final GeneratedColumnWithTypeConverter<ExerciseCategory?, int> category =
+      GeneratedColumn<int>('category', aliasedName, true,
+              type: DriftSqlType.int, requiredDuringInsert: false)
+          .withConverter<ExerciseCategory?>(
+              $LibraryExercisesTable.$convertercategoryn);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, name, nameEn, nameEs, isCustom, category];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'library_exercises';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<LibraryExerciseData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('name_en')) {
+      context.handle(_nameEnMeta,
+          nameEn.isAcceptableOrUnknown(data['name_en']!, _nameEnMeta));
+    } else if (isInserting) {
+      context.missing(_nameEnMeta);
+    }
+    if (data.containsKey('name_es')) {
+      context.handle(_nameEsMeta,
+          nameEs.isAcceptableOrUnknown(data['name_es']!, _nameEsMeta));
+    } else if (isInserting) {
+      context.missing(_nameEsMeta);
+    }
+    if (data.containsKey('is_custom')) {
+      context.handle(_isCustomMeta,
+          isCustom.isAcceptableOrUnknown(data['is_custom']!, _isCustomMeta));
+    } else if (isInserting) {
+      context.missing(_isCustomMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  LibraryExerciseData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LibraryExerciseData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      nameEn: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name_en'])!,
+      nameEs: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name_es'])!,
+      isCustom: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_custom'])!,
+      category: $LibraryExercisesTable.$convertercategoryn.fromSql(
+          attachedDatabase.typeMapping
+              .read(DriftSqlType.int, data['${effectivePrefix}category'])),
+    );
+  }
+
+  @override
+  $LibraryExercisesTable createAlias(String alias) {
+    return $LibraryExercisesTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<ExerciseCategory, int, int> $convertercategory =
+      const EnumIndexConverter<ExerciseCategory>(ExerciseCategory.values);
+  static JsonTypeConverter2<ExerciseCategory?, int?, int?> $convertercategoryn =
+      JsonTypeConverter2.asNullable($convertercategory);
+}
+
+class LibraryExerciseData extends DataClass
+    implements Insertable<LibraryExerciseData> {
+  final String id;
+  final String name;
+  final String nameEn;
+  final String nameEs;
+  final bool isCustom;
+  final ExerciseCategory? category;
+  const LibraryExerciseData(
+      {required this.id,
+      required this.name,
+      required this.nameEn,
+      required this.nameEs,
+      required this.isCustom,
+      this.category});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['name_en'] = Variable<String>(nameEn);
+    map['name_es'] = Variable<String>(nameEs);
+    map['is_custom'] = Variable<bool>(isCustom);
+    if (!nullToAbsent || category != null) {
+      map['category'] = Variable<int>(
+          $LibraryExercisesTable.$convertercategoryn.toSql(category));
+    }
+    return map;
+  }
+
+  LibraryExercisesCompanion toCompanion(bool nullToAbsent) {
+    return LibraryExercisesCompanion(
+      id: Value(id),
+      name: Value(name),
+      nameEn: Value(nameEn),
+      nameEs: Value(nameEs),
+      isCustom: Value(isCustom),
+      category: category == null && nullToAbsent
+          ? const Value.absent()
+          : Value(category),
+    );
+  }
+
+  factory LibraryExerciseData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LibraryExerciseData(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      nameEn: serializer.fromJson<String>(json['nameEn']),
+      nameEs: serializer.fromJson<String>(json['nameEs']),
+      isCustom: serializer.fromJson<bool>(json['isCustom']),
+      category: $LibraryExercisesTable.$convertercategoryn
+          .fromJson(serializer.fromJson<int?>(json['category'])),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'nameEn': serializer.toJson<String>(nameEn),
+      'nameEs': serializer.toJson<String>(nameEs),
+      'isCustom': serializer.toJson<bool>(isCustom),
+      'category': serializer.toJson<int?>(
+          $LibraryExercisesTable.$convertercategoryn.toJson(category)),
+    };
+  }
+
+  LibraryExerciseData copyWith(
+          {String? id,
+          String? name,
+          String? nameEn,
+          String? nameEs,
+          bool? isCustom,
+          Value<ExerciseCategory?> category = const Value.absent()}) =>
+      LibraryExerciseData(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        nameEn: nameEn ?? this.nameEn,
+        nameEs: nameEs ?? this.nameEs,
+        isCustom: isCustom ?? this.isCustom,
+        category: category.present ? category.value : this.category,
+      );
+  LibraryExerciseData copyWithCompanion(LibraryExercisesCompanion data) {
+    return LibraryExerciseData(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      nameEn: data.nameEn.present ? data.nameEn.value : this.nameEn,
+      nameEs: data.nameEs.present ? data.nameEs.value : this.nameEs,
+      isCustom: data.isCustom.present ? data.isCustom.value : this.isCustom,
+      category: data.category.present ? data.category.value : this.category,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LibraryExerciseData(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('nameEn: $nameEn, ')
+          ..write('nameEs: $nameEs, ')
+          ..write('isCustom: $isCustom, ')
+          ..write('category: $category')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, nameEn, nameEs, isCustom, category);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LibraryExerciseData &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.nameEn == this.nameEn &&
+          other.nameEs == this.nameEs &&
+          other.isCustom == this.isCustom &&
+          other.category == this.category);
+}
+
+class LibraryExercisesCompanion extends UpdateCompanion<LibraryExerciseData> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String> nameEn;
+  final Value<String> nameEs;
+  final Value<bool> isCustom;
+  final Value<ExerciseCategory?> category;
+  final Value<int> rowid;
+  const LibraryExercisesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.nameEn = const Value.absent(),
+    this.nameEs = const Value.absent(),
+    this.isCustom = const Value.absent(),
+    this.category = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LibraryExercisesCompanion.insert({
+    required String id,
+    required String name,
+    required String nameEn,
+    required String nameEs,
+    required bool isCustom,
+    this.category = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        name = Value(name),
+        nameEn = Value(nameEn),
+        nameEs = Value(nameEs),
+        isCustom = Value(isCustom);
+  static Insertable<LibraryExerciseData> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? nameEn,
+    Expression<String>? nameEs,
+    Expression<bool>? isCustom,
+    Expression<int>? category,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (nameEn != null) 'name_en': nameEn,
+      if (nameEs != null) 'name_es': nameEs,
+      if (isCustom != null) 'is_custom': isCustom,
+      if (category != null) 'category': category,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LibraryExercisesCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? name,
+      Value<String>? nameEn,
+      Value<String>? nameEs,
+      Value<bool>? isCustom,
+      Value<ExerciseCategory?>? category,
+      Value<int>? rowid}) {
+    return LibraryExercisesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      nameEn: nameEn ?? this.nameEn,
+      nameEs: nameEs ?? this.nameEs,
+      isCustom: isCustom ?? this.isCustom,
+      category: category ?? this.category,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (nameEn.present) {
+      map['name_en'] = Variable<String>(nameEn.value);
+    }
+    if (nameEs.present) {
+      map['name_es'] = Variable<String>(nameEs.value);
+    }
+    if (isCustom.present) {
+      map['is_custom'] = Variable<bool>(isCustom.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<int>(
+          $LibraryExercisesTable.$convertercategoryn.toSql(category.value));
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LibraryExercisesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('nameEn: $nameEn, ')
+          ..write('nameEs: $nameEs, ')
+          ..write('isCustom: $isCustom, ')
+          ..write('category: $category, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1803,12 +2158,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $SetsTable sets = $SetsTable(this);
   late final $SessionsTable sessions = $SessionsTable(this);
   late final $SetLogsTable setLogs = $SetLogsTable(this);
+  late final $LibraryExercisesTable libraryExercises =
+      $LibraryExercisesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [routines, exercises, sets, sessions, setLogs];
+      [routines, exercises, sets, sessions, setLogs, libraryExercises];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
         [
@@ -3473,6 +3830,197 @@ typedef $$SetLogsTableProcessedTableManager = ProcessedTableManager<
     (SetLogData, $$SetLogsTableReferences),
     SetLogData,
     PrefetchHooks Function({bool sessionId})>;
+typedef $$LibraryExercisesTableCreateCompanionBuilder
+    = LibraryExercisesCompanion Function({
+  required String id,
+  required String name,
+  required String nameEn,
+  required String nameEs,
+  required bool isCustom,
+  Value<ExerciseCategory?> category,
+  Value<int> rowid,
+});
+typedef $$LibraryExercisesTableUpdateCompanionBuilder
+    = LibraryExercisesCompanion Function({
+  Value<String> id,
+  Value<String> name,
+  Value<String> nameEn,
+  Value<String> nameEs,
+  Value<bool> isCustom,
+  Value<ExerciseCategory?> category,
+  Value<int> rowid,
+});
+
+class $$LibraryExercisesTableFilterComposer
+    extends Composer<_$AppDatabase, $LibraryExercisesTable> {
+  $$LibraryExercisesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get nameEn => $composableBuilder(
+      column: $table.nameEn, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get nameEs => $composableBuilder(
+      column: $table.nameEs, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isCustom => $composableBuilder(
+      column: $table.isCustom, builder: (column) => ColumnFilters(column));
+
+  ColumnWithTypeConverterFilters<ExerciseCategory?, ExerciseCategory, int>
+      get category => $composableBuilder(
+          column: $table.category,
+          builder: (column) => ColumnWithTypeConverterFilters(column));
+}
+
+class $$LibraryExercisesTableOrderingComposer
+    extends Composer<_$AppDatabase, $LibraryExercisesTable> {
+  $$LibraryExercisesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get nameEn => $composableBuilder(
+      column: $table.nameEn, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get nameEs => $composableBuilder(
+      column: $table.nameEs, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isCustom => $composableBuilder(
+      column: $table.isCustom, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get category => $composableBuilder(
+      column: $table.category, builder: (column) => ColumnOrderings(column));
+}
+
+class $$LibraryExercisesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LibraryExercisesTable> {
+  $$LibraryExercisesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get nameEn =>
+      $composableBuilder(column: $table.nameEn, builder: (column) => column);
+
+  GeneratedColumn<String> get nameEs =>
+      $composableBuilder(column: $table.nameEs, builder: (column) => column);
+
+  GeneratedColumn<bool> get isCustom =>
+      $composableBuilder(column: $table.isCustom, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<ExerciseCategory?, int> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+}
+
+class $$LibraryExercisesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $LibraryExercisesTable,
+    LibraryExerciseData,
+    $$LibraryExercisesTableFilterComposer,
+    $$LibraryExercisesTableOrderingComposer,
+    $$LibraryExercisesTableAnnotationComposer,
+    $$LibraryExercisesTableCreateCompanionBuilder,
+    $$LibraryExercisesTableUpdateCompanionBuilder,
+    (
+      LibraryExerciseData,
+      BaseReferences<_$AppDatabase, $LibraryExercisesTable, LibraryExerciseData>
+    ),
+    LibraryExerciseData,
+    PrefetchHooks Function()> {
+  $$LibraryExercisesTableTableManager(
+      _$AppDatabase db, $LibraryExercisesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LibraryExercisesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LibraryExercisesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LibraryExercisesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String> nameEn = const Value.absent(),
+            Value<String> nameEs = const Value.absent(),
+            Value<bool> isCustom = const Value.absent(),
+            Value<ExerciseCategory?> category = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              LibraryExercisesCompanion(
+            id: id,
+            name: name,
+            nameEn: nameEn,
+            nameEs: nameEs,
+            isCustom: isCustom,
+            category: category,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String name,
+            required String nameEn,
+            required String nameEs,
+            required bool isCustom,
+            Value<ExerciseCategory?> category = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              LibraryExercisesCompanion.insert(
+            id: id,
+            name: name,
+            nameEn: nameEn,
+            nameEs: nameEs,
+            isCustom: isCustom,
+            category: category,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$LibraryExercisesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $LibraryExercisesTable,
+    LibraryExerciseData,
+    $$LibraryExercisesTableFilterComposer,
+    $$LibraryExercisesTableOrderingComposer,
+    $$LibraryExercisesTableAnnotationComposer,
+    $$LibraryExercisesTableCreateCompanionBuilder,
+    $$LibraryExercisesTableUpdateCompanionBuilder,
+    (
+      LibraryExerciseData,
+      BaseReferences<_$AppDatabase, $LibraryExercisesTable, LibraryExerciseData>
+    ),
+    LibraryExerciseData,
+    PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3486,4 +4034,6 @@ class $AppDatabaseManager {
       $$SessionsTableTableManager(_db, _db.sessions);
   $$SetLogsTableTableManager get setLogs =>
       $$SetLogsTableTableManager(_db, _db.setLogs);
+  $$LibraryExercisesTableTableManager get libraryExercises =>
+      $$LibraryExercisesTableTableManager(_db, _db.libraryExercises);
 }

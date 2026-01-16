@@ -2,7 +2,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/error/failures.dart';
+import '../../../../core/usecases/usecase.dart';
 import '../../domain/entities/workout_entities.dart';
+import '../../domain/repositories/workout_repository.dart';
 import '../../domain/usecases/save_routine_usecase.dart';
 import 'routine_form_state.dart';
 
@@ -10,13 +12,15 @@ class RoutineFormCubit extends Cubit<RoutineFormState> {
   RoutineFormCubit({
     WorkoutRoutine? routine,
     required SaveRoutineUseCase saveRoutineUseCase,
+    required WorkoutRepository repository,
   })  : _saveRoutineUseCase = saveRoutineUseCase,
+        _repository = repository,
         super(
           RoutineFormState.editing(
             routine: routine ??
                 WorkoutRoutine(
                   id: const Uuid().v4(),
-                  name: 'New Routine',
+                  name: '',
                   sortOrder: 0,
                   exercises: [],
                 ),
@@ -25,6 +29,7 @@ class RoutineFormCubit extends Cubit<RoutineFormState> {
         );
 
   final SaveRoutineUseCase _saveRoutineUseCase;
+  final WorkoutRepository _repository;
   final _uuid = const Uuid();
 
   void updateName(String name) {
@@ -38,24 +43,26 @@ class RoutineFormCubit extends Cubit<RoutineFormState> {
   }
 
   void addExercise(String exerciseName) {
-    final currentRoutine = state.routine;
     final newExercise = WorkoutExercise(
       id: _uuid.v4(),
       name: exerciseName,
-      sortOrder: currentRoutine.exercises.length,
+      sortOrder: state.routine.exercises.length,
       notes: null,
       restTimeSeconds: 60,
       templateSets: [],
     );
 
+    final updatedExercises = List<WorkoutExercise>.from(state.routine.exercises)
+      ..add(newExercise);
+
     emit(
       RoutineFormState.editing(
-        routine: currentRoutine.copyWith(
-          exercises: [...currentRoutine.exercises, newExercise],
-        ),
+        routine: state.routine.copyWith(exercises: updatedExercises),
         isNew: state.isNew,
       ),
     );
+
+    _repository.saveLibraryExercise(exerciseName);
   }
 
   void removeExercise(String exerciseId) {
@@ -74,7 +81,8 @@ class RoutineFormCubit extends Cubit<RoutineFormState> {
     );
   }
 
-  void updateExercise(String exerciseId, {String? name, String? notes, int? restTimeSeconds}) {
+  void updateExercise(String exerciseId,
+      {String? name, String? notes, int? restTimeSeconds}) {
     final currentRoutine = state.routine;
     final updatedExercises = currentRoutine.exercises.map((exercise) {
       if (exercise.id == exerciseId) {
@@ -126,9 +134,8 @@ class RoutineFormCubit extends Cubit<RoutineFormState> {
     final currentRoutine = state.routine;
     final updatedExercises = currentRoutine.exercises.map((exercise) {
       if (exercise.id == exerciseId) {
-        final updatedSets = exercise.templateSets
-            .where((set) => set.id != setId)
-            .toList();
+        final updatedSets =
+            exercise.templateSets.where((set) => set.id != setId).toList();
         final reorderedSets = _reorderList(updatedSets);
         return exercise.copyWith(templateSets: reorderedSets);
       }
@@ -210,11 +217,23 @@ class RoutineFormCubit extends Cubit<RoutineFormState> {
     );
   }
 
+  Future<Either<Failure, List<LibraryExerciseEntity>>>
+      getLibraryExercises() async {
+    return await _repository.getLibraryExercises();
+  }
+
+  Future<Either<Failure, List<LibraryExerciseEntity>>> searchLibraryExercises(
+    String query,
+    String languageCode,
+  ) async {
+    return await _repository.searchLibraryExercises(query, languageCode);
+  }
+
   List<T> _reorderList<T>(List<T> items) {
     return items.asMap().entries.map((entry) {
       final index = entry.key;
       final item = entry.value;
-      
+
       if (item is WorkoutExercise) {
         return item.copyWith(sortOrder: index) as T;
       } else if (item is WorkoutSet) {

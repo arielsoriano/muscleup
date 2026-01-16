@@ -27,8 +27,31 @@ class RoutineFormPage extends StatelessWidget {
   }
 }
 
-class _RoutineFormPageContent extends StatelessWidget {
+class _RoutineFormPageContent extends StatefulWidget {
   const _RoutineFormPageContent();
+
+  @override
+  State<_RoutineFormPageContent> createState() =>
+      _RoutineFormPageContentState();
+}
+
+class _RoutineFormPageContentState extends State<_RoutineFormPageContent> {
+  late final TextEditingController _routineNameController;
+  final SearchController _exerciseSearchController = SearchController();
+
+  @override
+  void initState() {
+    super.initState();
+    final initialRoutine = context.read<RoutineFormCubit>().state.routine;
+    _routineNameController = TextEditingController(text: initialRoutine.name);
+  }
+
+  @override
+  void dispose() {
+    _routineNameController.dispose();
+    _exerciseSearchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +82,9 @@ class _RoutineFormPageContent extends StatelessWidget {
           child: Scaffold(
             appBar: AppBar(
               title: Text(
-                state.isNew ? context.l10n.addRoutine : context.l10n.editRoutine,
+                state.isNew
+                    ? context.l10n.addRoutine
+                    : context.l10n.editRoutine,
               ),
             ),
             body: isSaving
@@ -68,7 +93,8 @@ class _RoutineFormPageContent extends StatelessWidget {
             floatingActionButton: isSaving
                 ? null
                 : FloatingActionButton.extended(
-                    onPressed: () => context.read<RoutineFormCubit>().saveRoutine(),
+                    onPressed: () =>
+                        context.read<RoutineFormCubit>().saveRoutine(),
                     icon: const Icon(Icons.check_rounded),
                     label: Text(context.l10n.save),
                   ),
@@ -88,7 +114,11 @@ class _RoutineFormPageContent extends StatelessWidget {
         children: [
           _buildRoutineNameField(context, routine),
           const SizedBox(height: 24),
-          _buildExercisesList(context, routine),
+          BlocBuilder<RoutineFormCubit, RoutineFormState>(
+            builder: (context, state) {
+              return _buildExercisesList(context, state.routine);
+            },
+          ),
           const SizedBox(height: 16),
           _buildAddExerciseButton(context),
           const SizedBox(height: 80),
@@ -102,12 +132,13 @@ class _RoutineFormPageContent extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return TextField(
-      controller: TextEditingController(text: routine.name),
+      controller: _routineNameController,
       style: textTheme.headlineSmall?.copyWith(
         fontWeight: FontWeight.bold,
       ),
       decoration: InputDecoration(
         labelText: context.l10n.routineName,
+        hintText: context.l10n.routineNameHint,
         filled: true,
         fillColor: colorScheme.surfaceContainerLow,
         border: OutlineInputBorder(
@@ -164,7 +195,7 @@ class _RoutineFormPageContent extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'No exercises added yet',
+              context.l10n.noExercisesAdded,
               style: textTheme.bodyLarge?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
@@ -176,57 +207,127 @@ class _RoutineFormPageContent extends StatelessWidget {
   }
 
   Widget _buildAddExerciseButton(BuildContext context) {
-    return OutlinedButton.icon(
-      onPressed: () => _showAddExerciseDialog(context),
-      icon: const Icon(Icons.add_rounded),
-      label: Text(context.l10n.addExercise),
-      style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-    );
-  }
+    final languageCode = Localizations.localeOf(context).languageCode;
+    final colorScheme = Theme.of(context).colorScheme;
+    final cubit = context.read<RoutineFormCubit>();
 
-  Future<void> _showAddExerciseDialog(BuildContext context) async {
-    final controller = TextEditingController();
-    final exerciseName = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(context.l10n.addExercise),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: InputDecoration(
-            labelText: context.l10n.exerciseName,
-          ),
-          onSubmitted: (value) {
-            if (value.isNotEmpty) {
-              Navigator.of(dialogContext).pop(value);
-            }
+    return SearchAnchor(
+      searchController: _exerciseSearchController,
+      viewHintText: context.l10n.searchExercises,
+      isFullScreen: false,
+      viewConstraints: const BoxConstraints(maxHeight: 400),
+      builder: (BuildContext context, SearchController controller) {
+        return OutlinedButton.icon(
+          onPressed: () {
+            controller.openView();
           },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(context.l10n.cancel),
+          icon: const Icon(Icons.add_rounded),
+          label: Text(context.l10n.addExercise),
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
-          FilledButton(
-            onPressed: () {
-              if (controller.text.isNotEmpty) {
-                Navigator.of(dialogContext).pop(controller.text);
-              }
-            },
-            child: Text(context.l10n.save),
-          ),
-        ],
-      ),
-    );
+        );
+      },
+      suggestionsBuilder:
+          (BuildContext searchContext, SearchController controller) async {
+        final query = controller.text.trim();
+        final suggestions = <Widget>[];
 
-    if (exerciseName != null && exerciseName.isNotEmpty && context.mounted) {
-      context.read<RoutineFormCubit>().addExercise(exerciseName);
-    }
+        if (query.isEmpty) {
+          suggestions.add(
+            ListTile(
+              leading: Icon(
+                Icons.edit_outlined,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              title: Text(
+                context.l10n.searchHelper,
+                style: TextStyle(
+                  color: colorScheme.onSurfaceVariant,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              enabled: false,
+            ),
+          );
+
+          final result = await cubit.getLibraryExercises();
+          result.fold(
+            (failure) {},
+            (exercises) {
+              suggestions.addAll(
+                exercises.take(10).map((exercise) {
+                  final exerciseName = exercise.getLocalizedName(languageCode);
+                  return ListTile(
+                    leading: Icon(
+                      Icons.fitness_center_rounded,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                    title: Text(exerciseName),
+                    onTap: () {
+                      cubit.addExercise(exerciseName);
+                      controller.closeView(null);
+                      controller.clear();
+                    },
+                  );
+                }),
+              );
+            },
+          );
+        } else {
+          suggestions.add(
+            ListTile(
+              leading: Icon(
+                Icons.add_circle_outline_rounded,
+                color: colorScheme.primary,
+              ),
+              title: Text(
+                context.l10n.addCustomExercise(query),
+                style: TextStyle(
+                  color: colorScheme.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              onTap: () {
+                cubit.addExercise(query);
+                controller.closeView(null);
+                controller.clear();
+              },
+            ),
+          );
+
+          final result =
+              await cubit.searchLibraryExercises(query, languageCode);
+          result.fold(
+            (failure) {},
+            (exercises) {
+              suggestions.addAll(
+                exercises.map((exercise) {
+                  final exerciseName = exercise.getLocalizedName(languageCode);
+                  return ListTile(
+                    leading: Icon(
+                      Icons.fitness_center_rounded,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                    title: Text(exerciseName),
+                    onTap: () {
+                      cubit.addExercise(exerciseName);
+                      controller.closeView(null);
+                      controller.clear();
+                    },
+                  );
+                }),
+              );
+            },
+          );
+        }
+
+        return suggestions;
+      },
+    );
   }
 }
 
@@ -244,6 +345,21 @@ class _ExerciseFormItem extends StatefulWidget {
 
 class _ExerciseFormItemState extends State<_ExerciseFormItem> {
   bool _isExpanded = true;
+  late final TextEditingController _restTimeController;
+
+  @override
+  void initState() {
+    super.initState();
+    _restTimeController = TextEditingController(
+      text: widget.exercise.restTimeSeconds.toString(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _restTimeController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -273,13 +389,13 @@ class _ExerciseFormItemState extends State<_ExerciseFormItem> {
             ),
             subtitle: widget.exercise.templateSets.isEmpty
                 ? Text(
-                    'No sets added',
+                    context.l10n.noSetsAdded,
                     style: textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
                   )
                 : Text(
-                    '${widget.exercise.templateSets.length} sets',
+                    context.l10n.setsCount(widget.exercise.templateSets.length),
                     style: textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
@@ -288,7 +404,8 @@ class _ExerciseFormItemState extends State<_ExerciseFormItem> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: Icon(_isExpanded ? Icons.expand_less : Icons.expand_more),
+                  icon:
+                      Icon(_isExpanded ? Icons.expand_less : Icons.expand_more),
                   onPressed: () {
                     setState(() {
                       _isExpanded = !_isExpanded;
@@ -337,12 +454,10 @@ class _ExerciseFormItemState extends State<_ExerciseFormItem> {
         const SizedBox(width: 8),
         Expanded(
           child: TextField(
-            controller: TextEditingController(
-              text: widget.exercise.restTimeSeconds.toString(),
-            ),
+            controller: _restTimeController,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              labelText: 'Rest Time (seconds)',
+              labelText: context.l10n.restTimeSeconds,
               isDense: true,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -397,7 +512,7 @@ class _ExerciseFormItemState extends State<_ExerciseFormItem> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(context.l10n.removeExercise),
-        content: Text('Are you sure you want to remove ${widget.exercise.name}?'),
+        content: Text(context.l10n.removeConfirmation(widget.exercise.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
@@ -405,7 +520,7 @@ class _ExerciseFormItemState extends State<_ExerciseFormItem> {
           ),
           FilledButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Remove'),
+            child: Text(context.l10n.remove),
           ),
         ],
       ),
@@ -417,7 +532,7 @@ class _ExerciseFormItemState extends State<_ExerciseFormItem> {
   }
 }
 
-class _SetFormRow extends StatelessWidget {
+class _SetFormRow extends StatefulWidget {
   const _SetFormRow({
     required this.setNumber,
     required this.set,
@@ -428,6 +543,32 @@ class _SetFormRow extends StatelessWidget {
   final int setNumber;
   final WorkoutSet set;
   final String exerciseId;
+
+  @override
+  State<_SetFormRow> createState() => _SetFormRowState();
+}
+
+class _SetFormRowState extends State<_SetFormRow> {
+  late final TextEditingController _value1Controller;
+  late final TextEditingController _value2Controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _value1Controller = TextEditingController(
+      text: widget.set.targetValue1?.toString() ?? '0',
+    );
+    _value2Controller = TextEditingController(
+      text: widget.set.targetValue2?.toString() ?? '0',
+    );
+  }
+
+  @override
+  void dispose() {
+    _value1Controller.dispose();
+    _value2Controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -453,7 +594,7 @@ class _SetFormRow extends StatelessWidget {
             ),
             child: Center(
               child: Text(
-                setNumber.toString(),
+                widget.setNumber.toString(),
                 style: textTheme.labelLarge?.copyWith(
                   color: colorScheme.onPrimaryContainer,
                   fontWeight: FontWeight.bold,
@@ -468,20 +609,21 @@ class _SetFormRow extends StatelessWidget {
                 Expanded(
                   child: _buildValueField(
                     context,
+                    controller: _value1Controller,
                     label: 'Value 1',
-                    value: set.targetValue1,
-                    unit: set.unit1,
+                    value: widget.set.targetValue1,
+                    unit: widget.set.unit1,
                     onValueChanged: (value) {
                       context.read<RoutineFormCubit>().updateSetValues(
-                            exerciseId: exerciseId,
-                            setId: set.id,
+                            exerciseId: widget.exerciseId,
+                            setId: widget.set.id,
                             targetValue1: value,
                           );
                     },
                     onUnitChanged: (unit) {
                       context.read<RoutineFormCubit>().updateSetValues(
-                            exerciseId: exerciseId,
-                            setId: set.id,
+                            exerciseId: widget.exerciseId,
+                            setId: widget.set.id,
                             unit1: unit,
                           );
                     },
@@ -491,20 +633,21 @@ class _SetFormRow extends StatelessWidget {
                 Expanded(
                   child: _buildValueField(
                     context,
+                    controller: _value2Controller,
                     label: 'Value 2',
-                    value: set.targetValue2,
-                    unit: set.unit2,
+                    value: widget.set.targetValue2,
+                    unit: widget.set.unit2,
                     onValueChanged: (value) {
                       context.read<RoutineFormCubit>().updateSetValues(
-                            exerciseId: exerciseId,
-                            setId: set.id,
+                            exerciseId: widget.exerciseId,
+                            setId: widget.set.id,
                             targetValue2: value,
                           );
                     },
                     onUnitChanged: (unit) {
                       context.read<RoutineFormCubit>().updateSetValues(
-                            exerciseId: exerciseId,
-                            setId: set.id,
+                            exerciseId: widget.exerciseId,
+                            setId: widget.set.id,
                             unit2: unit,
                           );
                     },
@@ -517,7 +660,9 @@ class _SetFormRow extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.close_rounded, size: 20),
             onPressed: () {
-              context.read<RoutineFormCubit>().removeSet(exerciseId, set.id);
+              context
+                  .read<RoutineFormCubit>()
+                  .removeSet(widget.exerciseId, widget.set.id);
             },
             visualDensity: VisualDensity.compact,
           ),
@@ -528,6 +673,7 @@ class _SetFormRow extends StatelessWidget {
 
   Widget _buildValueField(
     BuildContext context, {
+    required TextEditingController controller,
     required String label,
     required double? value,
     required WorkoutUnit? unit,
@@ -538,7 +684,7 @@ class _SetFormRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextField(
-          controller: TextEditingController(text: value?.toString() ?? '0'),
+          controller: controller,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           decoration: InputDecoration(
             isDense: true,
@@ -593,21 +739,21 @@ class _SetFormRow extends StatelessWidget {
   String _formatUnit(WorkoutUnit unit) {
     switch (unit) {
       case WorkoutUnit.kilograms:
-        return 'kg';
+        return context.l10n.unitKg;
       case WorkoutUnit.pounds:
-        return 'lb';
+        return context.l10n.unitLb;
       case WorkoutUnit.repetitions:
-        return 'reps';
+        return context.l10n.unitReps;
       case WorkoutUnit.seconds:
-        return 's';
+        return context.l10n.unitSeconds;
       case WorkoutUnit.minutes:
-        return 'min';
+        return context.l10n.unitMinutes;
       case WorkoutUnit.kilometers:
-        return 'km';
+        return context.l10n.unitKm;
       case WorkoutUnit.meters:
-        return 'm';
+        return context.l10n.unitMeters;
       case WorkoutUnit.none:
-        return 'none';
+        return context.l10n.unitNone;
     }
   }
 }
