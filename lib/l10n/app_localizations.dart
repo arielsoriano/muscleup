@@ -223,6 +223,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Start a Routine'**
   String get startWorkout;
+
+  /// Finish workout action
+  ///
+  /// In en, this message translates to:
+  /// **'Finish Workout'**
+  String get finishWorkout;
+
+  /// Success message when workout is saved
+  ///
+  /// In en, this message translates to:
+  /// **'Workout saved successfully!'**
+  String get workoutSavedSuccess;
+
+  /// Active workout page title
+  ///
+  /// In en, this message translates to:
+  /// **'Active Workout'**
+  String get activeWorkoutTitle;
+
+  /// Set label for workout
+  ///
+  /// In en, this message translates to:
+  /// **'Set'**
+  String get set;
+
+  /// Target label for workout
+  ///
+  /// In en, this message translates to:
+  /// **'Target'**
+  String get target;
+
+  /// Actual label for workout
+  ///
+  /// In en, this message translates to:
+  /// **'Actual'**
+  String get actual;
 }
 
 class _AppLocalizationsDelegate

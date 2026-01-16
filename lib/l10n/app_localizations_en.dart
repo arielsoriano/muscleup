@@ -70,4 +70,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get startWorkout => 'Start a Routine';
+
+  @override
+  String get finishWorkout => 'Finish Workout';
+
+  @override
+  String get workoutSavedSuccess => 'Workout saved successfully!';
+
+  @override
+  String get activeWorkoutTitle => 'Active Workout';
+
+  @override
+  String get set => 'Set';
+
+  @override
+  String get target => 'Target';
+
+  @override
+  String get actual => 'Actual';
 }

@@ -20,5 +20,11 @@
   "dashboardTitle": "Panel Principal",
   "today": "Hoy",
   "noWorkoutToday": "No hay entrenamiento registrado para este día",
-  "startWorkout": "Iniciar una Rutina"
+  "startWorkout": "Iniciar una Rutina",
+  "finishWorkout": "Finalizar Entrenamiento",
+  "workoutSavedSuccess": "¡Entrenamiento guardado exitosamente!",
+  "activeWorkoutTitle": "Entrenamiento Activo",
+  "set": "Serie",
+  "target": "Objetivo",
+  "actual": "Real"
 }

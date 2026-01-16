@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/workout/data/datasources/local/workout_database.dart';
 import '../../features/workout/data/repositories/workout_repository_impl.dart';
+import '../../features/workout/domain/entities/workout_entities.dart';
 import '../../features/workout/domain/repositories/workout_repository.dart';
 import '../../features/workout/domain/usecases/delete_routine_usecase.dart';
 import '../../features/workout/domain/usecases/get_logs_for_session_usecase.dart';
@@ -13,6 +14,7 @@ import '../../features/workout/domain/usecases/save_set_log_usecase.dart';
 import '../../features/workout/domain/usecases/update_routine_order_usecase.dart';
 import '../../features/workout/domain/usecases/watch_routines_usecase.dart';
 import '../../features/workout/domain/usecases/watch_sessions_usecase.dart';
+import '../../features/workout/presentation/cubit/active_workout_cubit.dart';
 import '../../features/workout/presentation/cubit/dashboard_cubit.dart';
 import '../../features/workout/presentation/cubit/workout_cubit.dart';
 import '../router/app_router.dart';
@@ -84,6 +86,14 @@ Future<void> _initializePresentation() async {
   serviceLocator.registerFactory(
     () => DashboardCubit(
       watchSessionsUseCase: serviceLocator(),
+    ),
+  );
+
+  serviceLocator.registerFactoryParam<ActiveWorkoutCubit, WorkoutRoutine, void>(
+    (routine, _) => ActiveWorkoutCubit(
+      routine: routine,
+      saveSessionUseCase: serviceLocator(),
+      saveSetLogUseCase: serviceLocator(),
     ),
   );
 }

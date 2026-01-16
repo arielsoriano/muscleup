@@ -70,4 +70,22 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get startWorkout => 'Iniciar una Rutina';
+
+  @override
+  String get finishWorkout => 'Finalizar Entrenamiento';
+
+  @override
+  String get workoutSavedSuccess => '¡Entrenamiento guardado exitosamente!';
+
+  @override
+  String get activeWorkoutTitle => 'Entrenamiento Activo';
+
+  @override
+  String get set => 'Serie';
+
+  @override
+  String get target => 'Objetivo';
+
+  @override
+  String get actual => 'Real';
 }

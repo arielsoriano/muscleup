@@ -83,5 +83,29 @@
   "startWorkout": "Start a Routine",
   "@startWorkout": {
     "description": "Start workout action"
+  },
+  "finishWorkout": "Finish Workout",
+  "@finishWorkout": {
+    "description": "Finish workout action"
+  },
+  "workoutSavedSuccess": "Workout saved successfully!",
+  "@workoutSavedSuccess": {
+    "description": "Success message when workout is saved"
+  },
+  "activeWorkoutTitle": "Active Workout",
+  "@activeWorkoutTitle": {
+    "description": "Active workout page title"
+  },
+  "set": "Set",
+  "@set": {
+    "description": "Set label for workout"
+  },
+  "target": "Target",
+  "@target": {
+    "description": "Target label for workout"
+  },
+  "actual": "Actual",
+  "@actual": {
+    "description": "Actual label for workout"
   }
 }
