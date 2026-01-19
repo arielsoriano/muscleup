@@ -113,7 +113,7 @@ class _RoutinesPageContent extends StatelessWidget {
                             onPressed: isEmptyRoutine
                                 ? () {
                                     context.showAppSnackBar(
-                                        context.l10n.addExercisesFirst);
+                                        context.l10n.addExercisesFirst,);
                                   }
                                 : () => context.push(
                                       AppRoutes.activeWorkout,

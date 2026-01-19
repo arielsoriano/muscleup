@@ -148,7 +148,7 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
           emit(
             ActiveWorkoutState.error(
               routine: routine.copyWith(
-                  exercises: List.from(routine.exercises)),
+                  exercises: List.from(routine.exercises),),
               setLogs: [],
               displayTitle: historicalSession.routineName,
               isViewingHistory: true,
