@@ -233,5 +233,30 @@
   "noExercisesInRoutine": "No exercises in this routine",
   "@noExercisesInRoutine": {
     "description": "Empty state message when routine has no exercises"
+  },
+  "deleteRoutineConfirm": "Are you sure you want to delete this routine?",
+  "@deleteRoutineConfirm": {
+    "description": "Confirmation message for deleting a routine"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Delete action"
+  },
+  "emptyRoutine": "Empty",
+  "@emptyRoutine": {
+    "description": "Label for routines with no exercises"
+  },
+  "startNewSession": "Start New Session",
+  "@startNewSession": {
+    "description": "Button label for starting a new workout session"
+  },
+  "startRoutineName": "Start {name}",
+  "@startRoutineName": {
+    "description": "Button label for starting a specific routine by name",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -54,5 +54,10 @@
   "unitNone": "ninguno",
   "setsCount": "{count} series",
   "language": "Idioma",
-  "noExercisesInRoutine": "No hay ejercicios en esta rutina"
+  "noExercisesInRoutine": "No hay ejercicios en esta rutina",
+  "deleteRoutineConfirm": "¿Estás seguro de que quieres eliminar esta rutina?",
+  "delete": "Eliminar",
+  "emptyRoutine": "Vacía",
+  "startNewSession": "Iniciar Nueva Sesión",
+  "startRoutineName": "Iniciar {name}"
 }

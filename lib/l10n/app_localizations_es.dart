@@ -178,4 +178,22 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get noExercisesInRoutine => 'No hay ejercicios en esta rutina';
+
+  @override
+  String get deleteRoutineConfirm =>
+      '¿Estás seguro de que quieres eliminar esta rutina?';
+
+  @override
+  String get delete => 'Eliminar';
+
+  @override
+  String get emptyRoutine => 'Vacía';
+
+  @override
+  String get startNewSession => 'Iniciar Nueva Sesión';
+
+  @override
+  String startRoutineName(String name) {
+    return 'Iniciar $name';
+  }
 }

@@ -200,7 +200,7 @@ class WorkoutDetailsPage extends StatelessWidget {
                         children: [
                           const Icon(Icons.play_arrow_rounded),
                           const SizedBox(width: 8),
-                          Text(context.l10n.startWorkout),
+                          Text(context.l10n.startRoutineName(routine.name)),
                         ],
                       ),
                     ),

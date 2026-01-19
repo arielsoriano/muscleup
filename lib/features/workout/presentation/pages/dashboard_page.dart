@@ -112,15 +112,25 @@ class _DashboardPageContent extends StatelessWidget {
     DateTime selectedDate,
     List<WorkoutSession> sessions,
   ) {
+    final today = DateTime.now();
+    final normalizedToday = DateTime(today.year, today.month, today.day);
+    final normalizedSelected = DateTime(
+      selectedDate.year,
+      selectedDate.month,
+      selectedDate.day,
+    );
+    final isFutureDate = normalizedSelected.isAfter(normalizedToday);
+
     return Column(
       children: [
         _buildWeeklyCalendarStrip(context, selectedDate),
         const Divider(height: 1),
         Expanded(
           child: sessions.isEmpty
-              ? _buildEmptyState(context)
+              ? _buildEmptySessionsList(context)
               : _buildSessionsList(context, sessions),
         ),
+        if (!isFutureDate) _buildStartButton(context),
       ],
     );
   }
@@ -302,7 +312,7 @@ class _DashboardPageContent extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
+  Widget _buildEmptySessionsList(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -327,14 +337,29 @@ class _DashboardPageContent extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 32),
-            FilledButton.icon(
-              onPressed: () => context.push(AppRoutes.routines),
-              icon: const Icon(Icons.play_arrow_rounded),
-              label: Text(context.l10n.startWorkout),
-            ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildStartButton(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        border: Border(
+          top: BorderSide(
+            color: Theme.of(context).colorScheme.outlineVariant,
+            width: 1,
+          ),
+        ),
+      ),
+      child: FilledButton.icon(
+        onPressed: () => context.push(AppRoutes.routines),
+        icon: const Icon(Icons.play_arrow_rounded),
+        label: Text(context.l10n.startNewSession),
       ),
     );
   }

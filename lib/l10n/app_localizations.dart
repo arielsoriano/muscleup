@@ -427,6 +427,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No exercises in this routine'**
   String get noExercisesInRoutine;
+
+  /// Confirmation message for deleting a routine
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this routine?'**
+  String get deleteRoutineConfirm;
+
+  /// Delete action
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// Label for routines with no exercises
+  ///
+  /// In en, this message translates to:
+  /// **'Empty'**
+  String get emptyRoutine;
+
+  /// Button label for starting a new workout session
+  ///
+  /// In en, this message translates to:
+  /// **'Start New Session'**
+  String get startNewSession;
+
+  /// Button label for starting a specific routine by name
+  ///
+  /// In en, this message translates to:
+  /// **'Start {name}'**
+  String startRoutineName(String name);
 }
 
 class _AppLocalizationsDelegate
