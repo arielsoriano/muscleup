@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/utils/l10n_extension.dart';
+import '../../../../core/utils/ui_helpers.dart';
 import '../../../settings/presentation/cubit/settings_cubit.dart';
 import '../../domain/entities/workout_entities.dart';
 import '../cubit/dashboard_cubit.dart';
@@ -41,12 +42,7 @@ class _DashboardPageContent extends StatelessWidget {
             onPressed: () {
               context.read<DashboardCubit>().deleteSession(sessionId);
               Navigator.of(dialogContext).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(context.l10n.sessionDeleted),
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
+              context.showAppSnackBar(context.l10n.sessionDeleted);
             },
             child: Text(context.l10n.delete),
           ),
@@ -69,9 +65,8 @@ class _DashboardPageContent extends StatelessWidget {
               if (value == 'routines') {
                 context.push(AppRoutes.routines);
               } else if (value == 'language') {
-                final newLanguageCode = currentLocale.languageCode == 'en'
-                    ? 'es'
-                    : 'en';
+                final newLanguageCode =
+                    currentLocale.languageCode == 'en' ? 'es' : 'en';
                 context.read<SettingsCubit>().changeLanguage(newLanguageCode);
               }
             },

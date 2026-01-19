@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/l10n_extension.dart';
+import '../../../../core/utils/ui_helpers.dart';
 import '../../domain/entities/workout_entities.dart';
 import '../cubit/routine_form_cubit.dart';
 import '../cubit/routine_form_state.dart';
@@ -58,20 +59,10 @@ class _RoutineFormPageContentState extends State<_RoutineFormPageContent> {
     return BlocConsumer<RoutineFormCubit, RoutineFormState>(
       listener: (context, state) {
         if (state is RoutineFormStateSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(context.l10n.saveRoutineSuccess),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
-          );
+          context.showAppSnackBar(context.l10n.saveRoutineSuccess);
           context.pop();
         } else if (state is RoutineFormStateError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
+          context.showAppSnackBar(state.message, isError: true);
         }
       },
       builder: (context, state) {

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/l10n_extension.dart';
+import '../../../../core/utils/ui_helpers.dart';
 import '../../domain/entities/workout_entities.dart';
 import '../../domain/usecases/get_routine_by_id_usecase.dart';
 import '../cubit/active_workout_cubit.dart';
@@ -100,20 +101,10 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
     return BlocConsumer<ActiveWorkoutCubit, ActiveWorkoutState>(
       listener: (context, state) {
         if (state is ActiveWorkoutStateSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(context.l10n.workoutSavedSuccess),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
-          );
+          context.showAppSnackBar(context.l10n.workoutSavedSuccess);
           context.pop();
         } else if (state is ActiveWorkoutStateError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
+          context.showAppSnackBar(state.message, isError: true);
         }
       },
       builder: (context, state) {

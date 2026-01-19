@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/utils/l10n_extension.dart';
+import '../../../../core/utils/ui_helpers.dart';
 import '../cubit/workout_cubit.dart';
 import '../cubit/workout_state.dart';
 
@@ -68,7 +69,7 @@ class _RoutinesPageContent extends StatelessWidget {
                   ),
                 );
               }
-              
+
               return ListView.builder(
                 itemCount: routines.length,
                 padding: const EdgeInsets.all(16),
@@ -87,7 +88,8 @@ class _RoutinesPageContent extends StatelessWidget {
                                 context.l10n.emptyRoutine,
                                 style: Theme.of(context).textTheme.labelSmall,
                               ),
-                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
                               visualDensity: VisualDensity.compact,
                             ),
                         ],
@@ -102,17 +104,16 @@ class _RoutinesPageContent extends StatelessWidget {
                             icon: Icon(
                               Icons.play_arrow_rounded,
                               color: isEmptyRoutine
-                                  ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38)
+                                  ? Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withValues(alpha: 0.38)
                                   : null,
                             ),
                             onPressed: isEmptyRoutine
                                 ? () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(context.l10n.addExercisesFirst),
-                                        behavior: SnackBarBehavior.floating,
-                                      ),
-                                    );
+                                    context.showAppSnackBar(
+                                        context.l10n.addExercisesFirst);
                                   }
                                 : () => context.push(
                                       AppRoutes.activeWorkout,
