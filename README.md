@@ -66,6 +66,45 @@ A minimalist, privacy-focused workout tracking application built with Flutter. O
 - Localized UI with empty states and error messages
 - Memory-safe Stream management with proper disposal
 
+### Phase 5: UI & Core Functionalities ✅
+
+**Reactive Dashboard (DashboardPage)**:
+- Weekly calendar strip with horizontal scrolling and date selection via DashboardCubit.selectDate()
+- Multi-session support per day with ListView.builder for session cards
+- Session deletion with confirmation dialog calling DashboardCubit.deleteSession()
+- Real-time updates via BlocBuilder<DashboardCubit, DashboardState>
+- Empty state with context.l10n.noWorkoutToday when sessions list is empty
+- Start button docked at bottom (hidden for future dates)
+
+**Historical Integrity (Snapshot Architecture)**:
+- Sessions.routineName column stores routine name at workout time
+- Preserves historical accuracy when routines are renamed or deleted
+- WorkoutSession.routineName field maintains snapshot of original routine name
+- ActiveWorkoutCubit.displayTitle differentiates historical vs. template-based workouts
+- Session logs (SetLogs table) survive routine modifications via foreign key to Sessions only
+
+**Professional Routine Form (RoutineFormPage)**:
+- Exercise selection via _ExerciseSelectionModal (showModalBottomSheet with SearchBar)
+- Real-time search through LibraryExercises with RoutineFormCubit.searchLibraryExercises()
+- Custom exercise creation with RoutineFormCubit.addExercise() accepting user input
+- Hint-based input for sets: empty TextEditingController when targetValue is null/0 (no hardcoded "0.0")
+- _SetFormRow with dynamic TextField controllers showing empty string instead of zero
+- Rest time configuration per exercise with _restTimeController
+- Expandable/collapsible exercise cards with _isExpanded state
+
+**Active Workout Ergonomics (ActiveWorkoutPage)**:
+- Dynamic title logic: displays WorkoutSession.routineName for historical sessions, WorkoutRoutine.name for templates
+- ActiveWorkoutState.isViewingHistory flag controls UI behavior (hides finish button for historical views)
+- Bottom-docked finish button using bottomNavigationBar with SafeArea wrapping
+- Automated log synchronization: ActiveWorkoutCubit._saveAllSetLogs() iterates through SetLog list
+- Data merging in _loadExistingSession(): filters exercises by exerciseIdsWithLogs, updates templateSets with log values
+- SetLog pre-population in _createNewSession() generates logs from routine template
+
+**Centralized Messaging System (BuildContextSnackBarExtension)**:
+- Extension method context.showAppSnackBar(message, isError: bool)
+- Tonal colors: colorScheme.secondaryContainer for success, colorScheme.errorContainer for errors
+- Consistent across all pages: RoutineFormPage, ActiveWorkoutPage, DashboardPage
+
 ## Getting Started
 
 ### Prerequisites

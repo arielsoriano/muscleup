@@ -691,6 +691,148 @@ Sessions (1) ←→ (N) SetLogs
 - NOT NULL constraints on required fields
 - Enum constraints prevent invalid unit values
 
+### Data Persistence Patterns (Phase 5)
+
+**Soft Delete Implementation**:
+
+```dart
+@DataClassName('RoutineData')
+class Routines extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  IntColumn get sortOrder => integer()();
+  BoolColumn get isDeleted => boolean().withDefault(const Constant(false))();
+}
+```
+
+**Design Rationale**:
+- **Historical Integrity**: Deleted routines remain in database for Session.routineId foreign key validity
+- **Query Filtering**: `..where((routine) => routine.isDeleted.equals(false))` excludes soft-deleted routines
+- **Referential Safety**: Sessions.routineId references never become orphaned
+- **Data Recovery**: Soft-deleted routines can be restored without losing foreign key relationships
+- **Migration Strategy**: Added in schema version 4 with `await m.addColumn(routines, routines.isDeleted)`
+
+**Repository Implementation** (`WorkoutRepositoryImpl.deleteRoutine`):
+```dart
+@override
+Future<Either<Failure, void>> deleteRoutine(String id) async {
+  try {
+    await (database.update(database.routines)
+      ..where((routine) => routine.id.equals(id)))
+      .write(
+        const RoutinesCompanion(
+          isDeleted: Value(true),
+        ),
+      );
+    return const Either<Failure, void>.right(null);
+  } catch (e) {
+    return Either<Failure, void>.left(DatabaseFailure(e.toString()));
+  }
+}
+```
+
+**Benefits**:
+- No CASCADE DELETE on Sessions → Routines relationship
+- Historical workout data preserved indefinitely
+- Clean separation between active and archived routines
+
+**Upsert + Orphan Cleanup Pattern**:
+
+**Problem**: SQL unique constraint errors when modifying nested data (Exercises, Sets)
+
+**Solution** (`WorkoutRepositoryImpl.saveRoutine`):
+```dart
+await database.transaction(() async {
+  // 1. Upsert routine (INSERT or UPDATE)
+  await database.into(database.routines).insertOnConflictUpdate(
+    RoutinesCompanion.insert(
+      id: routine.id,
+      name: routine.name,
+      sortOrder: routine.sortOrder,
+      isDeleted: const Value(false),
+    ),
+  );
+
+  // 2. Identify orphans
+  final currentExerciseIds = await (database.select(database.exercises)
+    ..where((exercise) => exercise.routineId.equals(routine.id)))
+    .get()
+    .then((list) => list.map((e) => e.id).toSet());
+
+  final newExerciseIds = routine.exercises.map((e) => e.id).toSet();
+  final exercisesToDelete = currentExerciseIds.difference(newExerciseIds);
+
+  // 3. Delete orphans (CASCADE deletes Sets automatically)
+  if (exercisesToDelete.isNotEmpty) {
+    await database.batch((batch) {
+      for (final exerciseId in exercisesToDelete) {
+        batch.deleteWhere(
+          database.exercises,
+          (exercise) => exercise.id.equals(exerciseId),
+        );
+      }
+    });
+  }
+
+  // 4. Upsert new/updated exercises
+  await database.batch((batch) {
+    for (final exercise in routine.exercises) {
+      batch.insert(
+        database.exercises,
+        ExercisesCompanion.insert(...),
+        mode: InsertMode.insertOrReplace,
+      );
+    }
+  });
+
+  // 5. Repeat orphan cleanup for Sets (per exercise)
+  for (final exercise in routine.exercises) {
+    final currentSetIds = await (database.select(database.sets)
+      ..where((set) => set.exerciseId.equals(exercise.id)))
+      .get()
+      .then((list) => list.map((s) => s.id).toSet());
+
+    final newSetIds = exercise.templateSets.map((s) => s.id).toSet();
+    final setsToDelete = currentSetIds.difference(newSetIds);
+
+    if (setsToDelete.isNotEmpty) {
+      await database.batch((batch) {
+        for (final setId in setsToDelete) {
+          batch.deleteWhere(
+            database.sets,
+            (set) => set.id.equals(setId),
+          );
+        }
+      });
+    }
+
+    // 6. Upsert Sets
+    await database.batch((batch) {
+      for (final set in exercise.templateSets) {
+        batch.insert(
+          database.sets,
+          SetsCompanion.insert(...),
+          mode: InsertMode.insertOrReplace,
+        );
+      }
+    });
+  }
+});
+```
+
+**Key Techniques**:
+- **Set Difference**: `currentIds.difference(newIds)` identifies removed items
+- **insertOnConflictUpdate**: Upserts routine without unique constraint errors
+- **InsertMode.insertOrReplace**: Upserts nested entities (Exercises, Sets)
+- **Batching**: `database.batch()` groups deletes/inserts for performance
+- **Cascade Leverage**: Deleting Exercise automatically removes orphaned Sets via foreign key
+
+**Benefits**:
+- **Atomicity**: Transaction ensures all-or-nothing semantics
+- **Consistency**: No orphaned Exercises or Sets remain
+- **Idempotency**: Calling saveRoutine multiple times with same data is safe
+- **Error Prevention**: Eliminates "UNIQUE constraint failed" errors
+
 ### Repository Implementation
 
 **Implementation**: `lib/features/workout/data/repositories/workout_repository_impl.dart`
@@ -1367,6 +1509,420 @@ context.l10n.retry
 - Semantic labels from localization
 - Screen reader support automatic
 - Focus indicators from theme
+
+## Phase 5: UI & Core Functionalities
+
+### UI Patterns
+
+**Centralized Messaging System**
+
+**Implementation**: `lib/core/utils/ui_helpers.dart`
+
+```dart
+extension BuildContextSnackBarExtension on BuildContext {
+  void showAppSnackBar(String message, {bool isError = false}) {
+    final colorScheme = Theme.of(this).colorScheme;
+
+    ScaffoldMessenger.of(this).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: TextStyle(
+            color: isError
+                ? colorScheme.onErrorContainer
+                : colorScheme.onSecondaryContainer,
+          ),
+        ),
+        backgroundColor: isError
+            ? colorScheme.errorContainer
+            : colorScheme.secondaryContainer,
+      ),
+    );
+  }
+}
+```
+
+**Design Philosophy**:
+- **Tonal Colors**: Uses Material 3 container colors (secondaryContainer, errorContainer)
+- **Contextual Styling**: Automatic text color adjustment (onErrorContainer, onSecondaryContainer)
+- **Ergonomic Access**: Extension on BuildContext enables `context.showAppSnackBar(message)`
+- **Type Safety**: isError parameter controls color scheme selection
+- **Consistency**: All pages use same messaging pattern (RoutineFormPage, ActiveWorkoutPage, DashboardPage)
+
+**Usage Across Pages**:
+```dart
+// Success message
+context.showAppSnackBar(context.l10n.saveRoutineSuccess);
+
+// Error message
+context.showAppSnackBar(state.message, isError: true);
+```
+
+**Benefits**:
+- Single source of truth for user feedback
+- Material 3 design compliance
+- Accessible color contrast ratios
+- Eliminates duplicate SnackBar configuration
+- Localization-ready
+
+**Modal-Based Search Pattern**
+
+**Implementation**: `RoutineFormPage._showAddExerciseModal()` → `_ExerciseSelectionModal`
+
+**Architecture**:
+```dart
+void _showAddExerciseModal(BuildContext context) {
+  final cubit = context.read<RoutineFormCubit>();
+  final languageCode = Localizations.localeOf(context).languageCode;
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    showDragHandle: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+    ),
+    builder: (modalContext) {
+      return _ExerciseSelectionModal(
+        cubit: cubit,
+        languageCode: languageCode,
+      );
+    },
+  );
+}
+```
+
+**Modal Implementation** (`_ExerciseSelectionModal`):
+```dart
+class _ExerciseSelectionModal extends StatefulWidget {
+  const _ExerciseSelectionModal({
+    required this.cubit,
+    required this.languageCode,
+  });
+
+  final RoutineFormCubit cubit;
+  final String languageCode;
+}
+
+class _ExerciseSelectionModalState extends State<_ExerciseSelectionModal> {
+  late final TextEditingController _searchController;
+  String _searchQuery = '';
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: screenHeight * 0.8,
+      child: Column(
+        children: [
+          SearchBar(
+            controller: _searchController,
+            hintText: context.l10n.searchExercises,
+            leading: Icon(Icons.search_rounded),
+            onChanged: (value) {
+              setState(() {
+                _searchQuery = value.trim();
+              });
+            },
+          ),
+          Expanded(
+            child: FutureBuilder(
+              future: _searchQuery.isEmpty
+                  ? widget.cubit.getLibraryExercises()
+                  : widget.cubit.searchLibraryExercises(
+                      _searchQuery,
+                      widget.languageCode,
+                    ),
+              builder: (context, snapshot) {
+                // Build ListTile items from exercises
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
+
+**Key Features**:
+- **Material 3 SearchBar**: Native Flutter SearchBar widget with custom styling
+- **Real-time Filtering**: setState() triggers FutureBuilder rebuild on query change
+- **Cubit Delegation**: Modal accesses parent cubit for data operations
+- **Language-Aware Search**: Uses languageCode for LibraryExerciseEntity.getLocalizedName()
+- **Custom Exercise Creation**: Shows "Add Custom Exercise" option when query is not empty
+- **Responsive Height**: 80% of screen height with isScrollControlled: true
+- **Drag Handle**: Material 3 showDragHandle provides native dismiss gesture
+
+**Search Logic**:
+```dart
+// Empty query: show all exercises
+future: _searchQuery.isEmpty
+    ? widget.cubit.getLibraryExercises()
+    // Non-empty: filter by localized name
+    : widget.cubit.searchLibraryExercises(
+        _searchQuery,
+        widget.languageCode,
+      )
+```
+
+**Benefits**:
+- **Discovery**: Users can explore all exercises before searching
+- **Flexibility**: Custom exercise creation fallback
+- **Performance**: FutureBuilder prevents unnecessary rebuilds
+- **UX**: Native Material 3 bottom sheet with drag-to-dismiss
+- **Separation of Concerns**: Modal is self-contained stateful widget
+
+### State Management Patterns
+
+**ActiveWorkoutCubit: Template-History Merging**
+
+**Implementation**: `lib/features/workout/presentation/cubit/active_workout_cubit.dart`
+
+**State Definition**:
+```dart
+@freezed
+class ActiveWorkoutState with _$ActiveWorkoutState {
+  const factory ActiveWorkoutState.tracking({
+    required WorkoutRoutine routine,
+    required List<SetLog> setLogs,
+    required String? displayTitle,
+    required bool isViewingHistory,
+    @Default(false) bool isLoading,
+  }) = ActiveWorkoutStateTracking;
+  
+  // ... other states (loading, saving, success, error)
+}
+```
+
+**Critical Fields**:
+- **displayTitle**: Stores WorkoutSession.routineName for historical sessions, null for new workouts
+- **isViewingHistory**: Controls UI behavior (hides finish button, shows read-only view)
+- **routine**: Contains either template data (new workout) or merged data (historical session)
+- **setLogs**: Pre-populated from template or loaded from SetLogs table
+
+**Data Merging in _loadExistingSession()**:
+
+**Step 1: Load Session Snapshot**
+```dart
+final sessionResult = await _getSessionByIdUseCase(
+  GetSessionByIdParams(sessionId: _sessionId),
+);
+
+final historicalSession = sessionOrNull;
+// historicalSession.routineName = snapshot of routine name at workout time
+```
+
+**Step 2: Load Logs and Filter Exercises**
+```dart
+final result = await _getLogsForSessionUseCase(
+  GetLogsForSessionParams(sessionId: _sessionId),
+);
+
+final existingLogs = // List<SetLog> from SetLogs table
+
+// Only show exercises that have logs (handles deleted exercises)
+final exerciseIdsWithLogs =
+    existingLogs.map((log) => log.workoutExerciseId).toSet();
+
+final filteredExercises = routine.exercises
+    .where((exercise) => exerciseIdsWithLogs.contains(exercise.id))
+    .toList();
+```
+
+**Step 3: Merge Log Values into Template Sets**
+```dart
+final updatedExercises = filteredExercises.map((exercise) {
+  final exerciseLogs = existingLogs
+      .where((log) => log.workoutExerciseId == exercise.id)
+      .toList();
+
+  final updatedSets = List<WorkoutSet>.from(exercise.templateSets);
+  
+  for (final log in exerciseLogs) {
+    final setIndex = log.setNumber - 1;
+    if (setIndex >= 0 && setIndex < updatedSets.length) {
+      // Replace target values with actual logged values
+      updatedSets[setIndex] = WorkoutSet(
+        id: updatedSets[setIndex].id,
+        sortOrder: updatedSets[setIndex].sortOrder,
+        targetValue1: log.actualValue1,  // From SetLog
+        targetValue2: log.actualValue2,  // From SetLog
+        unit1: updatedSets[setIndex].unit1,
+        unit2: updatedSets[setIndex].unit2,
+      );
+    }
+  }
+
+  return exercise.copyWith(templateSets: updatedSets);
+}).toList();
+```
+
+**Step 4: Emit Merged State**
+```dart
+emit(
+  ActiveWorkoutState.tracking(
+    routine: routine.copyWith(exercises: updatedExercises),
+    setLogs: existingLogs,
+    displayTitle: historicalSession.routineName,  // Snapshot name
+    isViewingHistory: true,  // Read-only mode
+    isLoading: false,
+  ),
+);
+```
+
+**New Workout Creation (_createNewSession)**:
+```dart
+void _createNewSession(WorkoutRoutine routine) {
+  _sessionId = _uuid.v4();
+  final setLogs = <SetLog>[];
+
+  // Pre-populate logs from template
+  for (final exercise in routine.exercises) {
+    for (var i = 0; i < exercise.templateSets.length; i++) {
+      final templateSet = exercise.templateSets[i];
+      setLogs.add(
+        SetLog(
+          id: _uuid.v4(),
+          sessionId: _sessionId,
+          workoutExerciseId: exercise.id,
+          setNumber: i + 1,
+          actualValue1: templateSet.targetValue1,  // Copy from template
+          actualValue2: templateSet.targetValue2,
+          unit1: templateSet.unit1,
+          unit2: templateSet.unit2,
+          isCompleted: false,
+          timestamp: DateTime.now(),
+        ),
+      );
+    }
+  }
+
+  emit(
+    ActiveWorkoutState.tracking(
+      routine: routine,
+      setLogs: setLogs,
+      displayTitle: null,  // Use routine.name
+      isViewingHistory: false,  // Editable mode
+      isLoading: false,
+    ),
+  );
+}
+```
+
+**UI Title Logic (ActiveWorkoutPage)**:
+```dart
+Text(
+  state.maybeWhen(
+    tracking: (routine, setLogs, displayTitle, isViewingHistory, _, __) =>
+        displayTitle ?? routine.name,  // displayTitle if historical, routine.name if new
+    initial: (routine, setLogs, displayTitle, isViewingHistory, _, __) =>
+        displayTitle ?? routine.name,
+    orElse: () => state.routine.name,
+  ),
+)
+```
+
+**Finish Button Visibility**:
+```dart
+bottomNavigationBar: isSaving ||
+        isLoading ||
+        state.maybeWhen(
+          tracking: (_, __, ___, isViewingHistory, ____, _____) =>
+              isViewingHistory,  // Hide for historical sessions
+          orElse: () => false,
+        )
+    ? null
+    : _buildFinishButton(context),
+```
+
+**Design Benefits**:
+- **Historical Accuracy**: displayTitle preserves routine name even after deletion/renaming
+- **Data Integrity**: Filtered exercises prevent crashes from deleted exercises
+- **Value Merging**: Shows actual logged values instead of template targets
+- **Read-Only History**: isViewingHistory prevents accidental modifications
+- **Type Safety**: Freezed states enforce required fields
+- **Clean Separation**: New vs. historical logic isolated in separate methods
+
+**DashboardCubit: Multi-Session Day Support**
+
+**State Definition**:
+```dart
+@freezed
+class DashboardState with _$DashboardState {
+  const factory DashboardState.success({
+    required DateTime selectedDate,
+    required List<WorkoutSession> sessions,
+  }) = DashboardStateSuccess;
+}
+```
+
+**Session Filtering**:
+```dart
+void selectDate(DateTime date) {
+  final normalizedDate = DateTime(date.year, date.month, date.day);
+  
+  // Filter sessions by normalized date
+  final sessionsForDate = _allSessions.where((session) {
+    final sessionDate = DateTime(
+      session.date.year,
+      session.date.month,
+      session.date.day,
+    );
+    return sessionDate == normalizedDate;
+  }).toList();
+  
+  emit(
+    DashboardState.success(
+      selectedDate: normalizedDate,
+      sessions: sessionsForDate,
+    ),
+  );
+}
+```
+
+**Multi-Session UI (DashboardPage)**:
+```dart
+Widget _buildSessionsList(BuildContext context, List<WorkoutSession> sessions) {
+  return ListView.builder(
+    itemCount: sessions.length,  // Multiple cards per day
+    itemBuilder: (context, index) {
+      return _buildSessionCard(context, sessions[index]);
+    },
+  );
+}
+
+Widget _buildSessionCard(BuildContext context, WorkoutSession session) {
+  return Card(
+    child: InkWell(
+      onTap: () {
+        context.push(
+          AppRoutes.activeWorkout,
+          extra: {
+            'routineId': session.routineId,
+            'sessionId': session.id,  // Pass sessionId for historical view
+          },
+        );
+      },
+      child: Row(
+        children: [
+          Text(session.routineName),  // Shows snapshot name
+          IconButton(
+            icon: Icon(Icons.delete_outline_rounded),
+            onPressed: () => _showDeleteSessionDialog(context, session.id),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+```
+
+**Benefits**:
+- **Multiple Workouts Per Day**: No artificial limits
+- **Preserved History**: routineName shows what was actually performed
+- **Delete Functionality**: DashboardCubit.deleteSession() with confirmation dialog
+- **Navigation Integration**: sessionId passed to ActiveWorkoutPage for historical view
 
 ## Testing Strategy
 
