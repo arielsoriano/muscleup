@@ -3,7 +3,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
- import '../../domain/entities/workout_entities.dart';
+import '../../domain/entities/workout_entities.dart';
 import '../../domain/repositories/workout_repository.dart';
 import '../datasources/local/workout_database.dart';
 
@@ -80,35 +80,81 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
               ),
             );
 
-        await (database.delete(database.exercises)
+        final currentExerciseIds = await (database.select(database.exercises)
               ..where((exercise) => exercise.routineId.equals(routine.id)))
-            .go();
+            .get()
+            .then((list) => list.map((e) => e.id).toSet());
+
+        final newExerciseIds = routine.exercises.map((e) => e.id).toSet();
+
+        final exercisesToDelete = currentExerciseIds.difference(newExerciseIds);
+
+        if (exercisesToDelete.isNotEmpty) {
+          await database.batch((batch) {
+            for (final exerciseId in exercisesToDelete) {
+              batch.deleteWhere(
+                database.exercises,
+                (exercise) => exercise.id.equals(exerciseId),
+              );
+            }
+          });
+        }
+
+        await database.batch((batch) {
+          for (final exercise in routine.exercises) {
+            batch.insert(
+              database.exercises,
+              ExercisesCompanion.insert(
+                id: exercise.id,
+                routineId: routine.id,
+                name: exercise.name,
+                notes: Value(exercise.notes),
+                restTimeSeconds: exercise.restTimeSeconds,
+                sortOrder: exercise.sortOrder,
+              ),
+              mode: InsertMode.insertOrReplace,
+            );
+          }
+        });
 
         for (final exercise in routine.exercises) {
-          await database.into(database.exercises).insert(
-                ExercisesCompanion.insert(
-                  id: exercise.id,
-                  routineId: routine.id,
-                  name: exercise.name,
-                  notes: Value(exercise.notes),
-                  restTimeSeconds: exercise.restTimeSeconds,
-                  sortOrder: exercise.sortOrder,
-                ),
-              );
+          final currentSetIds = await (database.select(database.sets)
+                ..where((set) => set.exerciseId.equals(exercise.id)))
+              .get()
+              .then((list) => list.map((s) => s.id).toSet());
 
-          for (final set in exercise.templateSets) {
-            await database.into(database.sets).insert(
-                  SetsCompanion.insert(
-                    id: set.id,
-                    exerciseId: exercise.id,
-                    targetValue1: Value(set.targetValue1),
-                    targetValue2: Value(set.targetValue2),
-                    unit1: Value(set.unit1),
-                    unit2: Value(set.unit2),
-                    sortOrder: set.sortOrder,
-                  ),
+          final newSetIds = exercise.templateSets.map((s) => s.id).toSet();
+
+          final setsToDelete = currentSetIds.difference(newSetIds);
+
+          if (setsToDelete.isNotEmpty) {
+            await database.batch((batch) {
+              for (final setId in setsToDelete) {
+                batch.deleteWhere(
+                  database.sets,
+                  (set) => set.id.equals(setId),
                 );
+              }
+            });
           }
+
+          await database.batch((batch) {
+            for (final set in exercise.templateSets) {
+              batch.insert(
+                database.sets,
+                SetsCompanion.insert(
+                  id: set.id,
+                  exerciseId: exercise.id,
+                  targetValue1: Value(set.targetValue1),
+                  targetValue2: Value(set.targetValue2),
+                  unit1: Value(set.unit1),
+                  unit2: Value(set.unit2),
+                  sortOrder: set.sortOrder,
+                ),
+                mode: InsertMode.insertOrReplace,
+              );
+            }
+          });
         }
       });
 
@@ -123,9 +169,11 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
     try {
       await (database.update(database.routines)
             ..where((routine) => routine.id.equals(id)))
-          .write(const RoutinesCompanion(
-        isDeleted: Value(true),
-      ),);
+          .write(
+        const RoutinesCompanion(
+          isDeleted: Value(true),
+        ),
+      );
       return const Either<Failure, void>.right(null);
     } catch (e) {
       return Either<Failure, void>.left(DatabaseFailure(e.toString()));
@@ -337,7 +385,8 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
   }
 
   @override
-  Future<Either<Failure, List<LibraryExerciseEntity>>> getLibraryExercises() async {
+  Future<Either<Failure, List<LibraryExerciseEntity>>>
+      getLibraryExercises() async {
     try {
       final data = await database.select(database.libraryExercises).get();
       final exercises = data.map((exerciseData) {
@@ -391,12 +440,13 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
     String languageCode,
   ) async {
     try {
-      final allExercises = await database.select(database.libraryExercises).get();
+      final allExercises =
+          await database.select(database.libraryExercises).get();
       final lowerQuery = query.toLowerCase();
 
       final filtered = allExercises.where((exercise) {
-        final searchName = languageCode == 'es' 
-            ? exercise.nameEs.toLowerCase() 
+        final searchName = languageCode == 'es'
+            ? exercise.nameEs.toLowerCase()
             : exercise.nameEn.toLowerCase();
         return searchName.contains(lowerQuery);
       }).toList();
