@@ -258,5 +258,9 @@
         "type": "String"
       }
     }
+  },
+  "addExercisesFirst": "Add exercises first",
+  "@addExercisesFirst": {
+    "description": "Warning message when trying to start a routine without exercises"
   }
 }

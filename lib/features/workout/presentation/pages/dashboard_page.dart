@@ -242,6 +242,9 @@ class _DashboardPageContent extends StatelessWidget {
   Widget _buildSessionCard(BuildContext context, WorkoutSession session) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final timeFormat = DateFormat.jm(
+      Localizations.localeOf(context).languageCode,
+    );
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -266,10 +269,17 @@ class _DashboardPageContent extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(
-                    Icons.fitness_center_rounded,
-                    color: colorScheme.primary,
-                    size: 24,
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      Icons.fitness_center_rounded,
+                      color: colorScheme.onPrimaryContainer,
+                      size: 24,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -277,25 +287,18 @@ class _DashboardPageContent extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          DateFormat.yMMMd(
-                            Localizations.localeOf(context).languageCode,
-                          ).format(session.date),
+                          session.routineName,
                           style: textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        if (session.notes != null && session.notes!.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: Text(
-                              session.notes!,
-                              style: textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                        const SizedBox(height: 4),
+                        Text(
+                          timeFormat.format(session.date),
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
                           ),
+                        ),
                       ],
                     ),
                   ),

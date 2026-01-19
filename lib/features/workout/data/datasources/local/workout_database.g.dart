@@ -25,8 +25,18 @@ class $RoutinesTable extends Routines
   late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
       'sort_order', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _isDeletedMeta =
+      const VerificationMeta('isDeleted');
   @override
-  List<GeneratedColumn> get $columns => [id, name, sortOrder];
+  late final GeneratedColumn<bool> isDeleted = GeneratedColumn<bool>(
+      'is_deleted', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_deleted" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  @override
+  List<GeneratedColumn> get $columns => [id, name, sortOrder, isDeleted];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -54,6 +64,10 @@ class $RoutinesTable extends Routines
     } else if (isInserting) {
       context.missing(_sortOrderMeta);
     }
+    if (data.containsKey('is_deleted')) {
+      context.handle(_isDeletedMeta,
+          isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta));
+    }
     return context;
   }
 
@@ -69,6 +83,8 @@ class $RoutinesTable extends Routines
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       sortOrder: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}sort_order'])!,
+      isDeleted: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_deleted'])!,
     );
   }
 
@@ -82,14 +98,19 @@ class RoutineData extends DataClass implements Insertable<RoutineData> {
   final String id;
   final String name;
   final int sortOrder;
+  final bool isDeleted;
   const RoutineData(
-      {required this.id, required this.name, required this.sortOrder});
+      {required this.id,
+      required this.name,
+      required this.sortOrder,
+      required this.isDeleted});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['name'] = Variable<String>(name);
     map['sort_order'] = Variable<int>(sortOrder);
+    map['is_deleted'] = Variable<bool>(isDeleted);
     return map;
   }
 
@@ -98,6 +119,7 @@ class RoutineData extends DataClass implements Insertable<RoutineData> {
       id: Value(id),
       name: Value(name),
       sortOrder: Value(sortOrder),
+      isDeleted: Value(isDeleted),
     );
   }
 
@@ -108,6 +130,7 @@ class RoutineData extends DataClass implements Insertable<RoutineData> {
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      isDeleted: serializer.fromJson<bool>(json['isDeleted']),
     );
   }
   @override
@@ -117,20 +140,24 @@ class RoutineData extends DataClass implements Insertable<RoutineData> {
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
       'sortOrder': serializer.toJson<int>(sortOrder),
+      'isDeleted': serializer.toJson<bool>(isDeleted),
     };
   }
 
-  RoutineData copyWith({String? id, String? name, int? sortOrder}) =>
+  RoutineData copyWith(
+          {String? id, String? name, int? sortOrder, bool? isDeleted}) =>
       RoutineData(
         id: id ?? this.id,
         name: name ?? this.name,
         sortOrder: sortOrder ?? this.sortOrder,
+        isDeleted: isDeleted ?? this.isDeleted,
       );
   RoutineData copyWithCompanion(RoutinesCompanion data) {
     return RoutineData(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
     );
   }
 
@@ -139,37 +166,42 @@ class RoutineData extends DataClass implements Insertable<RoutineData> {
     return (StringBuffer('RoutineData(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('sortOrder: $sortOrder')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('isDeleted: $isDeleted')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, sortOrder);
+  int get hashCode => Object.hash(id, name, sortOrder, isDeleted);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is RoutineData &&
           other.id == this.id &&
           other.name == this.name &&
-          other.sortOrder == this.sortOrder);
+          other.sortOrder == this.sortOrder &&
+          other.isDeleted == this.isDeleted);
 }
 
 class RoutinesCompanion extends UpdateCompanion<RoutineData> {
   final Value<String> id;
   final Value<String> name;
   final Value<int> sortOrder;
+  final Value<bool> isDeleted;
   final Value<int> rowid;
   const RoutinesCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.sortOrder = const Value.absent(),
+    this.isDeleted = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   RoutinesCompanion.insert({
     required String id,
     required String name,
     required int sortOrder,
+    this.isDeleted = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         name = Value(name),
@@ -178,12 +210,14 @@ class RoutinesCompanion extends UpdateCompanion<RoutineData> {
     Expression<String>? id,
     Expression<String>? name,
     Expression<int>? sortOrder,
+    Expression<bool>? isDeleted,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (sortOrder != null) 'sort_order': sortOrder,
+      if (isDeleted != null) 'is_deleted': isDeleted,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -192,11 +226,13 @@ class RoutinesCompanion extends UpdateCompanion<RoutineData> {
       {Value<String>? id,
       Value<String>? name,
       Value<int>? sortOrder,
+      Value<bool>? isDeleted,
       Value<int>? rowid}) {
     return RoutinesCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       sortOrder: sortOrder ?? this.sortOrder,
+      isDeleted: isDeleted ?? this.isDeleted,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -213,6 +249,9 @@ class RoutinesCompanion extends UpdateCompanion<RoutineData> {
     if (sortOrder.present) {
       map['sort_order'] = Variable<int>(sortOrder.value);
     }
+    if (isDeleted.present) {
+      map['is_deleted'] = Variable<bool>(isDeleted.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -225,6 +264,7 @@ class RoutinesCompanion extends UpdateCompanion<RoutineData> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('sortOrder: $sortOrder, ')
+          ..write('isDeleted: $isDeleted, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1009,6 +1049,12 @@ class $SessionsTable extends Sessions
       requiredDuringInsert: true,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('REFERENCES routines (id)'));
+  static const VerificationMeta _routineNameMeta =
+      const VerificationMeta('routineName');
+  @override
+  late final GeneratedColumn<String> routineName = GeneratedColumn<String>(
+      'routine_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _dateMeta = const VerificationMeta('date');
   @override
   late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
@@ -1020,7 +1066,8 @@ class $SessionsTable extends Sessions
       'notes', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
   @override
-  List<GeneratedColumn> get $columns => [id, routineId, date, notes];
+  List<GeneratedColumn> get $columns =>
+      [id, routineId, routineName, date, notes];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1041,6 +1088,14 @@ class $SessionsTable extends Sessions
           routineId.isAcceptableOrUnknown(data['routine_id']!, _routineIdMeta));
     } else if (isInserting) {
       context.missing(_routineIdMeta);
+    }
+    if (data.containsKey('routine_name')) {
+      context.handle(
+          _routineNameMeta,
+          routineName.isAcceptableOrUnknown(
+              data['routine_name']!, _routineNameMeta));
+    } else if (isInserting) {
+      context.missing(_routineNameMeta);
     }
     if (data.containsKey('date')) {
       context.handle(
@@ -1065,6 +1120,8 @@ class $SessionsTable extends Sessions
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       routineId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}routine_id'])!,
+      routineName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}routine_name'])!,
       date: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
       notes: attachedDatabase.typeMapping
@@ -1081,11 +1138,13 @@ class $SessionsTable extends Sessions
 class SessionData extends DataClass implements Insertable<SessionData> {
   final String id;
   final String routineId;
+  final String routineName;
   final DateTime date;
   final String? notes;
   const SessionData(
       {required this.id,
       required this.routineId,
+      required this.routineName,
       required this.date,
       this.notes});
   @override
@@ -1093,6 +1152,7 @@ class SessionData extends DataClass implements Insertable<SessionData> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['routine_id'] = Variable<String>(routineId);
+    map['routine_name'] = Variable<String>(routineName);
     map['date'] = Variable<DateTime>(date);
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
@@ -1104,6 +1164,7 @@ class SessionData extends DataClass implements Insertable<SessionData> {
     return SessionsCompanion(
       id: Value(id),
       routineId: Value(routineId),
+      routineName: Value(routineName),
       date: Value(date),
       notes:
           notes == null && nullToAbsent ? const Value.absent() : Value(notes),
@@ -1116,6 +1177,7 @@ class SessionData extends DataClass implements Insertable<SessionData> {
     return SessionData(
       id: serializer.fromJson<String>(json['id']),
       routineId: serializer.fromJson<String>(json['routineId']),
+      routineName: serializer.fromJson<String>(json['routineName']),
       date: serializer.fromJson<DateTime>(json['date']),
       notes: serializer.fromJson<String?>(json['notes']),
     );
@@ -1126,6 +1188,7 @@ class SessionData extends DataClass implements Insertable<SessionData> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'routineId': serializer.toJson<String>(routineId),
+      'routineName': serializer.toJson<String>(routineName),
       'date': serializer.toJson<DateTime>(date),
       'notes': serializer.toJson<String?>(notes),
     };
@@ -1134,11 +1197,13 @@ class SessionData extends DataClass implements Insertable<SessionData> {
   SessionData copyWith(
           {String? id,
           String? routineId,
+          String? routineName,
           DateTime? date,
           Value<String?> notes = const Value.absent()}) =>
       SessionData(
         id: id ?? this.id,
         routineId: routineId ?? this.routineId,
+        routineName: routineName ?? this.routineName,
         date: date ?? this.date,
         notes: notes.present ? notes.value : this.notes,
       );
@@ -1146,6 +1211,8 @@ class SessionData extends DataClass implements Insertable<SessionData> {
     return SessionData(
       id: data.id.present ? data.id.value : this.id,
       routineId: data.routineId.present ? data.routineId.value : this.routineId,
+      routineName:
+          data.routineName.present ? data.routineName.value : this.routineName,
       date: data.date.present ? data.date.value : this.date,
       notes: data.notes.present ? data.notes.value : this.notes,
     );
@@ -1156,6 +1223,7 @@ class SessionData extends DataClass implements Insertable<SessionData> {
     return (StringBuffer('SessionData(')
           ..write('id: $id, ')
           ..write('routineId: $routineId, ')
+          ..write('routineName: $routineName, ')
           ..write('date: $date, ')
           ..write('notes: $notes')
           ..write(')'))
@@ -1163,13 +1231,14 @@ class SessionData extends DataClass implements Insertable<SessionData> {
   }
 
   @override
-  int get hashCode => Object.hash(id, routineId, date, notes);
+  int get hashCode => Object.hash(id, routineId, routineName, date, notes);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is SessionData &&
           other.id == this.id &&
           other.routineId == this.routineId &&
+          other.routineName == this.routineName &&
           other.date == this.date &&
           other.notes == this.notes);
 }
@@ -1177,12 +1246,14 @@ class SessionData extends DataClass implements Insertable<SessionData> {
 class SessionsCompanion extends UpdateCompanion<SessionData> {
   final Value<String> id;
   final Value<String> routineId;
+  final Value<String> routineName;
   final Value<DateTime> date;
   final Value<String?> notes;
   final Value<int> rowid;
   const SessionsCompanion({
     this.id = const Value.absent(),
     this.routineId = const Value.absent(),
+    this.routineName = const Value.absent(),
     this.date = const Value.absent(),
     this.notes = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -1190,15 +1261,18 @@ class SessionsCompanion extends UpdateCompanion<SessionData> {
   SessionsCompanion.insert({
     required String id,
     required String routineId,
+    required String routineName,
     required DateTime date,
     this.notes = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         routineId = Value(routineId),
+        routineName = Value(routineName),
         date = Value(date);
   static Insertable<SessionData> custom({
     Expression<String>? id,
     Expression<String>? routineId,
+    Expression<String>? routineName,
     Expression<DateTime>? date,
     Expression<String>? notes,
     Expression<int>? rowid,
@@ -1206,6 +1280,7 @@ class SessionsCompanion extends UpdateCompanion<SessionData> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (routineId != null) 'routine_id': routineId,
+      if (routineName != null) 'routine_name': routineName,
       if (date != null) 'date': date,
       if (notes != null) 'notes': notes,
       if (rowid != null) 'rowid': rowid,
@@ -1215,12 +1290,14 @@ class SessionsCompanion extends UpdateCompanion<SessionData> {
   SessionsCompanion copyWith(
       {Value<String>? id,
       Value<String>? routineId,
+      Value<String>? routineName,
       Value<DateTime>? date,
       Value<String?>? notes,
       Value<int>? rowid}) {
     return SessionsCompanion(
       id: id ?? this.id,
       routineId: routineId ?? this.routineId,
+      routineName: routineName ?? this.routineName,
       date: date ?? this.date,
       notes: notes ?? this.notes,
       rowid: rowid ?? this.rowid,
@@ -1235,6 +1312,9 @@ class SessionsCompanion extends UpdateCompanion<SessionData> {
     }
     if (routineId.present) {
       map['routine_id'] = Variable<String>(routineId.value);
+    }
+    if (routineName.present) {
+      map['routine_name'] = Variable<String>(routineName.value);
     }
     if (date.present) {
       map['date'] = Variable<DateTime>(date.value);
@@ -1253,6 +1333,7 @@ class SessionsCompanion extends UpdateCompanion<SessionData> {
     return (StringBuffer('SessionsCompanion(')
           ..write('id: $id, ')
           ..write('routineId: $routineId, ')
+          ..write('routineName: $routineName, ')
           ..write('date: $date, ')
           ..write('notes: $notes, ')
           ..write('rowid: $rowid')
@@ -2198,12 +2279,14 @@ typedef $$RoutinesTableCreateCompanionBuilder = RoutinesCompanion Function({
   required String id,
   required String name,
   required int sortOrder,
+  Value<bool> isDeleted,
   Value<int> rowid,
 });
 typedef $$RoutinesTableUpdateCompanionBuilder = RoutinesCompanion Function({
   Value<String> id,
   Value<String> name,
   Value<int> sortOrder,
+  Value<bool> isDeleted,
   Value<int> rowid,
 });
 
@@ -2259,6 +2342,9 @@ class $$RoutinesTableFilterComposer
 
   ColumnFilters<int> get sortOrder => $composableBuilder(
       column: $table.sortOrder, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isDeleted => $composableBuilder(
+      column: $table.isDeleted, builder: (column) => ColumnFilters(column));
 
   Expression<bool> exercisesRefs(
       Expression<bool> Function($$ExercisesTableFilterComposer f) f) {
@@ -2320,6 +2406,9 @@ class $$RoutinesTableOrderingComposer
 
   ColumnOrderings<int> get sortOrder => $composableBuilder(
       column: $table.sortOrder, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isDeleted => $composableBuilder(
+      column: $table.isDeleted, builder: (column) => ColumnOrderings(column));
 }
 
 class $$RoutinesTableAnnotationComposer
@@ -2339,6 +2428,9 @@ class $$RoutinesTableAnnotationComposer
 
   GeneratedColumn<int> get sortOrder =>
       $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  GeneratedColumn<bool> get isDeleted =>
+      $composableBuilder(column: $table.isDeleted, builder: (column) => column);
 
   Expression<T> exercisesRefs<T extends Object>(
       Expression<T> Function($$ExercisesTableAnnotationComposer a) f) {
@@ -2409,24 +2501,28 @@ class $$RoutinesTableTableManager extends RootTableManager<
             Value<String> id = const Value.absent(),
             Value<String> name = const Value.absent(),
             Value<int> sortOrder = const Value.absent(),
+            Value<bool> isDeleted = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               RoutinesCompanion(
             id: id,
             name: name,
             sortOrder: sortOrder,
+            isDeleted: isDeleted,
             rowid: rowid,
           ),
           createCompanionCallback: ({
             required String id,
             required String name,
             required int sortOrder,
+            Value<bool> isDeleted = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               RoutinesCompanion.insert(
             id: id,
             name: name,
             sortOrder: sortOrder,
+            isDeleted: isDeleted,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
@@ -3154,6 +3250,7 @@ typedef $$SetsTableProcessedTableManager = ProcessedTableManager<
 typedef $$SessionsTableCreateCompanionBuilder = SessionsCompanion Function({
   required String id,
   required String routineId,
+  required String routineName,
   required DateTime date,
   Value<String?> notes,
   Value<int> rowid,
@@ -3161,6 +3258,7 @@ typedef $$SessionsTableCreateCompanionBuilder = SessionsCompanion Function({
 typedef $$SessionsTableUpdateCompanionBuilder = SessionsCompanion Function({
   Value<String> id,
   Value<String> routineId,
+  Value<String> routineName,
   Value<DateTime> date,
   Value<String?> notes,
   Value<int> rowid,
@@ -3211,6 +3309,9 @@ class $$SessionsTableFilterComposer
   });
   ColumnFilters<String> get id => $composableBuilder(
       column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get routineName => $composableBuilder(
+      column: $table.routineName, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get date => $composableBuilder(
       column: $table.date, builder: (column) => ColumnFilters(column));
@@ -3272,6 +3373,9 @@ class $$SessionsTableOrderingComposer
   ColumnOrderings<String> get id => $composableBuilder(
       column: $table.id, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get routineName => $composableBuilder(
+      column: $table.routineName, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<DateTime> get date => $composableBuilder(
       column: $table.date, builder: (column) => ColumnOrderings(column));
 
@@ -3310,6 +3414,9 @@ class $$SessionsTableAnnotationComposer
   });
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get routineName => $composableBuilder(
+      column: $table.routineName, builder: (column) => column);
 
   GeneratedColumn<DateTime> get date =>
       $composableBuilder(column: $table.date, builder: (column) => column);
@@ -3384,6 +3491,7 @@ class $$SessionsTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> routineId = const Value.absent(),
+            Value<String> routineName = const Value.absent(),
             Value<DateTime> date = const Value.absent(),
             Value<String?> notes = const Value.absent(),
             Value<int> rowid = const Value.absent(),
@@ -3391,6 +3499,7 @@ class $$SessionsTableTableManager extends RootTableManager<
               SessionsCompanion(
             id: id,
             routineId: routineId,
+            routineName: routineName,
             date: date,
             notes: notes,
             rowid: rowid,
@@ -3398,6 +3507,7 @@ class $$SessionsTableTableManager extends RootTableManager<
           createCompanionCallback: ({
             required String id,
             required String routineId,
+            required String routineName,
             required DateTime date,
             Value<String?> notes = const Value.absent(),
             Value<int> rowid = const Value.absent(),
@@ -3405,6 +3515,7 @@ class $$SessionsTableTableManager extends RootTableManager<
               SessionsCompanion.insert(
             id: id,
             routineId: routineId,
+            routineName: routineName,
             date: date,
             notes: notes,
             rowid: rowid,

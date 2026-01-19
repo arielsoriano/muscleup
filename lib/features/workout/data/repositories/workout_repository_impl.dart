@@ -15,8 +15,8 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
   @override
   Stream<Either<Failure, List<WorkoutRoutine>>> watchRoutines() {
     try {
-      return database
-          .select(database.routines)
+      return (database.select(database.routines)
+            ..where((routine) => routine.isDeleted.equals(false)))
           .watch()
           .asyncMap((routineDataList) async {
         try {
@@ -76,6 +76,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                 id: routine.id,
                 name: routine.name,
                 sortOrder: routine.sortOrder,
+                isDeleted: const Value(false),
               ),
             );
 
@@ -120,9 +121,11 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
   @override
   Future<Either<Failure, void>> deleteRoutine(String id) async {
     try {
-      await (database.delete(database.routines)
+      await (database.update(database.routines)
             ..where((routine) => routine.id.equals(id)))
-          .go();
+          .write(const RoutinesCompanion(
+        isDeleted: Value(true),
+      ),);
       return const Either<Failure, void>.right(null);
     } catch (e) {
       return Either<Failure, void>.left(DatabaseFailure(e.toString()));
@@ -182,6 +185,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
             SessionsCompanion.insert(
               id: session.id,
               routineId: session.routineId,
+              routineName: session.routineName,
               date: session.date,
               notes: Value(session.notes),
             ),
@@ -299,6 +303,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
     return WorkoutSession(
       id: data.id,
       routineId: data.routineId,
+      routineName: data.routineName,
       date: data.date,
       notes: data.notes,
     );

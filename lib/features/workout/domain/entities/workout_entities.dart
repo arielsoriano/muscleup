@@ -52,6 +52,7 @@ class WorkoutSession with _$WorkoutSession {
   const factory WorkoutSession({
     required String id,
     required String routineId,
+    required String routineName,
     required DateTime date,
     String? notes,
   }) = _WorkoutSession;

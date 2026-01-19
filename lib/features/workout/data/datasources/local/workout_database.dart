@@ -15,6 +15,7 @@ class Routines extends Table {
   TextColumn get id => text()();
   TextColumn get name => text()();
   IntColumn get sortOrder => integer()();
+  BoolColumn get isDeleted => boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column<Object>> get primaryKey => {id};
@@ -53,6 +54,7 @@ class Sets extends Table {
 class Sessions extends Table {
   TextColumn get id => text()();
   TextColumn get routineId => text().references(Routines, #id)();
+  TextColumn get routineName => text()();
   DateTimeColumn get date => dateTime()();
   TextColumn get notes => text().nullable()();
 
@@ -127,6 +129,14 @@ class AppDatabase extends _$AppDatabase {
         if (from < 2) {
           await m.createTable(libraryExercises);
           await _seedLibraryExercises();
+        }
+        if (from < 3) {
+          await customStatement(
+            'ALTER TABLE sessions ADD COLUMN routine_name TEXT NOT NULL DEFAULT "";',
+          );
+        }
+        if (from < 4) {
+          await m.addColumn(routines, routines.isDeleted);
         }
       },
     );

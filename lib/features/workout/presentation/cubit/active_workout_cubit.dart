@@ -73,6 +73,7 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
     final session = WorkoutSession(
       id: _sessionId,
       routineId: state.routine.id,
+      routineName: state.routine.name,
       date: DateTime.now(),
       notes: null,
     );

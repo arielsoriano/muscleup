@@ -59,5 +59,6 @@
   "delete": "Eliminar",
   "emptyRoutine": "Vacía",
   "startNewSession": "Iniciar Nueva Sesión",
-  "startRoutineName": "Iniciar {name}"
+  "startRoutineName": "Iniciar {name}",
+  "addExercisesFirst": "Añade ejercicios primero"
 }

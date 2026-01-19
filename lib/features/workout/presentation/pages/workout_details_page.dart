@@ -187,11 +187,13 @@ class WorkoutDetailsPage extends StatelessWidget {
                 SafeArea(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
-                    child: FilledButton(
-                      onPressed: () => context.push(
-                        AppRoutes.activeWorkout,
-                        extra: routine,
-                      ),
+                    child: FilledButton.tonal(
+                      onPressed: routine.exercises.isEmpty
+                          ? null
+                          : () => context.push(
+                                AppRoutes.activeWorkout,
+                                extra: routine,
+                              ),
                       style: FilledButton.styleFrom(
                         minimumSize: const Size(double.infinity, 56),
                       ),

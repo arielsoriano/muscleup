@@ -693,6 +693,7 @@ abstract class _WorkoutSet implements WorkoutSet {
 mixin _$WorkoutSession {
   String get id => throw _privateConstructorUsedError;
   String get routineId => throw _privateConstructorUsedError;
+  String get routineName => throw _privateConstructorUsedError;
   DateTime get date => throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
 
@@ -709,7 +710,12 @@ abstract class $WorkoutSessionCopyWith<$Res> {
           WorkoutSession value, $Res Function(WorkoutSession) then) =
       _$WorkoutSessionCopyWithImpl<$Res, WorkoutSession>;
   @useResult
-  $Res call({String id, String routineId, DateTime date, String? notes});
+  $Res call(
+      {String id,
+      String routineId,
+      String routineName,
+      DateTime date,
+      String? notes});
 }
 
 /// @nodoc
@@ -729,6 +735,7 @@ class _$WorkoutSessionCopyWithImpl<$Res, $Val extends WorkoutSession>
   $Res call({
     Object? id = null,
     Object? routineId = null,
+    Object? routineName = null,
     Object? date = null,
     Object? notes = freezed,
   }) {
@@ -740,6 +747,10 @@ class _$WorkoutSessionCopyWithImpl<$Res, $Val extends WorkoutSession>
       routineId: null == routineId
           ? _value.routineId
           : routineId // ignore: cast_nullable_to_non_nullable
+              as String,
+      routineName: null == routineName
+          ? _value.routineName
+          : routineName // ignore: cast_nullable_to_non_nullable
               as String,
       date: null == date
           ? _value.date
@@ -761,7 +772,12 @@ abstract class _$$WorkoutSessionImplCopyWith<$Res>
       __$$WorkoutSessionImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String routineId, DateTime date, String? notes});
+  $Res call(
+      {String id,
+      String routineId,
+      String routineName,
+      DateTime date,
+      String? notes});
 }
 
 /// @nodoc
@@ -779,6 +795,7 @@ class __$$WorkoutSessionImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? routineId = null,
+    Object? routineName = null,
     Object? date = null,
     Object? notes = freezed,
   }) {
@@ -790,6 +807,10 @@ class __$$WorkoutSessionImplCopyWithImpl<$Res>
       routineId: null == routineId
           ? _value.routineId
           : routineId // ignore: cast_nullable_to_non_nullable
+              as String,
+      routineName: null == routineName
+          ? _value.routineName
+          : routineName // ignore: cast_nullable_to_non_nullable
               as String,
       date: null == date
           ? _value.date
@@ -809,6 +830,7 @@ class _$WorkoutSessionImpl implements _WorkoutSession {
   const _$WorkoutSessionImpl(
       {required this.id,
       required this.routineId,
+      required this.routineName,
       required this.date,
       this.notes});
 
@@ -817,13 +839,15 @@ class _$WorkoutSessionImpl implements _WorkoutSession {
   @override
   final String routineId;
   @override
+  final String routineName;
+  @override
   final DateTime date;
   @override
   final String? notes;
 
   @override
   String toString() {
-    return 'WorkoutSession(id: $id, routineId: $routineId, date: $date, notes: $notes)';
+    return 'WorkoutSession(id: $id, routineId: $routineId, routineName: $routineName, date: $date, notes: $notes)';
   }
 
   @override
@@ -834,12 +858,15 @@ class _$WorkoutSessionImpl implements _WorkoutSession {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.routineId, routineId) ||
                 other.routineId == routineId) &&
+            (identical(other.routineName, routineName) ||
+                other.routineName == routineName) &&
             (identical(other.date, date) || other.date == date) &&
             (identical(other.notes, notes) || other.notes == notes));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, routineId, date, notes);
+  int get hashCode =>
+      Object.hash(runtimeType, id, routineId, routineName, date, notes);
 
   /// Create a copy of WorkoutSession
   /// with the given fields replaced by the non-null parameter values.
@@ -855,6 +882,7 @@ abstract class _WorkoutSession implements WorkoutSession {
   const factory _WorkoutSession(
       {required final String id,
       required final String routineId,
+      required final String routineName,
       required final DateTime date,
       final String? notes}) = _$WorkoutSessionImpl;
 
@@ -862,6 +890,8 @@ abstract class _WorkoutSession implements WorkoutSession {
   String get id;
   @override
   String get routineId;
+  @override
+  String get routineName;
   @override
   DateTime get date;
   @override

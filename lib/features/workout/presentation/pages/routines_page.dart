@@ -99,11 +99,25 @@ class _RoutinesPageContent extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.play_arrow_rounded),
-                            onPressed: () => context.push(
-                              AppRoutes.activeWorkout,
-                              extra: routine,
+                            icon: Icon(
+                              Icons.play_arrow_rounded,
+                              color: isEmptyRoutine
+                                  ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38)
+                                  : null,
                             ),
+                            onPressed: isEmptyRoutine
+                                ? () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(context.l10n.addExercisesFirst),
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  }
+                                : () => context.push(
+                                      AppRoutes.activeWorkout,
+                                      extra: routine,
+                                    ),
                             tooltip: context.l10n.startWorkout,
                           ),
                           IconButton(

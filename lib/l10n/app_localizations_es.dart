@@ -196,4 +196,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String startRoutineName(String name) {
     return 'Iniciar $name';
   }
+
+  @override
+  String get addExercisesFirst => 'Añade ejercicios primero';
 }

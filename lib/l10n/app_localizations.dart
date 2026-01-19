@@ -457,6 +457,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Start {name}'**
   String startRoutineName(String name);
+
+  /// Warning message when trying to start a routine without exercises
+  ///
+  /// In en, this message translates to:
+  /// **'Add exercises first'**
+  String get addExercisesFirst;
 }
 
 class _AppLocalizationsDelegate
