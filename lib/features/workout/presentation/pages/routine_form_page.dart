@@ -38,7 +38,6 @@ class _RoutineFormPageContent extends StatefulWidget {
 
 class _RoutineFormPageContentState extends State<_RoutineFormPageContent> {
   late final TextEditingController _routineNameController;
-  final SearchController _exerciseSearchController = SearchController();
 
   @override
   void initState() {
@@ -50,7 +49,6 @@ class _RoutineFormPageContentState extends State<_RoutineFormPageContent> {
   @override
   void dispose() {
     _routineNameController.dispose();
-    _exerciseSearchController.dispose();
     super.dispose();
   }
 
@@ -198,125 +196,42 @@ class _RoutineFormPageContentState extends State<_RoutineFormPageContent> {
   }
 
   Widget _buildAddExerciseButton(BuildContext context) {
-    final languageCode = Localizations.localeOf(context).languageCode;
-    final colorScheme = Theme.of(context).colorScheme;
+    return FilledButton.tonal(
+      onPressed: () => _showAddExerciseModal(context),
+      style: FilledButton.styleFrom(
+        padding: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.add_rounded),
+          const SizedBox(width: 8),
+          Text(context.l10n.addExercise),
+        ],
+      ),
+    );
+  }
+
+  void _showAddExerciseModal(BuildContext context) {
     final cubit = context.read<RoutineFormCubit>();
+    final languageCode = Localizations.localeOf(context).languageCode;
 
-    return SearchAnchor(
-      searchController: _exerciseSearchController,
-      viewHintText: context.l10n.searchExercises,
-      isFullScreen: false,
-      viewConstraints: const BoxConstraints(maxHeight: 400),
-      builder: (BuildContext context, SearchController controller) {
-        return OutlinedButton.icon(
-          onPressed: () {
-            controller.openView();
-          },
-          icon: const Icon(Icons.add_rounded),
-          label: Text(context.l10n.addExercise),
-          style: OutlinedButton.styleFrom(
-            padding: const EdgeInsets.all(16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (modalContext) {
+        return _ExerciseSelectionModal(
+          cubit: cubit,
+          languageCode: languageCode,
         );
-      },
-      suggestionsBuilder:
-          (BuildContext searchContext, SearchController controller) async {
-        final query = controller.text.trim();
-        final suggestions = <Widget>[];
-
-        if (query.isEmpty) {
-          suggestions.add(
-            ListTile(
-              leading: Icon(
-                Icons.edit_outlined,
-                color: colorScheme.onSurfaceVariant,
-              ),
-              title: Text(
-                context.l10n.searchHelper,
-                style: TextStyle(
-                  color: colorScheme.onSurfaceVariant,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-              enabled: false,
-            ),
-          );
-
-          final result = await cubit.getLibraryExercises();
-          result.fold(
-            (failure) {},
-            (exercises) {
-              suggestions.addAll(
-                exercises.take(10).map((exercise) {
-                  final exerciseName = exercise.getLocalizedName(languageCode);
-                  return ListTile(
-                    leading: Icon(
-                      Icons.fitness_center_rounded,
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                    title: Text(exerciseName),
-                    onTap: () {
-                      cubit.addExercise(exerciseName);
-                      controller.closeView(null);
-                      controller.clear();
-                    },
-                  );
-                }),
-              );
-            },
-          );
-        } else {
-          suggestions.add(
-            ListTile(
-              leading: Icon(
-                Icons.add_circle_outline_rounded,
-                color: colorScheme.primary,
-              ),
-              title: Text(
-                context.l10n.addCustomExercise(query),
-                style: TextStyle(
-                  color: colorScheme.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              onTap: () {
-                cubit.addExercise(query);
-                controller.closeView(null);
-                controller.clear();
-              },
-            ),
-          );
-
-          final result =
-              await cubit.searchLibraryExercises(query, languageCode);
-          result.fold(
-            (failure) {},
-            (exercises) {
-              suggestions.addAll(
-                exercises.map((exercise) {
-                  final exerciseName = exercise.getLocalizedName(languageCode);
-                  return ListTile(
-                    leading: Icon(
-                      Icons.fitness_center_rounded,
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                    title: Text(exerciseName),
-                    onTap: () {
-                      cubit.addExercise(exerciseName);
-                      controller.closeView(null);
-                      controller.clear();
-                    },
-                  );
-                }),
-              );
-            },
-          );
-        }
-
-        return suggestions;
       },
     );
   }
@@ -547,10 +462,14 @@ class _SetFormRowState extends State<_SetFormRow> {
   void initState() {
     super.initState();
     _value1Controller = TextEditingController(
-      text: widget.set.targetValue1?.toString() ?? '0',
+      text: (widget.set.targetValue1 == null || widget.set.targetValue1 == 0)
+          ? ''
+          : widget.set.targetValue1.toString(),
     );
     _value2Controller = TextEditingController(
-      text: widget.set.targetValue2?.toString() ?? '0',
+      text: (widget.set.targetValue2 == null || widget.set.targetValue2 == 0)
+          ? ''
+          : widget.set.targetValue2.toString(),
     );
   }
 
@@ -679,6 +598,7 @@ class _SetFormRowState extends State<_SetFormRow> {
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           decoration: InputDecoration(
             isDense: true,
+            hintText: '0',
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 8,
               vertical: 8,
@@ -689,9 +609,7 @@ class _SetFormRowState extends State<_SetFormRow> {
           ),
           onChanged: (text) {
             final parsedValue = double.tryParse(text);
-            if (parsedValue != null) {
-              onValueChanged(parsedValue);
-            }
+            onValueChanged(parsedValue ?? 0);
           },
         ),
         const SizedBox(height: 4),
@@ -746,5 +664,227 @@ class _SetFormRowState extends State<_SetFormRow> {
       case WorkoutUnit.none:
         return context.l10n.unitNone;
     }
+  }
+}
+
+class _ExerciseSelectionModal extends StatefulWidget {
+  const _ExerciseSelectionModal({
+    required this.cubit,
+    required this.languageCode,
+  });
+
+  final RoutineFormCubit cubit;
+  final String languageCode;
+
+  @override
+  State<_ExerciseSelectionModal> createState() =>
+      _ExerciseSelectionModalState();
+}
+
+class _ExerciseSelectionModalState extends State<_ExerciseSelectionModal> {
+  late final TextEditingController _searchController;
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: SizedBox(
+        height: screenHeight * 0.8,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              child: SearchBar(
+                controller: _searchController,
+                hintText: context.l10n.searchExercises,
+                padding: const WidgetStatePropertyAll(
+                  EdgeInsets.symmetric(horizontal: 16),
+                ),
+                backgroundColor: WidgetStatePropertyAll(
+                  colorScheme.surfaceContainerHighest,
+                ),
+                surfaceTintColor: const WidgetStatePropertyAll(
+                  Colors.transparent,
+                ),
+                elevation: const WidgetStatePropertyAll(0),
+                shape: WidgetStatePropertyAll(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                hintStyle: WidgetStatePropertyAll(
+                  textTheme.bodyLarge?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                textStyle: WidgetStatePropertyAll(
+                  textTheme.bodyLarge?.copyWith(
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                leading: Icon(
+                  Icons.search_rounded,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                trailing: [
+                  if (_searchQuery.isNotEmpty)
+                    IconButton(
+                      icon: const Icon(Icons.clear_rounded),
+                      onPressed: () {
+                        setState(() {
+                          _searchController.clear();
+                          _searchQuery = '';
+                        });
+                      },
+                    ),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value.trim();
+                  });
+                },
+              ),
+            ),
+            Expanded(
+              child: FutureBuilder(
+                future: _searchQuery.isEmpty
+                    ? widget.cubit.getLibraryExercises()
+                    : widget.cubit.searchLibraryExercises(
+                        _searchQuery,
+                        widget.languageCode,
+                      ),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+
+                  final exercises = snapshot.data?.fold(
+                        (failure) => <dynamic>[],
+                        (exercises) => exercises,
+                      ) ??
+                      [];
+
+                  final items = <Widget>[];
+
+                  if (_searchQuery.isNotEmpty) {
+                    items.add(
+                      ListTile(
+                        leading: Icon(
+                          Icons.add_circle_outline_rounded,
+                          color: colorScheme.primary,
+                        ),
+                        title: Text(
+                          context.l10n.addCustomExercise(_searchQuery),
+                          style: TextStyle(
+                            color: colorScheme.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        onTap: () {
+                          widget.cubit.addExercise(_searchQuery);
+                          Navigator.pop(context);
+                        },
+                      ),
+                    );
+
+                    if (exercises.isNotEmpty) {
+                      items.add(
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                          child: Text(
+                            context.l10n.searchHelper,
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelMedium
+                                ?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                          ),
+                        ),
+                      );
+                    }
+                  }
+
+                  items.addAll(
+                    exercises.map((exercise) {
+                      final exerciseName =
+                          exercise.getLocalizedName(widget.languageCode);
+                      return ListTile(
+                        leading: Icon(
+                          Icons.fitness_center_rounded,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        title: Text(exerciseName),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        onTap: () {
+                          widget.cubit.addExercise(exerciseName);
+                          Navigator.pop(context);
+                        },
+                      );
+                    }),
+                  );
+
+                  if (items.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.search_off_rounded,
+                            size: 64,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            _searchQuery.isEmpty
+                                ? context.l10n.searchHelper
+                                : context.l10n.noExercisesAdded,
+                            style: TextStyle(
+                              color: colorScheme.onSurfaceVariant,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return ListView(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    children: items,
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
