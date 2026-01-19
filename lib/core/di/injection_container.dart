@@ -7,6 +7,7 @@ import '../../features/workout/data/repositories/workout_repository_impl.dart';
 import '../../features/workout/domain/entities/workout_entities.dart';
 import '../../features/workout/domain/repositories/workout_repository.dart';
 import '../../features/workout/domain/usecases/delete_routine_usecase.dart';
+import '../../features/workout/domain/usecases/delete_session_usecase.dart';
 import '../../features/workout/domain/usecases/get_logs_for_session_usecase.dart';
 import '../../features/workout/domain/usecases/get_routine_by_id_usecase.dart';
 import '../../features/workout/domain/usecases/save_routine_usecase.dart';
@@ -78,6 +79,10 @@ Future<void> _initializeDomain() async {
   );
 
   serviceLocator.registerFactory(
+    () => DeleteSessionUseCase(serviceLocator()),
+  );
+
+  serviceLocator.registerFactory(
     () => SaveSetLogUseCase(serviceLocator()),
   );
 
@@ -101,14 +106,19 @@ Future<void> _initializePresentation() async {
   serviceLocator.registerFactory(
     () => DashboardCubit(
       watchSessionsUseCase: serviceLocator(),
+      deleteSessionUseCase: serviceLocator(),
     ),
   );
 
-  serviceLocator.registerFactoryParam<ActiveWorkoutCubit, WorkoutRoutine, void>(
-    (routine, _) => ActiveWorkoutCubit(
+  serviceLocator.registerFactoryParam<ActiveWorkoutCubit, WorkoutRoutine, String?>(
+    (routine, sessionId) => ActiveWorkoutCubit(
+      routineId: routine.id,
       routine: routine,
+      getRoutineByIdUseCase: serviceLocator(),
       saveSessionUseCase: serviceLocator(),
       saveSetLogUseCase: serviceLocator(),
+      getLogsForSessionUseCase: serviceLocator(),
+      sessionId: sessionId,
     ),
   );
 

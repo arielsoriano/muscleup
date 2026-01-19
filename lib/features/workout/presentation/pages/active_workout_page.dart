@@ -5,22 +5,87 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/l10n_extension.dart';
 import '../../domain/entities/workout_entities.dart';
+import '../../domain/usecases/get_routine_by_id_usecase.dart';
 import '../cubit/active_workout_cubit.dart';
 import '../cubit/active_workout_state.dart';
 
 class ActiveWorkoutPage extends StatelessWidget {
   const ActiveWorkoutPage({
-    required this.routine,
+    this.routine,
+    this.routineId,
+    this.sessionId,
     super.key,
   });
 
-  final WorkoutRoutine routine;
+  final WorkoutRoutine? routine;
+  final String? routineId;
+  final String? sessionId;
 
   @override
   Widget build(BuildContext context) {
+    if (routine != null) {
+      return _buildWithRoutine(routine!);
+    } else if (routineId != null) {
+      return FutureBuilder(
+        future: serviceLocator<GetRoutineByIdUseCase>()(
+          GetRoutineByIdParams(id: routineId!),
+        ),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Scaffold(
+              appBar: AppBar(title: Text(context.l10n.activeWorkoutTitle)),
+              body: const Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          if (snapshot.hasError || !snapshot.hasData) {
+            return Scaffold(
+              appBar: AppBar(title: Text(context.l10n.activeWorkoutTitle)),
+              body: Center(
+                child: Text(
+                  context.l10n.errorLoading,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                ),
+              ),
+            );
+          }
+
+          return snapshot.data!.fold(
+            (failure) => Scaffold(
+              appBar: AppBar(title: Text(context.l10n.activeWorkoutTitle)),
+              body: Center(
+                child: Text(
+                  context.l10n.errorLoading,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                ),
+              ),
+            ),
+            (loadedRoutine) => _buildWithRoutine(loadedRoutine),
+          );
+        },
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: Text(context.l10n.activeWorkoutTitle)),
+      body: Center(
+        child: Text(
+          context.l10n.errorLoading,
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWithRoutine(WorkoutRoutine routine) {
     return BlocProvider(
-      create: (context) => serviceLocator<ActiveWorkoutCubit>(
+      create: (context) => serviceLocator.get<ActiveWorkoutCubit>(
         param1: routine,
+        param2: sessionId,
       ),
       child: const _ActiveWorkoutPageContent(),
     );
@@ -53,37 +118,77 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
       },
       builder: (context, state) {
         final isSaving = state is ActiveWorkoutStateSaving;
+        final isLoading = state is ActiveWorkoutStateLoading;
 
         return PopScope(
           canPop: !isSaving,
           child: Scaffold(
             appBar: AppBar(
-              title: Text(state.routine.name),
-              actions: [
-                if (!isSaving)
-                  TextButton.icon(
-                    onPressed: () => _showFinishConfirmation(context),
-                    icon: const Icon(Icons.check_circle_outline_rounded),
-                    label: Text(context.l10n.finishWorkout),
-                  ),
-              ],
+              title: Text(
+                state.routine.name,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-            body: isSaving
+            body: isSaving || isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _buildWorkoutContent(context, state),
+            bottomNavigationBar:
+                isSaving || isLoading ? null : _buildFinishButton(context),
           ),
         );
       },
     );
   }
 
+  Widget _buildFinishButton(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        border: Border(
+          top: BorderSide(
+            color: Theme.of(context).colorScheme.outlineVariant,
+            width: 1,
+          ),
+        ),
+      ),
+      child: SafeArea(
+        child: FilledButton.icon(
+          onPressed: () => _showFinishConfirmation(context),
+          icon: const Icon(Icons.check_circle_outline_rounded),
+          label: Text(context.l10n.finishWorkout),
+        ),
+      ),
+    );
+  }
+
   Widget _buildWorkoutContent(BuildContext context, ActiveWorkoutState state) {
+    return state.maybeWhen(
+      tracking: (routine, setLogs, _, __) => _buildExerciseList(
+        context,
+        routine,
+        setLogs,
+      ),
+      initial: (routine, setLogs, _, __) => _buildExerciseList(
+        context,
+        routine,
+        setLogs,
+      ),
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
+
+  Widget _buildExerciseList(
+    BuildContext context,
+    WorkoutRoutine routine,
+    List<SetLog> setLogs,
+  ) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: state.routine.exercises.length,
+      itemCount: routine.exercises.length,
       itemBuilder: (context, index) {
-        final exercise = state.routine.exercises[index];
-        final exerciseLogs = state.setLogs
+        final exercise = routine.exercises[index];
+        final exerciseLogs = setLogs
             .where((log) => log.workoutExerciseId == exercise.id)
             .toList();
 

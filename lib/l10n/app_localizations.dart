@@ -463,6 +463,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add exercises first'**
   String get addExercisesFirst;
+
+  /// Confirmation message for deleting a workout session
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this workout session?'**
+  String get deleteSessionConfirm;
+
+  /// Success message after deleting a workout session
+  ///
+  /// In en, this message translates to:
+  /// **'Session deleted'**
+  String get sessionDeleted;
 }
 
 class _AppLocalizationsDelegate

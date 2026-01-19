@@ -262,5 +262,13 @@
   "addExercisesFirst": "Add exercises first",
   "@addExercisesFirst": {
     "description": "Warning message when trying to start a routine without exercises"
+  },
+  "deleteSessionConfirm": "Are you sure you want to delete this workout session?",
+  "@deleteSessionConfirm": {
+    "description": "Confirmation message for deleting a workout session"
+  },
+  "sessionDeleted": "Session deleted",
+  "@sessionDeleted": {
+    "description": "Success message after deleting a workout session"
   }
 }

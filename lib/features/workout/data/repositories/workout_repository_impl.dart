@@ -197,6 +197,18 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
   }
 
   @override
+  Future<Either<Failure, void>> deleteSession(String sessionId) async {
+    try {
+      await (database.delete(database.sessions)
+            ..where((session) => session.id.equals(sessionId)))
+          .go();
+      return const Either<Failure, void>.right(null);
+    } catch (e) {
+      return Either<Failure, void>.left(DatabaseFailure(e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, void>> saveSetLog(SetLog log) async {
     try {
       await database.into(database.setLogs).insertOnConflictUpdate(

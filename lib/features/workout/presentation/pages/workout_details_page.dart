@@ -192,7 +192,7 @@ class WorkoutDetailsPage extends StatelessWidget {
                           ? null
                           : () => context.push(
                                 AppRoutes.activeWorkout,
-                                extra: routine,
+                                extra: {'routine': routine},
                               ),
                       style: FilledButton.styleFrom(
                         minimumSize: const Size(double.infinity, 56),

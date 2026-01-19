@@ -17,51 +17,64 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$ActiveWorkoutState {
   WorkoutRoutine get routine => throw _privateConstructorUsedError;
-  List<SetLog> get setLogs => throw _privateConstructorUsedError;
+  bool get isLoading => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)
         initial,
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)
+    required TResult Function(WorkoutRoutine routine, bool isLoading) loading,
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)
         tracking,
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)
-        saving,
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)
-        success,
     required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, String message)
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
+        saving,
+    required TResult Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
+        success,
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String message, bool isLoading)
         error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         initial,
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult? Function(WorkoutRoutine routine, bool isLoading)? loading,
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         tracking,
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs)? saving,
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs)? success,
     TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, String message)?
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        saving,
+    TResult? Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        success,
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String message, bool isLoading)?
         error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         initial,
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult Function(WorkoutRoutine routine, bool isLoading)? loading,
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         tracking,
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)? saving,
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)? success,
     TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, String message)?
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        saving,
+    TResult Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        success,
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String message, bool isLoading)?
         error,
     required TResult orElse(),
   }) =>
@@ -69,6 +82,7 @@ mixin _$ActiveWorkoutState {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(ActiveWorkoutStateInitial value) initial,
+    required TResult Function(ActiveWorkoutStateLoading value) loading,
     required TResult Function(ActiveWorkoutStateTracking value) tracking,
     required TResult Function(ActiveWorkoutStateSaving value) saving,
     required TResult Function(ActiveWorkoutStateSuccess value) success,
@@ -78,6 +92,7 @@ mixin _$ActiveWorkoutState {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(ActiveWorkoutStateInitial value)? initial,
+    TResult? Function(ActiveWorkoutStateLoading value)? loading,
     TResult? Function(ActiveWorkoutStateTracking value)? tracking,
     TResult? Function(ActiveWorkoutStateSaving value)? saving,
     TResult? Function(ActiveWorkoutStateSuccess value)? success,
@@ -87,6 +102,7 @@ mixin _$ActiveWorkoutState {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(ActiveWorkoutStateInitial value)? initial,
+    TResult Function(ActiveWorkoutStateLoading value)? loading,
     TResult Function(ActiveWorkoutStateTracking value)? tracking,
     TResult Function(ActiveWorkoutStateSaving value)? saving,
     TResult Function(ActiveWorkoutStateSuccess value)? success,
@@ -108,7 +124,7 @@ abstract class $ActiveWorkoutStateCopyWith<$Res> {
           ActiveWorkoutState value, $Res Function(ActiveWorkoutState) then) =
       _$ActiveWorkoutStateCopyWithImpl<$Res, ActiveWorkoutState>;
   @useResult
-  $Res call({WorkoutRoutine routine, List<SetLog> setLogs});
+  $Res call({WorkoutRoutine routine, bool isLoading});
 
   $WorkoutRoutineCopyWith<$Res> get routine;
 }
@@ -129,17 +145,17 @@ class _$ActiveWorkoutStateCopyWithImpl<$Res, $Val extends ActiveWorkoutState>
   @override
   $Res call({
     Object? routine = null,
-    Object? setLogs = null,
+    Object? isLoading = null,
   }) {
     return _then(_value.copyWith(
       routine: null == routine
           ? _value.routine
           : routine // ignore: cast_nullable_to_non_nullable
               as WorkoutRoutine,
-      setLogs: null == setLogs
-          ? _value.setLogs
-          : setLogs // ignore: cast_nullable_to_non_nullable
-              as List<SetLog>,
+      isLoading: null == isLoading
+          ? _value.isLoading
+          : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 
@@ -163,7 +179,11 @@ abstract class _$$ActiveWorkoutStateInitialImplCopyWith<$Res>
       __$$ActiveWorkoutStateInitialImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving});
+  $Res call(
+      {WorkoutRoutine routine,
+      List<SetLog> setLogs,
+      bool isSaving,
+      bool isLoading});
 
   @override
   $WorkoutRoutineCopyWith<$Res> get routine;
@@ -187,6 +207,7 @@ class __$$ActiveWorkoutStateInitialImplCopyWithImpl<$Res>
     Object? routine = null,
     Object? setLogs = null,
     Object? isSaving = null,
+    Object? isLoading = null,
   }) {
     return _then(_$ActiveWorkoutStateInitialImpl(
       routine: null == routine
@@ -201,6 +222,10 @@ class __$$ActiveWorkoutStateInitialImplCopyWithImpl<$Res>
           ? _value.isSaving
           : isSaving // ignore: cast_nullable_to_non_nullable
               as bool,
+      isLoading: null == isLoading
+          ? _value.isLoading
+          : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -211,7 +236,8 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
   const _$ActiveWorkoutStateInitialImpl(
       {required this.routine,
       final List<SetLog> setLogs = const [],
-      this.isSaving = false})
+      this.isSaving = false,
+      this.isLoading = false})
       : _setLogs = setLogs;
 
   @override
@@ -228,10 +254,13 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
   @override
   @JsonKey()
   final bool isSaving;
+  @override
+  @JsonKey()
+  final bool isLoading;
 
   @override
   String toString() {
-    return 'ActiveWorkoutState.initial(routine: $routine, setLogs: $setLogs, isSaving: $isSaving)';
+    return 'ActiveWorkoutState.initial(routine: $routine, setLogs: $setLogs, isSaving: $isSaving, isLoading: $isLoading)';
   }
 
   @override
@@ -242,12 +271,14 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
             (identical(other.routine, routine) || other.routine == routine) &&
             const DeepCollectionEquality().equals(other._setLogs, _setLogs) &&
             (identical(other.isSaving, isSaving) ||
-                other.isSaving == isSaving));
+                other.isSaving == isSaving) &&
+            (identical(other.isLoading, isLoading) ||
+                other.isLoading == isLoading));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, routine,
-      const DeepCollectionEquality().hash(_setLogs), isSaving);
+      const DeepCollectionEquality().hash(_setLogs), isSaving, isLoading);
 
   /// Create a copy of ActiveWorkoutState
   /// with the given fields replaced by the non-null parameter values.
@@ -261,59 +292,72 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)
         initial,
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)
+    required TResult Function(WorkoutRoutine routine, bool isLoading) loading,
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)
         tracking,
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)
-        saving,
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)
-        success,
     required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, String message)
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
+        saving,
+    required TResult Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
+        success,
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String message, bool isLoading)
         error,
   }) {
-    return initial(routine, setLogs, isSaving);
+    return initial(routine, setLogs, isSaving, isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         initial,
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult? Function(WorkoutRoutine routine, bool isLoading)? loading,
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         tracking,
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs)? saving,
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs)? success,
     TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, String message)?
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        saving,
+    TResult? Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        success,
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String message, bool isLoading)?
         error,
   }) {
-    return initial?.call(routine, setLogs, isSaving);
+    return initial?.call(routine, setLogs, isSaving, isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         initial,
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult Function(WorkoutRoutine routine, bool isLoading)? loading,
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         tracking,
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)? saving,
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)? success,
     TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, String message)?
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        saving,
+    TResult Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        success,
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String message, bool isLoading)?
         error,
     required TResult orElse(),
   }) {
     if (initial != null) {
-      return initial(routine, setLogs, isSaving);
+      return initial(routine, setLogs, isSaving, isLoading);
     }
     return orElse();
   }
@@ -322,6 +366,7 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(ActiveWorkoutStateInitial value) initial,
+    required TResult Function(ActiveWorkoutStateLoading value) loading,
     required TResult Function(ActiveWorkoutStateTracking value) tracking,
     required TResult Function(ActiveWorkoutStateSaving value) saving,
     required TResult Function(ActiveWorkoutStateSuccess value) success,
@@ -334,6 +379,7 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(ActiveWorkoutStateInitial value)? initial,
+    TResult? Function(ActiveWorkoutStateLoading value)? loading,
     TResult? Function(ActiveWorkoutStateTracking value)? tracking,
     TResult? Function(ActiveWorkoutStateSaving value)? saving,
     TResult? Function(ActiveWorkoutStateSuccess value)? success,
@@ -346,6 +392,7 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(ActiveWorkoutStateInitial value)? initial,
+    TResult Function(ActiveWorkoutStateLoading value)? loading,
     TResult Function(ActiveWorkoutStateTracking value)? tracking,
     TResult Function(ActiveWorkoutStateSaving value)? saving,
     TResult Function(ActiveWorkoutStateSuccess value)? success,
@@ -363,19 +410,241 @@ abstract class ActiveWorkoutStateInitial implements ActiveWorkoutState {
   const factory ActiveWorkoutStateInitial(
       {required final WorkoutRoutine routine,
       final List<SetLog> setLogs,
-      final bool isSaving}) = _$ActiveWorkoutStateInitialImpl;
+      final bool isSaving,
+      final bool isLoading}) = _$ActiveWorkoutStateInitialImpl;
 
   @override
   WorkoutRoutine get routine;
-  @override
   List<SetLog> get setLogs;
   bool get isSaving;
+  @override
+  bool get isLoading;
 
   /// Create a copy of ActiveWorkoutState
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ActiveWorkoutStateInitialImplCopyWith<_$ActiveWorkoutStateInitialImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$ActiveWorkoutStateLoadingImplCopyWith<$Res>
+    implements $ActiveWorkoutStateCopyWith<$Res> {
+  factory _$$ActiveWorkoutStateLoadingImplCopyWith(
+          _$ActiveWorkoutStateLoadingImpl value,
+          $Res Function(_$ActiveWorkoutStateLoadingImpl) then) =
+      __$$ActiveWorkoutStateLoadingImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({WorkoutRoutine routine, bool isLoading});
+
+  @override
+  $WorkoutRoutineCopyWith<$Res> get routine;
+}
+
+/// @nodoc
+class __$$ActiveWorkoutStateLoadingImplCopyWithImpl<$Res>
+    extends _$ActiveWorkoutStateCopyWithImpl<$Res,
+        _$ActiveWorkoutStateLoadingImpl>
+    implements _$$ActiveWorkoutStateLoadingImplCopyWith<$Res> {
+  __$$ActiveWorkoutStateLoadingImplCopyWithImpl(
+      _$ActiveWorkoutStateLoadingImpl _value,
+      $Res Function(_$ActiveWorkoutStateLoadingImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of ActiveWorkoutState
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? routine = null,
+    Object? isLoading = null,
+  }) {
+    return _then(_$ActiveWorkoutStateLoadingImpl(
+      routine: null == routine
+          ? _value.routine
+          : routine // ignore: cast_nullable_to_non_nullable
+              as WorkoutRoutine,
+      isLoading: null == isLoading
+          ? _value.isLoading
+          : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
+  const _$ActiveWorkoutStateLoadingImpl(
+      {required this.routine, this.isLoading = true});
+
+  @override
+  final WorkoutRoutine routine;
+  @override
+  @JsonKey()
+  final bool isLoading;
+
+  @override
+  String toString() {
+    return 'ActiveWorkoutState.loading(routine: $routine, isLoading: $isLoading)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ActiveWorkoutStateLoadingImpl &&
+            (identical(other.routine, routine) || other.routine == routine) &&
+            (identical(other.isLoading, isLoading) ||
+                other.isLoading == isLoading));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, routine, isLoading);
+
+  /// Create a copy of ActiveWorkoutState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ActiveWorkoutStateLoadingImplCopyWith<_$ActiveWorkoutStateLoadingImpl>
+      get copyWith => __$$ActiveWorkoutStateLoadingImplCopyWithImpl<
+          _$ActiveWorkoutStateLoadingImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)
+        initial,
+    required TResult Function(WorkoutRoutine routine, bool isLoading) loading,
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)
+        tracking,
+    required TResult Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
+        saving,
+    required TResult Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
+        success,
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String message, bool isLoading)
+        error,
+  }) {
+    return loading(routine, isLoading);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
+        initial,
+    TResult? Function(WorkoutRoutine routine, bool isLoading)? loading,
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
+        tracking,
+    TResult? Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        saving,
+    TResult? Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        success,
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String message, bool isLoading)?
+        error,
+  }) {
+    return loading?.call(routine, isLoading);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
+        initial,
+    TResult Function(WorkoutRoutine routine, bool isLoading)? loading,
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
+        tracking,
+    TResult Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        saving,
+    TResult Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        success,
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String message, bool isLoading)?
+        error,
+    required TResult orElse(),
+  }) {
+    if (loading != null) {
+      return loading(routine, isLoading);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(ActiveWorkoutStateInitial value) initial,
+    required TResult Function(ActiveWorkoutStateLoading value) loading,
+    required TResult Function(ActiveWorkoutStateTracking value) tracking,
+    required TResult Function(ActiveWorkoutStateSaving value) saving,
+    required TResult Function(ActiveWorkoutStateSuccess value) success,
+    required TResult Function(ActiveWorkoutStateError value) error,
+  }) {
+    return loading(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(ActiveWorkoutStateInitial value)? initial,
+    TResult? Function(ActiveWorkoutStateLoading value)? loading,
+    TResult? Function(ActiveWorkoutStateTracking value)? tracking,
+    TResult? Function(ActiveWorkoutStateSaving value)? saving,
+    TResult? Function(ActiveWorkoutStateSuccess value)? success,
+    TResult? Function(ActiveWorkoutStateError value)? error,
+  }) {
+    return loading?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(ActiveWorkoutStateInitial value)? initial,
+    TResult Function(ActiveWorkoutStateLoading value)? loading,
+    TResult Function(ActiveWorkoutStateTracking value)? tracking,
+    TResult Function(ActiveWorkoutStateSaving value)? saving,
+    TResult Function(ActiveWorkoutStateSuccess value)? success,
+    TResult Function(ActiveWorkoutStateError value)? error,
+    required TResult orElse(),
+  }) {
+    if (loading != null) {
+      return loading(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class ActiveWorkoutStateLoading implements ActiveWorkoutState {
+  const factory ActiveWorkoutStateLoading(
+      {required final WorkoutRoutine routine,
+      final bool isLoading}) = _$ActiveWorkoutStateLoadingImpl;
+
+  @override
+  WorkoutRoutine get routine;
+  @override
+  bool get isLoading;
+
+  /// Create a copy of ActiveWorkoutState
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ActiveWorkoutStateLoadingImplCopyWith<_$ActiveWorkoutStateLoadingImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -388,7 +657,11 @@ abstract class _$$ActiveWorkoutStateTrackingImplCopyWith<$Res>
       __$$ActiveWorkoutStateTrackingImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving});
+  $Res call(
+      {WorkoutRoutine routine,
+      List<SetLog> setLogs,
+      bool isSaving,
+      bool isLoading});
 
   @override
   $WorkoutRoutineCopyWith<$Res> get routine;
@@ -412,6 +685,7 @@ class __$$ActiveWorkoutStateTrackingImplCopyWithImpl<$Res>
     Object? routine = null,
     Object? setLogs = null,
     Object? isSaving = null,
+    Object? isLoading = null,
   }) {
     return _then(_$ActiveWorkoutStateTrackingImpl(
       routine: null == routine
@@ -426,6 +700,10 @@ class __$$ActiveWorkoutStateTrackingImplCopyWithImpl<$Res>
           ? _value.isSaving
           : isSaving // ignore: cast_nullable_to_non_nullable
               as bool,
+      isLoading: null == isLoading
+          ? _value.isLoading
+          : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -436,7 +714,8 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
   const _$ActiveWorkoutStateTrackingImpl(
       {required this.routine,
       required final List<SetLog> setLogs,
-      this.isSaving = false})
+      this.isSaving = false,
+      this.isLoading = false})
       : _setLogs = setLogs;
 
   @override
@@ -452,10 +731,13 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
   @override
   @JsonKey()
   final bool isSaving;
+  @override
+  @JsonKey()
+  final bool isLoading;
 
   @override
   String toString() {
-    return 'ActiveWorkoutState.tracking(routine: $routine, setLogs: $setLogs, isSaving: $isSaving)';
+    return 'ActiveWorkoutState.tracking(routine: $routine, setLogs: $setLogs, isSaving: $isSaving, isLoading: $isLoading)';
   }
 
   @override
@@ -466,12 +748,14 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
             (identical(other.routine, routine) || other.routine == routine) &&
             const DeepCollectionEquality().equals(other._setLogs, _setLogs) &&
             (identical(other.isSaving, isSaving) ||
-                other.isSaving == isSaving));
+                other.isSaving == isSaving) &&
+            (identical(other.isLoading, isLoading) ||
+                other.isLoading == isLoading));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, routine,
-      const DeepCollectionEquality().hash(_setLogs), isSaving);
+      const DeepCollectionEquality().hash(_setLogs), isSaving, isLoading);
 
   /// Create a copy of ActiveWorkoutState
   /// with the given fields replaced by the non-null parameter values.
@@ -485,59 +769,72 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)
         initial,
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)
+    required TResult Function(WorkoutRoutine routine, bool isLoading) loading,
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)
         tracking,
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)
-        saving,
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)
-        success,
     required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, String message)
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
+        saving,
+    required TResult Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
+        success,
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String message, bool isLoading)
         error,
   }) {
-    return tracking(routine, setLogs, isSaving);
+    return tracking(routine, setLogs, isSaving, isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         initial,
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult? Function(WorkoutRoutine routine, bool isLoading)? loading,
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         tracking,
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs)? saving,
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs)? success,
     TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, String message)?
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        saving,
+    TResult? Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        success,
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String message, bool isLoading)?
         error,
   }) {
-    return tracking?.call(routine, setLogs, isSaving);
+    return tracking?.call(routine, setLogs, isSaving, isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         initial,
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult Function(WorkoutRoutine routine, bool isLoading)? loading,
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         tracking,
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)? saving,
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)? success,
     TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, String message)?
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        saving,
+    TResult Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        success,
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String message, bool isLoading)?
         error,
     required TResult orElse(),
   }) {
     if (tracking != null) {
-      return tracking(routine, setLogs, isSaving);
+      return tracking(routine, setLogs, isSaving, isLoading);
     }
     return orElse();
   }
@@ -546,6 +843,7 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(ActiveWorkoutStateInitial value) initial,
+    required TResult Function(ActiveWorkoutStateLoading value) loading,
     required TResult Function(ActiveWorkoutStateTracking value) tracking,
     required TResult Function(ActiveWorkoutStateSaving value) saving,
     required TResult Function(ActiveWorkoutStateSuccess value) success,
@@ -558,6 +856,7 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(ActiveWorkoutStateInitial value)? initial,
+    TResult? Function(ActiveWorkoutStateLoading value)? loading,
     TResult? Function(ActiveWorkoutStateTracking value)? tracking,
     TResult? Function(ActiveWorkoutStateSaving value)? saving,
     TResult? Function(ActiveWorkoutStateSuccess value)? success,
@@ -570,6 +869,7 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(ActiveWorkoutStateInitial value)? initial,
+    TResult Function(ActiveWorkoutStateLoading value)? loading,
     TResult Function(ActiveWorkoutStateTracking value)? tracking,
     TResult Function(ActiveWorkoutStateSaving value)? saving,
     TResult Function(ActiveWorkoutStateSuccess value)? success,
@@ -587,13 +887,15 @@ abstract class ActiveWorkoutStateTracking implements ActiveWorkoutState {
   const factory ActiveWorkoutStateTracking(
       {required final WorkoutRoutine routine,
       required final List<SetLog> setLogs,
-      final bool isSaving}) = _$ActiveWorkoutStateTrackingImpl;
+      final bool isSaving,
+      final bool isLoading}) = _$ActiveWorkoutStateTrackingImpl;
 
   @override
   WorkoutRoutine get routine;
-  @override
   List<SetLog> get setLogs;
   bool get isSaving;
+  @override
+  bool get isLoading;
 
   /// Create a copy of ActiveWorkoutState
   /// with the given fields replaced by the non-null parameter values.
@@ -612,7 +914,7 @@ abstract class _$$ActiveWorkoutStateSavingImplCopyWith<$Res>
       __$$ActiveWorkoutStateSavingImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({WorkoutRoutine routine, List<SetLog> setLogs});
+  $Res call({WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading});
 
   @override
   $WorkoutRoutineCopyWith<$Res> get routine;
@@ -635,6 +937,7 @@ class __$$ActiveWorkoutStateSavingImplCopyWithImpl<$Res>
   $Res call({
     Object? routine = null,
     Object? setLogs = null,
+    Object? isLoading = null,
   }) {
     return _then(_$ActiveWorkoutStateSavingImpl(
       routine: null == routine
@@ -645,6 +948,10 @@ class __$$ActiveWorkoutStateSavingImplCopyWithImpl<$Res>
           ? _value._setLogs
           : setLogs // ignore: cast_nullable_to_non_nullable
               as List<SetLog>,
+      isLoading: null == isLoading
+          ? _value.isLoading
+          : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -653,7 +960,9 @@ class __$$ActiveWorkoutStateSavingImplCopyWithImpl<$Res>
 
 class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
   const _$ActiveWorkoutStateSavingImpl(
-      {required this.routine, required final List<SetLog> setLogs})
+      {required this.routine,
+      required final List<SetLog> setLogs,
+      this.isLoading = false})
       : _setLogs = setLogs;
 
   @override
@@ -667,8 +976,12 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
   }
 
   @override
+  @JsonKey()
+  final bool isLoading;
+
+  @override
   String toString() {
-    return 'ActiveWorkoutState.saving(routine: $routine, setLogs: $setLogs)';
+    return 'ActiveWorkoutState.saving(routine: $routine, setLogs: $setLogs, isLoading: $isLoading)';
   }
 
   @override
@@ -677,12 +990,14 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
         (other.runtimeType == runtimeType &&
             other is _$ActiveWorkoutStateSavingImpl &&
             (identical(other.routine, routine) || other.routine == routine) &&
-            const DeepCollectionEquality().equals(other._setLogs, _setLogs));
+            const DeepCollectionEquality().equals(other._setLogs, _setLogs) &&
+            (identical(other.isLoading, isLoading) ||
+                other.isLoading == isLoading));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, routine, const DeepCollectionEquality().hash(_setLogs));
+  int get hashCode => Object.hash(runtimeType, routine,
+      const DeepCollectionEquality().hash(_setLogs), isLoading);
 
   /// Create a copy of ActiveWorkoutState
   /// with the given fields replaced by the non-null parameter values.
@@ -696,59 +1011,72 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)
         initial,
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)
+    required TResult Function(WorkoutRoutine routine, bool isLoading) loading,
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)
         tracking,
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)
-        saving,
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)
-        success,
     required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, String message)
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
+        saving,
+    required TResult Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
+        success,
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String message, bool isLoading)
         error,
   }) {
-    return saving(routine, setLogs);
+    return saving(routine, setLogs, isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         initial,
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult? Function(WorkoutRoutine routine, bool isLoading)? loading,
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         tracking,
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs)? saving,
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs)? success,
     TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, String message)?
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        saving,
+    TResult? Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        success,
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String message, bool isLoading)?
         error,
   }) {
-    return saving?.call(routine, setLogs);
+    return saving?.call(routine, setLogs, isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         initial,
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult Function(WorkoutRoutine routine, bool isLoading)? loading,
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         tracking,
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)? saving,
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)? success,
     TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, String message)?
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        saving,
+    TResult Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        success,
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String message, bool isLoading)?
         error,
     required TResult orElse(),
   }) {
     if (saving != null) {
-      return saving(routine, setLogs);
+      return saving(routine, setLogs, isLoading);
     }
     return orElse();
   }
@@ -757,6 +1085,7 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(ActiveWorkoutStateInitial value) initial,
+    required TResult Function(ActiveWorkoutStateLoading value) loading,
     required TResult Function(ActiveWorkoutStateTracking value) tracking,
     required TResult Function(ActiveWorkoutStateSaving value) saving,
     required TResult Function(ActiveWorkoutStateSuccess value) success,
@@ -769,6 +1098,7 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(ActiveWorkoutStateInitial value)? initial,
+    TResult? Function(ActiveWorkoutStateLoading value)? loading,
     TResult? Function(ActiveWorkoutStateTracking value)? tracking,
     TResult? Function(ActiveWorkoutStateSaving value)? saving,
     TResult? Function(ActiveWorkoutStateSuccess value)? success,
@@ -781,6 +1111,7 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(ActiveWorkoutStateInitial value)? initial,
+    TResult Function(ActiveWorkoutStateLoading value)? loading,
     TResult Function(ActiveWorkoutStateTracking value)? tracking,
     TResult Function(ActiveWorkoutStateSaving value)? saving,
     TResult Function(ActiveWorkoutStateSuccess value)? success,
@@ -797,12 +1128,14 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
 abstract class ActiveWorkoutStateSaving implements ActiveWorkoutState {
   const factory ActiveWorkoutStateSaving(
       {required final WorkoutRoutine routine,
-      required final List<SetLog> setLogs}) = _$ActiveWorkoutStateSavingImpl;
+      required final List<SetLog> setLogs,
+      final bool isLoading}) = _$ActiveWorkoutStateSavingImpl;
 
   @override
   WorkoutRoutine get routine;
-  @override
   List<SetLog> get setLogs;
+  @override
+  bool get isLoading;
 
   /// Create a copy of ActiveWorkoutState
   /// with the given fields replaced by the non-null parameter values.
@@ -821,7 +1154,7 @@ abstract class _$$ActiveWorkoutStateSuccessImplCopyWith<$Res>
       __$$ActiveWorkoutStateSuccessImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({WorkoutRoutine routine, List<SetLog> setLogs});
+  $Res call({WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading});
 
   @override
   $WorkoutRoutineCopyWith<$Res> get routine;
@@ -844,6 +1177,7 @@ class __$$ActiveWorkoutStateSuccessImplCopyWithImpl<$Res>
   $Res call({
     Object? routine = null,
     Object? setLogs = null,
+    Object? isLoading = null,
   }) {
     return _then(_$ActiveWorkoutStateSuccessImpl(
       routine: null == routine
@@ -854,6 +1188,10 @@ class __$$ActiveWorkoutStateSuccessImplCopyWithImpl<$Res>
           ? _value._setLogs
           : setLogs // ignore: cast_nullable_to_non_nullable
               as List<SetLog>,
+      isLoading: null == isLoading
+          ? _value.isLoading
+          : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -862,7 +1200,9 @@ class __$$ActiveWorkoutStateSuccessImplCopyWithImpl<$Res>
 
 class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
   const _$ActiveWorkoutStateSuccessImpl(
-      {required this.routine, required final List<SetLog> setLogs})
+      {required this.routine,
+      required final List<SetLog> setLogs,
+      this.isLoading = false})
       : _setLogs = setLogs;
 
   @override
@@ -876,8 +1216,12 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
   }
 
   @override
+  @JsonKey()
+  final bool isLoading;
+
+  @override
   String toString() {
-    return 'ActiveWorkoutState.success(routine: $routine, setLogs: $setLogs)';
+    return 'ActiveWorkoutState.success(routine: $routine, setLogs: $setLogs, isLoading: $isLoading)';
   }
 
   @override
@@ -886,12 +1230,14 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
         (other.runtimeType == runtimeType &&
             other is _$ActiveWorkoutStateSuccessImpl &&
             (identical(other.routine, routine) || other.routine == routine) &&
-            const DeepCollectionEquality().equals(other._setLogs, _setLogs));
+            const DeepCollectionEquality().equals(other._setLogs, _setLogs) &&
+            (identical(other.isLoading, isLoading) ||
+                other.isLoading == isLoading));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, routine, const DeepCollectionEquality().hash(_setLogs));
+  int get hashCode => Object.hash(runtimeType, routine,
+      const DeepCollectionEquality().hash(_setLogs), isLoading);
 
   /// Create a copy of ActiveWorkoutState
   /// with the given fields replaced by the non-null parameter values.
@@ -905,59 +1251,72 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)
         initial,
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)
+    required TResult Function(WorkoutRoutine routine, bool isLoading) loading,
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)
         tracking,
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)
-        saving,
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)
-        success,
     required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, String message)
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
+        saving,
+    required TResult Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
+        success,
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String message, bool isLoading)
         error,
   }) {
-    return success(routine, setLogs);
+    return success(routine, setLogs, isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         initial,
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult? Function(WorkoutRoutine routine, bool isLoading)? loading,
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         tracking,
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs)? saving,
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs)? success,
     TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, String message)?
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        saving,
+    TResult? Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        success,
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String message, bool isLoading)?
         error,
   }) {
-    return success?.call(routine, setLogs);
+    return success?.call(routine, setLogs, isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         initial,
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult Function(WorkoutRoutine routine, bool isLoading)? loading,
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         tracking,
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)? saving,
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)? success,
     TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, String message)?
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        saving,
+    TResult Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        success,
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String message, bool isLoading)?
         error,
     required TResult orElse(),
   }) {
     if (success != null) {
-      return success(routine, setLogs);
+      return success(routine, setLogs, isLoading);
     }
     return orElse();
   }
@@ -966,6 +1325,7 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(ActiveWorkoutStateInitial value) initial,
+    required TResult Function(ActiveWorkoutStateLoading value) loading,
     required TResult Function(ActiveWorkoutStateTracking value) tracking,
     required TResult Function(ActiveWorkoutStateSaving value) saving,
     required TResult Function(ActiveWorkoutStateSuccess value) success,
@@ -978,6 +1338,7 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(ActiveWorkoutStateInitial value)? initial,
+    TResult? Function(ActiveWorkoutStateLoading value)? loading,
     TResult? Function(ActiveWorkoutStateTracking value)? tracking,
     TResult? Function(ActiveWorkoutStateSaving value)? saving,
     TResult? Function(ActiveWorkoutStateSuccess value)? success,
@@ -990,6 +1351,7 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(ActiveWorkoutStateInitial value)? initial,
+    TResult Function(ActiveWorkoutStateLoading value)? loading,
     TResult Function(ActiveWorkoutStateTracking value)? tracking,
     TResult Function(ActiveWorkoutStateSaving value)? saving,
     TResult Function(ActiveWorkoutStateSuccess value)? success,
@@ -1006,12 +1368,14 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
 abstract class ActiveWorkoutStateSuccess implements ActiveWorkoutState {
   const factory ActiveWorkoutStateSuccess(
       {required final WorkoutRoutine routine,
-      required final List<SetLog> setLogs}) = _$ActiveWorkoutStateSuccessImpl;
+      required final List<SetLog> setLogs,
+      final bool isLoading}) = _$ActiveWorkoutStateSuccessImpl;
 
   @override
   WorkoutRoutine get routine;
-  @override
   List<SetLog> get setLogs;
+  @override
+  bool get isLoading;
 
   /// Create a copy of ActiveWorkoutState
   /// with the given fields replaced by the non-null parameter values.
@@ -1030,7 +1394,11 @@ abstract class _$$ActiveWorkoutStateErrorImplCopyWith<$Res>
       __$$ActiveWorkoutStateErrorImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({WorkoutRoutine routine, List<SetLog> setLogs, String message});
+  $Res call(
+      {WorkoutRoutine routine,
+      List<SetLog> setLogs,
+      String message,
+      bool isLoading});
 
   @override
   $WorkoutRoutineCopyWith<$Res> get routine;
@@ -1054,6 +1422,7 @@ class __$$ActiveWorkoutStateErrorImplCopyWithImpl<$Res>
     Object? routine = null,
     Object? setLogs = null,
     Object? message = null,
+    Object? isLoading = null,
   }) {
     return _then(_$ActiveWorkoutStateErrorImpl(
       routine: null == routine
@@ -1068,6 +1437,10 @@ class __$$ActiveWorkoutStateErrorImplCopyWithImpl<$Res>
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
               as String,
+      isLoading: null == isLoading
+          ? _value.isLoading
+          : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -1078,7 +1451,8 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
   const _$ActiveWorkoutStateErrorImpl(
       {required this.routine,
       required final List<SetLog> setLogs,
-      required this.message})
+      required this.message,
+      this.isLoading = false})
       : _setLogs = setLogs;
 
   @override
@@ -1093,10 +1467,13 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
 
   @override
   final String message;
+  @override
+  @JsonKey()
+  final bool isLoading;
 
   @override
   String toString() {
-    return 'ActiveWorkoutState.error(routine: $routine, setLogs: $setLogs, message: $message)';
+    return 'ActiveWorkoutState.error(routine: $routine, setLogs: $setLogs, message: $message, isLoading: $isLoading)';
   }
 
   @override
@@ -1106,12 +1483,14 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
             other is _$ActiveWorkoutStateErrorImpl &&
             (identical(other.routine, routine) || other.routine == routine) &&
             const DeepCollectionEquality().equals(other._setLogs, _setLogs) &&
-            (identical(other.message, message) || other.message == message));
+            (identical(other.message, message) || other.message == message) &&
+            (identical(other.isLoading, isLoading) ||
+                other.isLoading == isLoading));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, routine,
-      const DeepCollectionEquality().hash(_setLogs), message);
+      const DeepCollectionEquality().hash(_setLogs), message, isLoading);
 
   /// Create a copy of ActiveWorkoutState
   /// with the given fields replaced by the non-null parameter values.
@@ -1125,59 +1504,72 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)
         initial,
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)
+    required TResult Function(WorkoutRoutine routine, bool isLoading) loading,
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)
         tracking,
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)
-        saving,
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)
-        success,
     required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, String message)
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
+        saving,
+    required TResult Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
+        success,
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String message, bool isLoading)
         error,
   }) {
-    return error(routine, setLogs, message);
+    return error(routine, setLogs, message, isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         initial,
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult? Function(WorkoutRoutine routine, bool isLoading)? loading,
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         tracking,
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs)? saving,
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs)? success,
     TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, String message)?
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        saving,
+    TResult? Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        success,
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String message, bool isLoading)?
         error,
   }) {
-    return error?.call(routine, setLogs, message);
+    return error?.call(routine, setLogs, message, isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         initial,
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isSaving)?
+    TResult Function(WorkoutRoutine routine, bool isLoading)? loading,
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            bool isSaving, bool isLoading)?
         tracking,
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)? saving,
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs)? success,
     TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, String message)?
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        saving,
+    TResult Function(
+            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
+        success,
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String message, bool isLoading)?
         error,
     required TResult orElse(),
   }) {
     if (error != null) {
-      return error(routine, setLogs, message);
+      return error(routine, setLogs, message, isLoading);
     }
     return orElse();
   }
@@ -1186,6 +1578,7 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(ActiveWorkoutStateInitial value) initial,
+    required TResult Function(ActiveWorkoutStateLoading value) loading,
     required TResult Function(ActiveWorkoutStateTracking value) tracking,
     required TResult Function(ActiveWorkoutStateSaving value) saving,
     required TResult Function(ActiveWorkoutStateSuccess value) success,
@@ -1198,6 +1591,7 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(ActiveWorkoutStateInitial value)? initial,
+    TResult? Function(ActiveWorkoutStateLoading value)? loading,
     TResult? Function(ActiveWorkoutStateTracking value)? tracking,
     TResult? Function(ActiveWorkoutStateSaving value)? saving,
     TResult? Function(ActiveWorkoutStateSuccess value)? success,
@@ -1210,6 +1604,7 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(ActiveWorkoutStateInitial value)? initial,
+    TResult Function(ActiveWorkoutStateLoading value)? loading,
     TResult Function(ActiveWorkoutStateTracking value)? tracking,
     TResult Function(ActiveWorkoutStateSaving value)? saving,
     TResult Function(ActiveWorkoutStateSuccess value)? success,
@@ -1227,13 +1622,15 @@ abstract class ActiveWorkoutStateError implements ActiveWorkoutState {
   const factory ActiveWorkoutStateError(
       {required final WorkoutRoutine routine,
       required final List<SetLog> setLogs,
-      required final String message}) = _$ActiveWorkoutStateErrorImpl;
+      required final String message,
+      final bool isLoading}) = _$ActiveWorkoutStateErrorImpl;
 
   @override
   WorkoutRoutine get routine;
-  @override
   List<SetLog> get setLogs;
   String get message;
+  @override
+  bool get isLoading;
 
   /// Create a copy of ActiveWorkoutState
   /// with the given fields replaced by the non-null parameter values.

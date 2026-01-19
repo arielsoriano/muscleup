@@ -26,6 +26,35 @@ class DashboardPage extends StatelessWidget {
 class _DashboardPageContent extends StatelessWidget {
   const _DashboardPageContent();
 
+  void _showDeleteSessionDialog(BuildContext context, String sessionId) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(context.l10n.delete),
+        content: Text(context.l10n.deleteSessionConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(context.l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () {
+              context.read<DashboardCubit>().deleteSession(sessionId);
+              Navigator.of(dialogContext).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(context.l10n.sessionDeleted),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
+            child: Text(context.l10n.delete),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentLocale = Localizations.localeOf(context);
@@ -259,54 +288,67 @@ class _DashboardPageContent extends StatelessWidget {
       ),
       child: InkWell(
         onTap: () {
-          context.push(AppRoutes.routineDetailsPath(session.routineId));
+          context.push(
+            AppRoutes.activeWorkout,
+            extra: {
+              'routineId': session.routineId,
+              'sessionId': session.id,
+            },
+          );
         },
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(12),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.fitness_center_rounded,
+                  color: colorScheme.onPrimaryContainer,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      session.routineName,
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
-                    child: Icon(
-                      Icons.fitness_center_rounded,
-                      color: colorScheme.onPrimaryContainer,
-                      size: 24,
+                    const SizedBox(height: 4),
+                    Text(
+                      timeFormat.format(session.date),
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          session.routineName,
-                          style: textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          timeFormat.format(session.date),
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Icon(
-                    Icons.chevron_right_rounded,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ],
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.delete_outline_rounded,
+                  color: colorScheme.error,
+                ),
+                onPressed: () => _showDeleteSessionDialog(
+                  context,
+                  session.id,
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: colorScheme.onSurfaceVariant,
               ),
             ],
           ),

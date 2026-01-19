@@ -5,18 +5,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../domain/entities/workout_entities.dart';
+import '../../domain/usecases/delete_session_usecase.dart';
 import '../../domain/usecases/watch_sessions_usecase.dart';
 import 'dashboard_state.dart';
 
 class DashboardCubit extends Cubit<DashboardState> {
   DashboardCubit({
     required WatchSessionsUseCase watchSessionsUseCase,
+    required DeleteSessionUseCase deleteSessionUseCase,
   })  : _watchSessionsUseCase = watchSessionsUseCase,
+        _deleteSessionUseCase = deleteSessionUseCase,
         super(DashboardState.initial(selectedDate: DateTime.now())) {
     _initializeSessionsStream();
   }
 
   final WatchSessionsUseCase _watchSessionsUseCase;
+  final DeleteSessionUseCase _deleteSessionUseCase;
   StreamSubscription? _sessionsSubscription;
   List<WorkoutSession> _allSessions = [];
 
@@ -55,6 +59,21 @@ class DashboardCubit extends Cubit<DashboardState> {
       selectedDate: normalizedDate,
       sessions: filteredSessions,
     ),);
+  }
+
+  Future<void> deleteSession(String sessionId) async {
+    final result = await _deleteSessionUseCase(
+      DeleteSessionParams(sessionId: sessionId),
+    );
+
+    result.fold(
+      (failure) => emit(DashboardState.error(
+        selectedDate: state.selectedDate,
+        message: _mapFailureToMessage(failure),
+        sessions: state.sessions,
+      ),),
+      (_) {},
+    );
   }
 
   List<WorkoutSession> _filterSessionsByDate(DateTime date) {

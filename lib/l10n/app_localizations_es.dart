@@ -199,4 +199,11 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get addExercisesFirst => 'Añade ejercicios primero';
+
+  @override
+  String get deleteSessionConfirm =>
+      '¿Estás seguro de que quieres eliminar esta sesión de entrenamiento?';
+
+  @override
+  String get sessionDeleted => 'Sesión eliminada';
 }

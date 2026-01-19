@@ -116,7 +116,7 @@ class _RoutinesPageContent extends StatelessWidget {
                                   }
                                 : () => context.push(
                                       AppRoutes.activeWorkout,
-                                      extra: routine,
+                                      extra: {'routine': routine},
                                     ),
                             tooltip: context.l10n.startWorkout,
                           ),

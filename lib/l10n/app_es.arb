@@ -60,5 +60,7 @@
   "emptyRoutine": "Vacía",
   "startNewSession": "Iniciar Nueva Sesión",
   "startRoutineName": "Iniciar {name}",
-  "addExercisesFirst": "Añade ejercicios primero"
+  "addExercisesFirst": "Añade ejercicios primero",
+  "deleteSessionConfirm": "¿Estás seguro de que quieres eliminar esta sesión de entrenamiento?",
+  "sessionDeleted": "Sesión eliminada"
 }
