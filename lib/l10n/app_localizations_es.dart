@@ -175,4 +175,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get language => 'Idioma';
+
+  @override
+  String get noExercisesInRoutine => 'No hay ejercicios en esta rutina';
 }

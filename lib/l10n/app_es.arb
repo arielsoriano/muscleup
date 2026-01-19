@@ -53,5 +53,6 @@
   "unitMeters": "m",
   "unitNone": "ninguno",
   "setsCount": "{count} series",
-  "language": "Idioma"
+  "language": "Idioma",
+  "noExercisesInRoutine": "No hay ejercicios en esta rutina"
 }

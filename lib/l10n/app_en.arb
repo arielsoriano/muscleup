@@ -229,5 +229,9 @@
   "language": "Language",
   "@language": {
     "description": "Language menu item"
+  },
+  "noExercisesInRoutine": "No exercises in this routine",
+  "@noExercisesInRoutine": {
+    "description": "Empty state message when routine has no exercises"
   }
 }

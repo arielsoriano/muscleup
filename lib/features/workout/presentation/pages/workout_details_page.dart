@@ -102,7 +102,7 @@ class WorkoutDetailsPage extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 16),
                                 Text(
-                                  'No exercises in this routine',
+                                  context.l10n.noExercisesInRoutine,
                                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                                       ),

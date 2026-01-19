@@ -421,6 +421,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Language'**
   String get language;
+
+  /// Empty state message when routine has no exercises
+  ///
+  /// In en, this message translates to:
+  /// **'No exercises in this routine'**
+  String get noExercisesInRoutine;
 }
 
 class _AppLocalizationsDelegate
