@@ -5,6 +5,7 @@ import '../../../../core/error/failures.dart';
 import '../../domain/entities/workout_entities.dart';
 import '../../domain/usecases/get_logs_for_session_usecase.dart';
 import '../../domain/usecases/get_routine_by_id_usecase.dart';
+import '../../domain/usecases/get_session_by_id_usecase.dart';
 import '../../domain/usecases/save_session_usecase.dart';
 import '../../domain/usecases/save_set_log_usecase.dart';
 import 'active_workout_state.dart';
@@ -14,12 +15,14 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
     required String routineId,
     required WorkoutRoutine routine,
     required GetRoutineByIdUseCase getRoutineByIdUseCase,
+    required GetSessionByIdUseCase getSessionByIdUseCase,
     required SaveSessionUseCase saveSessionUseCase,
     required SaveSetLogUseCase saveSetLogUseCase,
     required GetLogsForSessionUseCase getLogsForSessionUseCase,
     String? sessionId,
   })  : _routineId = routineId,
         _getRoutineByIdUseCase = getRoutineByIdUseCase,
+        _getSessionByIdUseCase = getSessionByIdUseCase,
         _saveSessionUseCase = saveSessionUseCase,
         _saveSetLogUseCase = saveSetLogUseCase,
         _getLogsForSessionUseCase = getLogsForSessionUseCase,
@@ -32,6 +35,7 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
 
   final String _routineId;
   final GetRoutineByIdUseCase _getRoutineByIdUseCase;
+  final GetSessionByIdUseCase _getSessionByIdUseCase;
   final SaveSessionUseCase _saveSessionUseCase;
   final SaveSetLogUseCase _saveSetLogUseCase;
   final GetLogsForSessionUseCase _getLogsForSessionUseCase;
@@ -52,6 +56,8 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
           ActiveWorkoutState.error(
             routine: state.routine,
             setLogs: [],
+            displayTitle: null,
+            isViewingHistory: false,
             message: _mapFailureToMessage(failure),
             isLoading: false,
           ),
@@ -72,6 +78,8 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
         ActiveWorkoutState.error(
           routine: fullRoutine,
           setLogs: [],
+          displayTitle: null,
+          isViewingHistory: false,
           message: 'Routine has no exercises',
           isLoading: false,
         ),
@@ -95,6 +103,29 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
   }
 
   Future<void> _loadExistingSession(WorkoutRoutine routine) async {
+    final sessionResult = await _getSessionByIdUseCase(
+      GetSessionByIdParams(sessionId: _sessionId),
+    );
+
+    final sessionOrNull = await sessionResult.fold(
+      (failure) async {
+        emit(
+          ActiveWorkoutState.error(
+            routine: routine.copyWith(exercises: List.from(routine.exercises)),
+            setLogs: [],
+            message: _mapFailureToMessage(failure),
+            isLoading: false,
+          ),
+        );
+        return null;
+      },
+      (session) async => session,
+    );
+
+    if (sessionOrNull == null) return;
+
+    final historicalSession = sessionOrNull;
+
     final result = await _getLogsForSessionUseCase(
       GetLogsForSessionParams(sessionId: _sessionId),
     );
@@ -105,13 +136,37 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
           ActiveWorkoutState.error(
             routine: routine.copyWith(exercises: List.from(routine.exercises)),
             setLogs: [],
+            displayTitle: historicalSession.routineName,
+            isViewingHistory: true,
             message: _mapFailureToMessage(failure),
             isLoading: false,
           ),
         );
       },
       (existingLogs) {
-        final updatedExercises = routine.exercises.map((exercise) {
+        if (existingLogs.isEmpty) {
+          emit(
+            ActiveWorkoutState.error(
+              routine: routine.copyWith(
+                  exercises: List.from(routine.exercises)),
+              setLogs: [],
+              displayTitle: historicalSession.routineName,
+              isViewingHistory: true,
+              message: 'No logs found for this session',
+              isLoading: false,
+            ),
+          );
+          return;
+        }
+
+        final exerciseIdsWithLogs =
+            existingLogs.map((log) => log.workoutExerciseId).toSet();
+
+        final filteredExercises = routine.exercises
+            .where((exercise) => exerciseIdsWithLogs.contains(exercise.id))
+            .toList();
+
+        final updatedExercises = filteredExercises.map((exercise) {
           final exerciseLogs = existingLogs
               .where((log) => log.workoutExerciseId == exercise.id)
               .toList();
@@ -143,6 +198,8 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
             ActiveWorkoutState.error(
               routine: updatedRoutine,
               setLogs: [],
+              displayTitle: historicalSession.routineName,
+              isViewingHistory: true,
               message: 'No exercises found in routine',
               isLoading: false,
             ),
@@ -154,6 +211,8 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
           ActiveWorkoutState.tracking(
             routine: updatedRoutine,
             setLogs: existingLogs,
+            displayTitle: historicalSession.routineName,
+            isViewingHistory: true,
             isLoading: false,
           ),
         );
@@ -190,6 +249,8 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
         ActiveWorkoutState.error(
           routine: routine.copyWith(exercises: List.from(routine.exercises)),
           setLogs: [],
+          displayTitle: null,
+          isViewingHistory: false,
           message: 'No exercises found in routine',
           isLoading: false,
         ),
@@ -201,6 +262,8 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
       ActiveWorkoutState.tracking(
         routine: routine.copyWith(exercises: List.from(routine.exercises)),
         setLogs: setLogs,
+        displayTitle: null,
+        isViewingHistory: false,
         isLoading: false,
       ),
     );
@@ -208,7 +271,7 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
 
   void updateSetLog(SetLog updatedLog) {
     state.maybeWhen(
-      tracking: (routine, setLogs, _, __) {
+      tracking: (routine, setLogs, displayTitle, isViewingHistory, _, __) {
         final updatedLogs = setLogs.map((log) {
           return log.id == updatedLog.id ? updatedLog : log;
         }).toList();
@@ -217,6 +280,8 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
           ActiveWorkoutState.tracking(
             routine: routine,
             setLogs: updatedLogs,
+            displayTitle: displayTitle,
+            isViewingHistory: isViewingHistory,
           ),
         );
       },
@@ -226,15 +291,17 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
 
   Future<void> finishWorkout() async {
     state.maybeWhen(
-      tracking: (routine, setLogs, _, __) async {
+      tracking: (routine, setLogs, displayTitle, isViewingHistory, _, __) async {
         emit(
           ActiveWorkoutState.saving(
             routine: routine,
             setLogs: setLogs,
+            displayTitle: displayTitle,
+            isViewingHistory: isViewingHistory,
           ),
         );
 
-        final session = WorkoutSession(
+        final workoutSession = WorkoutSession(
           id: _sessionId,
           routineId: routine.id,
           routineName: routine.name,
@@ -243,7 +310,7 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
         );
 
         final sessionResult = await _saveSessionUseCase(
-          SaveSessionParams(session: session),
+          SaveSessionParams(session: workoutSession),
         );
 
         await sessionResult.fold(
@@ -252,12 +319,14 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
               ActiveWorkoutState.error(
                 routine: routine,
                 setLogs: setLogs,
+                displayTitle: displayTitle,
+                isViewingHistory: isViewingHistory,
                 message: _mapFailureToMessage(failure),
               ),
             );
           },
           (_) async {
-            await _saveAllSetLogs(routine, setLogs);
+            await _saveAllSetLogs(routine, setLogs, displayTitle, isViewingHistory);
           },
         );
       },
@@ -268,6 +337,8 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
   Future<void> _saveAllSetLogs(
     WorkoutRoutine routine,
     List<SetLog> setLogs,
+    String? displayTitle,
+    bool isViewingHistory,
   ) async {
     for (final log in setLogs) {
       final result = await _saveSetLogUseCase(
@@ -280,6 +351,8 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
             ActiveWorkoutState.error(
               routine: routine,
               setLogs: setLogs,
+              displayTitle: displayTitle,
+              isViewingHistory: isViewingHistory,
               message: _mapFailureToMessage(failure),
             ),
           );
@@ -296,6 +369,8 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
       ActiveWorkoutState.success(
         routine: routine,
         setLogs: setLogs,
+        displayTitle: displayTitle,
+        isViewingHistory: isViewingHistory,
       ),
     );
   }

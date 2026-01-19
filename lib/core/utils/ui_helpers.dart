@@ -11,12 +11,12 @@ extension BuildContextSnackBarExtension on BuildContext {
           style: TextStyle(
             color: isError
                 ? colorScheme.onErrorContainer
-                : colorScheme.onPrimaryContainer,
+                : colorScheme.onSecondaryContainer,
           ),
         ),
         backgroundColor: isError
             ? colorScheme.errorContainer
-            : colorScheme.primaryContainer,
+            : colorScheme.secondaryContainer,
       ),
     );
   }

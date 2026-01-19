@@ -10,6 +10,7 @@ import '../../features/workout/domain/usecases/delete_routine_usecase.dart';
 import '../../features/workout/domain/usecases/delete_session_usecase.dart';
 import '../../features/workout/domain/usecases/get_logs_for_session_usecase.dart';
 import '../../features/workout/domain/usecases/get_routine_by_id_usecase.dart';
+import '../../features/workout/domain/usecases/get_session_by_id_usecase.dart';
 import '../../features/workout/domain/usecases/save_routine_usecase.dart';
 import '../../features/workout/domain/usecases/save_session_usecase.dart';
 import '../../features/workout/domain/usecases/save_set_log_usecase.dart';
@@ -75,6 +76,10 @@ Future<void> _initializeDomain() async {
   );
 
   serviceLocator.registerFactory(
+    () => GetSessionByIdUseCase(serviceLocator()),
+  );
+
+  serviceLocator.registerFactory(
     () => SaveSessionUseCase(serviceLocator()),
   );
 
@@ -115,6 +120,7 @@ Future<void> _initializePresentation() async {
       routineId: routine.id,
       routine: routine,
       getRoutineByIdUseCase: serviceLocator(),
+      getSessionByIdUseCase: serviceLocator(),
       saveSessionUseCase: serviceLocator(),
       saveSetLogUseCase: serviceLocator(),
       getLogsForSessionUseCase: serviceLocator(),

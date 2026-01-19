@@ -115,16 +115,34 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
           canPop: !isSaving,
           child: Scaffold(
             appBar: AppBar(
-              title: Text(
-                state.routine.name,
-                overflow: TextOverflow.ellipsis,
+              title: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 250),
+                child: Text(
+                  state.maybeWhen(
+                    tracking: (routine, setLogs, displayTitle, isViewingHistory, _, __) =>
+                        displayTitle ?? routine.name,
+                    initial: (routine, setLogs, displayTitle, isViewingHistory, _, __) =>
+                        displayTitle ?? routine.name,
+                    orElse: () => state.routine.name,
+                  ),
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
               ),
             ),
             body: isSaving || isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _buildWorkoutContent(context, state),
-            bottomNavigationBar:
-                isSaving || isLoading ? null : _buildFinishButton(context),
+            bottomNavigationBar: isSaving ||
+                    isLoading ||
+                    state.maybeWhen(
+                      tracking: (_, __, ___, isViewingHistory, ____, _____) =>
+                          isViewingHistory,
+                      orElse: () => false,
+                    )
+                ? null
+                : _buildFinishButton(context),
           ),
         );
       },
@@ -155,12 +173,14 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
 
   Widget _buildWorkoutContent(BuildContext context, ActiveWorkoutState state) {
     return state.maybeWhen(
-      tracking: (routine, setLogs, _, __) => _buildExerciseList(
+      tracking: (routine, setLogs, displayTitle, isViewingHistory, _, __) =>
+          _buildExerciseList(
         context,
         routine,
         setLogs,
       ),
-      initial: (routine, setLogs, _, __) => _buildExerciseList(
+      initial: (routine, setLogs, displayTitle, isViewingHistory, _, __) =>
+          _buildExerciseList(
         context,
         routine,
         setLogs,

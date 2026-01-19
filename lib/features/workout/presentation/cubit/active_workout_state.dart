@@ -9,18 +9,24 @@ class ActiveWorkoutState with _$ActiveWorkoutState {
   const factory ActiveWorkoutState.initial({
     required WorkoutRoutine routine,
     @Default([]) List<SetLog> setLogs,
+    String? displayTitle,
+    @Default(false) bool isViewingHistory,
     @Default(false) bool isSaving,
     @Default(false) bool isLoading,
   }) = ActiveWorkoutStateInitial;
 
   const factory ActiveWorkoutState.loading({
     required WorkoutRoutine routine,
+    String? displayTitle,
+    @Default(false) bool isViewingHistory,
     @Default(true) bool isLoading,
   }) = ActiveWorkoutStateLoading;
 
   const factory ActiveWorkoutState.tracking({
     required WorkoutRoutine routine,
     required List<SetLog> setLogs,
+    String? displayTitle,
+    @Default(false) bool isViewingHistory,
     @Default(false) bool isSaving,
     @Default(false) bool isLoading,
   }) = ActiveWorkoutStateTracking;
@@ -28,12 +34,16 @@ class ActiveWorkoutState with _$ActiveWorkoutState {
   const factory ActiveWorkoutState.saving({
     required WorkoutRoutine routine,
     required List<SetLog> setLogs,
+    String? displayTitle,
+    @Default(false) bool isViewingHistory,
     @Default(false) bool isLoading,
   }) = ActiveWorkoutStateSaving;
 
   const factory ActiveWorkoutState.success({
     required WorkoutRoutine routine,
     required List<SetLog> setLogs,
+    String? displayTitle,
+    @Default(false) bool isViewingHistory,
     @Default(false) bool isLoading,
   }) = ActiveWorkoutStateSuccess;
 
@@ -41,6 +51,8 @@ class ActiveWorkoutState with _$ActiveWorkoutState {
     required WorkoutRoutine routine,
     required List<SetLog> setLogs,
     required String message,
+    String? displayTitle,
+    @Default(false) bool isViewingHistory,
     @Default(false) bool isLoading,
   }) = ActiveWorkoutStateError;
 }

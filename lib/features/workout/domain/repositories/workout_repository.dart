@@ -17,6 +17,8 @@ abstract class WorkoutRepository {
 
   Stream<Either<Failure, List<WorkoutSession>>> watchSessions();
 
+  Future<Either<Failure, WorkoutSession>> getSessionById(String sessionId);
+
   Future<Either<Failure, void>> saveSession(WorkoutSession session);
 
   Future<Either<Failure, void>> deleteSession(String sessionId);

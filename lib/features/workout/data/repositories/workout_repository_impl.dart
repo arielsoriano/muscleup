@@ -227,6 +227,31 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
   }
 
   @override
+  Future<Either<Failure, WorkoutSession>> getSessionById(
+    String sessionId,
+  ) async {
+    try {
+      final sessionData = await (database.select(database.sessions)
+            ..where((session) => session.id.equals(sessionId)))
+          .getSingleOrNull();
+
+      if (sessionData == null) {
+        return const Either<Failure, WorkoutSession>.left(
+          DatabaseFailure('Session not found'),
+        );
+      }
+
+      return Either<Failure, WorkoutSession>.right(
+        _mapSessionDataToEntity(sessionData),
+      );
+    } catch (e) {
+      return Either<Failure, WorkoutSession>.left(
+        DatabaseFailure(e.toString()),
+      );
+    }
+  }
+
+  @override
   Future<Either<Failure, void>> saveSession(WorkoutSession session) async {
     try {
       await database.into(database.sessions).insertOnConflictUpdate(

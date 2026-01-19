@@ -17,64 +17,117 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$ActiveWorkoutState {
   WorkoutRoutine get routine => throw _privateConstructorUsedError;
+  String? get displayTitle => throw _privateConstructorUsedError;
+  bool get isViewingHistory => throw _privateConstructorUsedError;
   bool get isLoading => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)
+    required TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)
         initial,
-    required TResult Function(WorkoutRoutine routine, bool isLoading) loading,
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)
+    required TResult Function(WorkoutRoutine routine, String? displayTitle,
+            bool isViewingHistory, bool isLoading)
+        loading,
+    required TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)
         tracking,
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
-        saving,
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
-        success,
     required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            String message, bool isLoading)
+            String? displayTitle, bool isViewingHistory, bool isLoading)
+        saving,
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String? displayTitle, bool isViewingHistory, bool isLoading)
+        success,
+    required TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String message,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isLoading)
         error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult? Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         initial,
-    TResult? Function(WorkoutRoutine routine, bool isLoading)? loading,
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult? Function(WorkoutRoutine routine, String? displayTitle,
+            bool isViewingHistory, bool isLoading)?
+        loading,
+    TResult? Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         tracking,
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        saving,
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        success,
     TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            String message, bool isLoading)?
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        saving,
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        success,
+    TResult? Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String message,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isLoading)?
         error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         initial,
-    TResult Function(WorkoutRoutine routine, bool isLoading)? loading,
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult Function(WorkoutRoutine routine, String? displayTitle,
+            bool isViewingHistory, bool isLoading)?
+        loading,
+    TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         tracking,
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        saving,
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        success,
     TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            String message, bool isLoading)?
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        saving,
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        success,
+    TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String message,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isLoading)?
         error,
     required TResult orElse(),
   }) =>
@@ -124,7 +177,11 @@ abstract class $ActiveWorkoutStateCopyWith<$Res> {
           ActiveWorkoutState value, $Res Function(ActiveWorkoutState) then) =
       _$ActiveWorkoutStateCopyWithImpl<$Res, ActiveWorkoutState>;
   @useResult
-  $Res call({WorkoutRoutine routine, bool isLoading});
+  $Res call(
+      {WorkoutRoutine routine,
+      String? displayTitle,
+      bool isViewingHistory,
+      bool isLoading});
 
   $WorkoutRoutineCopyWith<$Res> get routine;
 }
@@ -145,6 +202,8 @@ class _$ActiveWorkoutStateCopyWithImpl<$Res, $Val extends ActiveWorkoutState>
   @override
   $Res call({
     Object? routine = null,
+    Object? displayTitle = freezed,
+    Object? isViewingHistory = null,
     Object? isLoading = null,
   }) {
     return _then(_value.copyWith(
@@ -152,6 +211,14 @@ class _$ActiveWorkoutStateCopyWithImpl<$Res, $Val extends ActiveWorkoutState>
           ? _value.routine
           : routine // ignore: cast_nullable_to_non_nullable
               as WorkoutRoutine,
+      displayTitle: freezed == displayTitle
+          ? _value.displayTitle
+          : displayTitle // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isViewingHistory: null == isViewingHistory
+          ? _value.isViewingHistory
+          : isViewingHistory // ignore: cast_nullable_to_non_nullable
+              as bool,
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
@@ -182,6 +249,8 @@ abstract class _$$ActiveWorkoutStateInitialImplCopyWith<$Res>
   $Res call(
       {WorkoutRoutine routine,
       List<SetLog> setLogs,
+      String? displayTitle,
+      bool isViewingHistory,
       bool isSaving,
       bool isLoading});
 
@@ -206,6 +275,8 @@ class __$$ActiveWorkoutStateInitialImplCopyWithImpl<$Res>
   $Res call({
     Object? routine = null,
     Object? setLogs = null,
+    Object? displayTitle = freezed,
+    Object? isViewingHistory = null,
     Object? isSaving = null,
     Object? isLoading = null,
   }) {
@@ -218,6 +289,14 @@ class __$$ActiveWorkoutStateInitialImplCopyWithImpl<$Res>
           ? _value._setLogs
           : setLogs // ignore: cast_nullable_to_non_nullable
               as List<SetLog>,
+      displayTitle: freezed == displayTitle
+          ? _value.displayTitle
+          : displayTitle // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isViewingHistory: null == isViewingHistory
+          ? _value.isViewingHistory
+          : isViewingHistory // ignore: cast_nullable_to_non_nullable
+              as bool,
       isSaving: null == isSaving
           ? _value.isSaving
           : isSaving // ignore: cast_nullable_to_non_nullable
@@ -236,6 +315,8 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
   const _$ActiveWorkoutStateInitialImpl(
       {required this.routine,
       final List<SetLog> setLogs = const [],
+      this.displayTitle,
+      this.isViewingHistory = false,
       this.isSaving = false,
       this.isLoading = false})
       : _setLogs = setLogs;
@@ -252,6 +333,11 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
   }
 
   @override
+  final String? displayTitle;
+  @override
+  @JsonKey()
+  final bool isViewingHistory;
+  @override
   @JsonKey()
   final bool isSaving;
   @override
@@ -260,7 +346,7 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
 
   @override
   String toString() {
-    return 'ActiveWorkoutState.initial(routine: $routine, setLogs: $setLogs, isSaving: $isSaving, isLoading: $isLoading)';
+    return 'ActiveWorkoutState.initial(routine: $routine, setLogs: $setLogs, displayTitle: $displayTitle, isViewingHistory: $isViewingHistory, isSaving: $isSaving, isLoading: $isLoading)';
   }
 
   @override
@@ -270,6 +356,10 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
             other is _$ActiveWorkoutStateInitialImpl &&
             (identical(other.routine, routine) || other.routine == routine) &&
             const DeepCollectionEquality().equals(other._setLogs, _setLogs) &&
+            (identical(other.displayTitle, displayTitle) ||
+                other.displayTitle == displayTitle) &&
+            (identical(other.isViewingHistory, isViewingHistory) ||
+                other.isViewingHistory == isViewingHistory) &&
             (identical(other.isSaving, isSaving) ||
                 other.isSaving == isSaving) &&
             (identical(other.isLoading, isLoading) ||
@@ -277,8 +367,14 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, routine,
-      const DeepCollectionEquality().hash(_setLogs), isSaving, isLoading);
+  int get hashCode => Object.hash(
+      runtimeType,
+      routine,
+      const DeepCollectionEquality().hash(_setLogs),
+      displayTitle,
+      isViewingHistory,
+      isSaving,
+      isLoading);
 
   /// Create a copy of ActiveWorkoutState
   /// with the given fields replaced by the non-null parameter values.
@@ -292,72 +388,126 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)
+    required TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)
         initial,
-    required TResult Function(WorkoutRoutine routine, bool isLoading) loading,
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)
+    required TResult Function(WorkoutRoutine routine, String? displayTitle,
+            bool isViewingHistory, bool isLoading)
+        loading,
+    required TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)
         tracking,
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
-        saving,
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
-        success,
     required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            String message, bool isLoading)
+            String? displayTitle, bool isViewingHistory, bool isLoading)
+        saving,
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String? displayTitle, bool isViewingHistory, bool isLoading)
+        success,
+    required TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String message,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isLoading)
         error,
   }) {
-    return initial(routine, setLogs, isSaving, isLoading);
+    return initial(
+        routine, setLogs, displayTitle, isViewingHistory, isSaving, isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult? Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         initial,
-    TResult? Function(WorkoutRoutine routine, bool isLoading)? loading,
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult? Function(WorkoutRoutine routine, String? displayTitle,
+            bool isViewingHistory, bool isLoading)?
+        loading,
+    TResult? Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         tracking,
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        saving,
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        success,
     TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            String message, bool isLoading)?
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        saving,
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        success,
+    TResult? Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String message,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isLoading)?
         error,
   }) {
-    return initial?.call(routine, setLogs, isSaving, isLoading);
+    return initial?.call(
+        routine, setLogs, displayTitle, isViewingHistory, isSaving, isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         initial,
-    TResult Function(WorkoutRoutine routine, bool isLoading)? loading,
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult Function(WorkoutRoutine routine, String? displayTitle,
+            bool isViewingHistory, bool isLoading)?
+        loading,
+    TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         tracking,
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        saving,
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        success,
     TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            String message, bool isLoading)?
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        saving,
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        success,
+    TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String message,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isLoading)?
         error,
     required TResult orElse(),
   }) {
     if (initial != null) {
-      return initial(routine, setLogs, isSaving, isLoading);
+      return initial(routine, setLogs, displayTitle, isViewingHistory, isSaving,
+          isLoading);
     }
     return orElse();
   }
@@ -410,12 +560,18 @@ abstract class ActiveWorkoutStateInitial implements ActiveWorkoutState {
   const factory ActiveWorkoutStateInitial(
       {required final WorkoutRoutine routine,
       final List<SetLog> setLogs,
+      final String? displayTitle,
+      final bool isViewingHistory,
       final bool isSaving,
       final bool isLoading}) = _$ActiveWorkoutStateInitialImpl;
 
   @override
   WorkoutRoutine get routine;
   List<SetLog> get setLogs;
+  @override
+  String? get displayTitle;
+  @override
+  bool get isViewingHistory;
   bool get isSaving;
   @override
   bool get isLoading;
@@ -437,7 +593,11 @@ abstract class _$$ActiveWorkoutStateLoadingImplCopyWith<$Res>
       __$$ActiveWorkoutStateLoadingImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({WorkoutRoutine routine, bool isLoading});
+  $Res call(
+      {WorkoutRoutine routine,
+      String? displayTitle,
+      bool isViewingHistory,
+      bool isLoading});
 
   @override
   $WorkoutRoutineCopyWith<$Res> get routine;
@@ -459,6 +619,8 @@ class __$$ActiveWorkoutStateLoadingImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? routine = null,
+    Object? displayTitle = freezed,
+    Object? isViewingHistory = null,
     Object? isLoading = null,
   }) {
     return _then(_$ActiveWorkoutStateLoadingImpl(
@@ -466,6 +628,14 @@ class __$$ActiveWorkoutStateLoadingImplCopyWithImpl<$Res>
           ? _value.routine
           : routine // ignore: cast_nullable_to_non_nullable
               as WorkoutRoutine,
+      displayTitle: freezed == displayTitle
+          ? _value.displayTitle
+          : displayTitle // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isViewingHistory: null == isViewingHistory
+          ? _value.isViewingHistory
+          : isViewingHistory // ignore: cast_nullable_to_non_nullable
+              as bool,
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
@@ -478,17 +648,25 @@ class __$$ActiveWorkoutStateLoadingImplCopyWithImpl<$Res>
 
 class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
   const _$ActiveWorkoutStateLoadingImpl(
-      {required this.routine, this.isLoading = true});
+      {required this.routine,
+      this.displayTitle,
+      this.isViewingHistory = false,
+      this.isLoading = true});
 
   @override
   final WorkoutRoutine routine;
+  @override
+  final String? displayTitle;
+  @override
+  @JsonKey()
+  final bool isViewingHistory;
   @override
   @JsonKey()
   final bool isLoading;
 
   @override
   String toString() {
-    return 'ActiveWorkoutState.loading(routine: $routine, isLoading: $isLoading)';
+    return 'ActiveWorkoutState.loading(routine: $routine, displayTitle: $displayTitle, isViewingHistory: $isViewingHistory, isLoading: $isLoading)';
   }
 
   @override
@@ -497,12 +675,17 @@ class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
         (other.runtimeType == runtimeType &&
             other is _$ActiveWorkoutStateLoadingImpl &&
             (identical(other.routine, routine) || other.routine == routine) &&
+            (identical(other.displayTitle, displayTitle) ||
+                other.displayTitle == displayTitle) &&
+            (identical(other.isViewingHistory, isViewingHistory) ||
+                other.isViewingHistory == isViewingHistory) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, routine, isLoading);
+  int get hashCode => Object.hash(
+      runtimeType, routine, displayTitle, isViewingHistory, isLoading);
 
   /// Create a copy of ActiveWorkoutState
   /// with the given fields replaced by the non-null parameter values.
@@ -516,72 +699,123 @@ class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)
+    required TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)
         initial,
-    required TResult Function(WorkoutRoutine routine, bool isLoading) loading,
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)
+    required TResult Function(WorkoutRoutine routine, String? displayTitle,
+            bool isViewingHistory, bool isLoading)
+        loading,
+    required TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)
         tracking,
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
-        saving,
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
-        success,
     required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            String message, bool isLoading)
+            String? displayTitle, bool isViewingHistory, bool isLoading)
+        saving,
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String? displayTitle, bool isViewingHistory, bool isLoading)
+        success,
+    required TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String message,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isLoading)
         error,
   }) {
-    return loading(routine, isLoading);
+    return loading(routine, displayTitle, isViewingHistory, isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult? Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         initial,
-    TResult? Function(WorkoutRoutine routine, bool isLoading)? loading,
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult? Function(WorkoutRoutine routine, String? displayTitle,
+            bool isViewingHistory, bool isLoading)?
+        loading,
+    TResult? Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         tracking,
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        saving,
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        success,
     TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            String message, bool isLoading)?
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        saving,
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        success,
+    TResult? Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String message,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isLoading)?
         error,
   }) {
-    return loading?.call(routine, isLoading);
+    return loading?.call(routine, displayTitle, isViewingHistory, isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         initial,
-    TResult Function(WorkoutRoutine routine, bool isLoading)? loading,
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult Function(WorkoutRoutine routine, String? displayTitle,
+            bool isViewingHistory, bool isLoading)?
+        loading,
+    TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         tracking,
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        saving,
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        success,
     TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            String message, bool isLoading)?
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        saving,
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        success,
+    TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String message,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isLoading)?
         error,
     required TResult orElse(),
   }) {
     if (loading != null) {
-      return loading(routine, isLoading);
+      return loading(routine, displayTitle, isViewingHistory, isLoading);
     }
     return orElse();
   }
@@ -633,10 +867,16 @@ class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
 abstract class ActiveWorkoutStateLoading implements ActiveWorkoutState {
   const factory ActiveWorkoutStateLoading(
       {required final WorkoutRoutine routine,
+      final String? displayTitle,
+      final bool isViewingHistory,
       final bool isLoading}) = _$ActiveWorkoutStateLoadingImpl;
 
   @override
   WorkoutRoutine get routine;
+  @override
+  String? get displayTitle;
+  @override
+  bool get isViewingHistory;
   @override
   bool get isLoading;
 
@@ -660,6 +900,8 @@ abstract class _$$ActiveWorkoutStateTrackingImplCopyWith<$Res>
   $Res call(
       {WorkoutRoutine routine,
       List<SetLog> setLogs,
+      String? displayTitle,
+      bool isViewingHistory,
       bool isSaving,
       bool isLoading});
 
@@ -684,6 +926,8 @@ class __$$ActiveWorkoutStateTrackingImplCopyWithImpl<$Res>
   $Res call({
     Object? routine = null,
     Object? setLogs = null,
+    Object? displayTitle = freezed,
+    Object? isViewingHistory = null,
     Object? isSaving = null,
     Object? isLoading = null,
   }) {
@@ -696,6 +940,14 @@ class __$$ActiveWorkoutStateTrackingImplCopyWithImpl<$Res>
           ? _value._setLogs
           : setLogs // ignore: cast_nullable_to_non_nullable
               as List<SetLog>,
+      displayTitle: freezed == displayTitle
+          ? _value.displayTitle
+          : displayTitle // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isViewingHistory: null == isViewingHistory
+          ? _value.isViewingHistory
+          : isViewingHistory // ignore: cast_nullable_to_non_nullable
+              as bool,
       isSaving: null == isSaving
           ? _value.isSaving
           : isSaving // ignore: cast_nullable_to_non_nullable
@@ -714,6 +966,8 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
   const _$ActiveWorkoutStateTrackingImpl(
       {required this.routine,
       required final List<SetLog> setLogs,
+      this.displayTitle,
+      this.isViewingHistory = false,
       this.isSaving = false,
       this.isLoading = false})
       : _setLogs = setLogs;
@@ -729,6 +983,11 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
   }
 
   @override
+  final String? displayTitle;
+  @override
+  @JsonKey()
+  final bool isViewingHistory;
+  @override
   @JsonKey()
   final bool isSaving;
   @override
@@ -737,7 +996,7 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
 
   @override
   String toString() {
-    return 'ActiveWorkoutState.tracking(routine: $routine, setLogs: $setLogs, isSaving: $isSaving, isLoading: $isLoading)';
+    return 'ActiveWorkoutState.tracking(routine: $routine, setLogs: $setLogs, displayTitle: $displayTitle, isViewingHistory: $isViewingHistory, isSaving: $isSaving, isLoading: $isLoading)';
   }
 
   @override
@@ -747,6 +1006,10 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
             other is _$ActiveWorkoutStateTrackingImpl &&
             (identical(other.routine, routine) || other.routine == routine) &&
             const DeepCollectionEquality().equals(other._setLogs, _setLogs) &&
+            (identical(other.displayTitle, displayTitle) ||
+                other.displayTitle == displayTitle) &&
+            (identical(other.isViewingHistory, isViewingHistory) ||
+                other.isViewingHistory == isViewingHistory) &&
             (identical(other.isSaving, isSaving) ||
                 other.isSaving == isSaving) &&
             (identical(other.isLoading, isLoading) ||
@@ -754,8 +1017,14 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, routine,
-      const DeepCollectionEquality().hash(_setLogs), isSaving, isLoading);
+  int get hashCode => Object.hash(
+      runtimeType,
+      routine,
+      const DeepCollectionEquality().hash(_setLogs),
+      displayTitle,
+      isViewingHistory,
+      isSaving,
+      isLoading);
 
   /// Create a copy of ActiveWorkoutState
   /// with the given fields replaced by the non-null parameter values.
@@ -769,72 +1038,126 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)
+    required TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)
         initial,
-    required TResult Function(WorkoutRoutine routine, bool isLoading) loading,
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)
+    required TResult Function(WorkoutRoutine routine, String? displayTitle,
+            bool isViewingHistory, bool isLoading)
+        loading,
+    required TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)
         tracking,
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
-        saving,
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
-        success,
     required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            String message, bool isLoading)
+            String? displayTitle, bool isViewingHistory, bool isLoading)
+        saving,
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String? displayTitle, bool isViewingHistory, bool isLoading)
+        success,
+    required TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String message,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isLoading)
         error,
   }) {
-    return tracking(routine, setLogs, isSaving, isLoading);
+    return tracking(
+        routine, setLogs, displayTitle, isViewingHistory, isSaving, isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult? Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         initial,
-    TResult? Function(WorkoutRoutine routine, bool isLoading)? loading,
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult? Function(WorkoutRoutine routine, String? displayTitle,
+            bool isViewingHistory, bool isLoading)?
+        loading,
+    TResult? Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         tracking,
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        saving,
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        success,
     TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            String message, bool isLoading)?
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        saving,
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        success,
+    TResult? Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String message,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isLoading)?
         error,
   }) {
-    return tracking?.call(routine, setLogs, isSaving, isLoading);
+    return tracking?.call(
+        routine, setLogs, displayTitle, isViewingHistory, isSaving, isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         initial,
-    TResult Function(WorkoutRoutine routine, bool isLoading)? loading,
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult Function(WorkoutRoutine routine, String? displayTitle,
+            bool isViewingHistory, bool isLoading)?
+        loading,
+    TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         tracking,
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        saving,
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        success,
     TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            String message, bool isLoading)?
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        saving,
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        success,
+    TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String message,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isLoading)?
         error,
     required TResult orElse(),
   }) {
     if (tracking != null) {
-      return tracking(routine, setLogs, isSaving, isLoading);
+      return tracking(routine, setLogs, displayTitle, isViewingHistory,
+          isSaving, isLoading);
     }
     return orElse();
   }
@@ -887,12 +1210,18 @@ abstract class ActiveWorkoutStateTracking implements ActiveWorkoutState {
   const factory ActiveWorkoutStateTracking(
       {required final WorkoutRoutine routine,
       required final List<SetLog> setLogs,
+      final String? displayTitle,
+      final bool isViewingHistory,
       final bool isSaving,
       final bool isLoading}) = _$ActiveWorkoutStateTrackingImpl;
 
   @override
   WorkoutRoutine get routine;
   List<SetLog> get setLogs;
+  @override
+  String? get displayTitle;
+  @override
+  bool get isViewingHistory;
   bool get isSaving;
   @override
   bool get isLoading;
@@ -914,7 +1243,12 @@ abstract class _$$ActiveWorkoutStateSavingImplCopyWith<$Res>
       __$$ActiveWorkoutStateSavingImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading});
+  $Res call(
+      {WorkoutRoutine routine,
+      List<SetLog> setLogs,
+      String? displayTitle,
+      bool isViewingHistory,
+      bool isLoading});
 
   @override
   $WorkoutRoutineCopyWith<$Res> get routine;
@@ -937,6 +1271,8 @@ class __$$ActiveWorkoutStateSavingImplCopyWithImpl<$Res>
   $Res call({
     Object? routine = null,
     Object? setLogs = null,
+    Object? displayTitle = freezed,
+    Object? isViewingHistory = null,
     Object? isLoading = null,
   }) {
     return _then(_$ActiveWorkoutStateSavingImpl(
@@ -948,6 +1284,14 @@ class __$$ActiveWorkoutStateSavingImplCopyWithImpl<$Res>
           ? _value._setLogs
           : setLogs // ignore: cast_nullable_to_non_nullable
               as List<SetLog>,
+      displayTitle: freezed == displayTitle
+          ? _value.displayTitle
+          : displayTitle // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isViewingHistory: null == isViewingHistory
+          ? _value.isViewingHistory
+          : isViewingHistory // ignore: cast_nullable_to_non_nullable
+              as bool,
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
@@ -962,6 +1306,8 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
   const _$ActiveWorkoutStateSavingImpl(
       {required this.routine,
       required final List<SetLog> setLogs,
+      this.displayTitle,
+      this.isViewingHistory = false,
       this.isLoading = false})
       : _setLogs = setLogs;
 
@@ -976,12 +1322,17 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
   }
 
   @override
+  final String? displayTitle;
+  @override
+  @JsonKey()
+  final bool isViewingHistory;
+  @override
   @JsonKey()
   final bool isLoading;
 
   @override
   String toString() {
-    return 'ActiveWorkoutState.saving(routine: $routine, setLogs: $setLogs, isLoading: $isLoading)';
+    return 'ActiveWorkoutState.saving(routine: $routine, setLogs: $setLogs, displayTitle: $displayTitle, isViewingHistory: $isViewingHistory, isLoading: $isLoading)';
   }
 
   @override
@@ -991,13 +1342,22 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
             other is _$ActiveWorkoutStateSavingImpl &&
             (identical(other.routine, routine) || other.routine == routine) &&
             const DeepCollectionEquality().equals(other._setLogs, _setLogs) &&
+            (identical(other.displayTitle, displayTitle) ||
+                other.displayTitle == displayTitle) &&
+            (identical(other.isViewingHistory, isViewingHistory) ||
+                other.isViewingHistory == isViewingHistory) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, routine,
-      const DeepCollectionEquality().hash(_setLogs), isLoading);
+  int get hashCode => Object.hash(
+      runtimeType,
+      routine,
+      const DeepCollectionEquality().hash(_setLogs),
+      displayTitle,
+      isViewingHistory,
+      isLoading);
 
   /// Create a copy of ActiveWorkoutState
   /// with the given fields replaced by the non-null parameter values.
@@ -1011,72 +1371,125 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)
+    required TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)
         initial,
-    required TResult Function(WorkoutRoutine routine, bool isLoading) loading,
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)
+    required TResult Function(WorkoutRoutine routine, String? displayTitle,
+            bool isViewingHistory, bool isLoading)
+        loading,
+    required TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)
         tracking,
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
-        saving,
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
-        success,
     required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            String message, bool isLoading)
+            String? displayTitle, bool isViewingHistory, bool isLoading)
+        saving,
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String? displayTitle, bool isViewingHistory, bool isLoading)
+        success,
+    required TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String message,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isLoading)
         error,
   }) {
-    return saving(routine, setLogs, isLoading);
+    return saving(routine, setLogs, displayTitle, isViewingHistory, isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult? Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         initial,
-    TResult? Function(WorkoutRoutine routine, bool isLoading)? loading,
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult? Function(WorkoutRoutine routine, String? displayTitle,
+            bool isViewingHistory, bool isLoading)?
+        loading,
+    TResult? Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         tracking,
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        saving,
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        success,
     TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            String message, bool isLoading)?
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        saving,
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        success,
+    TResult? Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String message,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isLoading)?
         error,
   }) {
-    return saving?.call(routine, setLogs, isLoading);
+    return saving?.call(
+        routine, setLogs, displayTitle, isViewingHistory, isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         initial,
-    TResult Function(WorkoutRoutine routine, bool isLoading)? loading,
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult Function(WorkoutRoutine routine, String? displayTitle,
+            bool isViewingHistory, bool isLoading)?
+        loading,
+    TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         tracking,
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        saving,
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        success,
     TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            String message, bool isLoading)?
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        saving,
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        success,
+    TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String message,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isLoading)?
         error,
     required TResult orElse(),
   }) {
     if (saving != null) {
-      return saving(routine, setLogs, isLoading);
+      return saving(
+          routine, setLogs, displayTitle, isViewingHistory, isLoading);
     }
     return orElse();
   }
@@ -1129,11 +1542,17 @@ abstract class ActiveWorkoutStateSaving implements ActiveWorkoutState {
   const factory ActiveWorkoutStateSaving(
       {required final WorkoutRoutine routine,
       required final List<SetLog> setLogs,
+      final String? displayTitle,
+      final bool isViewingHistory,
       final bool isLoading}) = _$ActiveWorkoutStateSavingImpl;
 
   @override
   WorkoutRoutine get routine;
   List<SetLog> get setLogs;
+  @override
+  String? get displayTitle;
+  @override
+  bool get isViewingHistory;
   @override
   bool get isLoading;
 
@@ -1154,7 +1573,12 @@ abstract class _$$ActiveWorkoutStateSuccessImplCopyWith<$Res>
       __$$ActiveWorkoutStateSuccessImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading});
+  $Res call(
+      {WorkoutRoutine routine,
+      List<SetLog> setLogs,
+      String? displayTitle,
+      bool isViewingHistory,
+      bool isLoading});
 
   @override
   $WorkoutRoutineCopyWith<$Res> get routine;
@@ -1177,6 +1601,8 @@ class __$$ActiveWorkoutStateSuccessImplCopyWithImpl<$Res>
   $Res call({
     Object? routine = null,
     Object? setLogs = null,
+    Object? displayTitle = freezed,
+    Object? isViewingHistory = null,
     Object? isLoading = null,
   }) {
     return _then(_$ActiveWorkoutStateSuccessImpl(
@@ -1188,6 +1614,14 @@ class __$$ActiveWorkoutStateSuccessImplCopyWithImpl<$Res>
           ? _value._setLogs
           : setLogs // ignore: cast_nullable_to_non_nullable
               as List<SetLog>,
+      displayTitle: freezed == displayTitle
+          ? _value.displayTitle
+          : displayTitle // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isViewingHistory: null == isViewingHistory
+          ? _value.isViewingHistory
+          : isViewingHistory // ignore: cast_nullable_to_non_nullable
+              as bool,
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
@@ -1202,6 +1636,8 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
   const _$ActiveWorkoutStateSuccessImpl(
       {required this.routine,
       required final List<SetLog> setLogs,
+      this.displayTitle,
+      this.isViewingHistory = false,
       this.isLoading = false})
       : _setLogs = setLogs;
 
@@ -1216,12 +1652,17 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
   }
 
   @override
+  final String? displayTitle;
+  @override
+  @JsonKey()
+  final bool isViewingHistory;
+  @override
   @JsonKey()
   final bool isLoading;
 
   @override
   String toString() {
-    return 'ActiveWorkoutState.success(routine: $routine, setLogs: $setLogs, isLoading: $isLoading)';
+    return 'ActiveWorkoutState.success(routine: $routine, setLogs: $setLogs, displayTitle: $displayTitle, isViewingHistory: $isViewingHistory, isLoading: $isLoading)';
   }
 
   @override
@@ -1231,13 +1672,22 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
             other is _$ActiveWorkoutStateSuccessImpl &&
             (identical(other.routine, routine) || other.routine == routine) &&
             const DeepCollectionEquality().equals(other._setLogs, _setLogs) &&
+            (identical(other.displayTitle, displayTitle) ||
+                other.displayTitle == displayTitle) &&
+            (identical(other.isViewingHistory, isViewingHistory) ||
+                other.isViewingHistory == isViewingHistory) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, routine,
-      const DeepCollectionEquality().hash(_setLogs), isLoading);
+  int get hashCode => Object.hash(
+      runtimeType,
+      routine,
+      const DeepCollectionEquality().hash(_setLogs),
+      displayTitle,
+      isViewingHistory,
+      isLoading);
 
   /// Create a copy of ActiveWorkoutState
   /// with the given fields replaced by the non-null parameter values.
@@ -1251,72 +1701,125 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)
+    required TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)
         initial,
-    required TResult Function(WorkoutRoutine routine, bool isLoading) loading,
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)
+    required TResult Function(WorkoutRoutine routine, String? displayTitle,
+            bool isViewingHistory, bool isLoading)
+        loading,
+    required TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)
         tracking,
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
-        saving,
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
-        success,
     required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            String message, bool isLoading)
+            String? displayTitle, bool isViewingHistory, bool isLoading)
+        saving,
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String? displayTitle, bool isViewingHistory, bool isLoading)
+        success,
+    required TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String message,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isLoading)
         error,
   }) {
-    return success(routine, setLogs, isLoading);
+    return success(routine, setLogs, displayTitle, isViewingHistory, isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult? Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         initial,
-    TResult? Function(WorkoutRoutine routine, bool isLoading)? loading,
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult? Function(WorkoutRoutine routine, String? displayTitle,
+            bool isViewingHistory, bool isLoading)?
+        loading,
+    TResult? Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         tracking,
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        saving,
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        success,
     TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            String message, bool isLoading)?
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        saving,
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        success,
+    TResult? Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String message,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isLoading)?
         error,
   }) {
-    return success?.call(routine, setLogs, isLoading);
+    return success?.call(
+        routine, setLogs, displayTitle, isViewingHistory, isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         initial,
-    TResult Function(WorkoutRoutine routine, bool isLoading)? loading,
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult Function(WorkoutRoutine routine, String? displayTitle,
+            bool isViewingHistory, bool isLoading)?
+        loading,
+    TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         tracking,
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        saving,
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        success,
     TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            String message, bool isLoading)?
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        saving,
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        success,
+    TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String message,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isLoading)?
         error,
     required TResult orElse(),
   }) {
     if (success != null) {
-      return success(routine, setLogs, isLoading);
+      return success(
+          routine, setLogs, displayTitle, isViewingHistory, isLoading);
     }
     return orElse();
   }
@@ -1369,11 +1872,17 @@ abstract class ActiveWorkoutStateSuccess implements ActiveWorkoutState {
   const factory ActiveWorkoutStateSuccess(
       {required final WorkoutRoutine routine,
       required final List<SetLog> setLogs,
+      final String? displayTitle,
+      final bool isViewingHistory,
       final bool isLoading}) = _$ActiveWorkoutStateSuccessImpl;
 
   @override
   WorkoutRoutine get routine;
   List<SetLog> get setLogs;
+  @override
+  String? get displayTitle;
+  @override
+  bool get isViewingHistory;
   @override
   bool get isLoading;
 
@@ -1398,6 +1907,8 @@ abstract class _$$ActiveWorkoutStateErrorImplCopyWith<$Res>
       {WorkoutRoutine routine,
       List<SetLog> setLogs,
       String message,
+      String? displayTitle,
+      bool isViewingHistory,
       bool isLoading});
 
   @override
@@ -1422,6 +1933,8 @@ class __$$ActiveWorkoutStateErrorImplCopyWithImpl<$Res>
     Object? routine = null,
     Object? setLogs = null,
     Object? message = null,
+    Object? displayTitle = freezed,
+    Object? isViewingHistory = null,
     Object? isLoading = null,
   }) {
     return _then(_$ActiveWorkoutStateErrorImpl(
@@ -1437,6 +1950,14 @@ class __$$ActiveWorkoutStateErrorImplCopyWithImpl<$Res>
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
               as String,
+      displayTitle: freezed == displayTitle
+          ? _value.displayTitle
+          : displayTitle // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isViewingHistory: null == isViewingHistory
+          ? _value.isViewingHistory
+          : isViewingHistory // ignore: cast_nullable_to_non_nullable
+              as bool,
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
@@ -1452,6 +1973,8 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
       {required this.routine,
       required final List<SetLog> setLogs,
       required this.message,
+      this.displayTitle,
+      this.isViewingHistory = false,
       this.isLoading = false})
       : _setLogs = setLogs;
 
@@ -1468,12 +1991,17 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
   @override
   final String message;
   @override
+  final String? displayTitle;
+  @override
+  @JsonKey()
+  final bool isViewingHistory;
+  @override
   @JsonKey()
   final bool isLoading;
 
   @override
   String toString() {
-    return 'ActiveWorkoutState.error(routine: $routine, setLogs: $setLogs, message: $message, isLoading: $isLoading)';
+    return 'ActiveWorkoutState.error(routine: $routine, setLogs: $setLogs, message: $message, displayTitle: $displayTitle, isViewingHistory: $isViewingHistory, isLoading: $isLoading)';
   }
 
   @override
@@ -1484,13 +2012,23 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
             (identical(other.routine, routine) || other.routine == routine) &&
             const DeepCollectionEquality().equals(other._setLogs, _setLogs) &&
             (identical(other.message, message) || other.message == message) &&
+            (identical(other.displayTitle, displayTitle) ||
+                other.displayTitle == displayTitle) &&
+            (identical(other.isViewingHistory, isViewingHistory) ||
+                other.isViewingHistory == isViewingHistory) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, routine,
-      const DeepCollectionEquality().hash(_setLogs), message, isLoading);
+  int get hashCode => Object.hash(
+      runtimeType,
+      routine,
+      const DeepCollectionEquality().hash(_setLogs),
+      message,
+      displayTitle,
+      isViewingHistory,
+      isLoading);
 
   /// Create a copy of ActiveWorkoutState
   /// with the given fields replaced by the non-null parameter values.
@@ -1504,72 +2042,126 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)
+    required TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)
         initial,
-    required TResult Function(WorkoutRoutine routine, bool isLoading) loading,
-    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)
+    required TResult Function(WorkoutRoutine routine, String? displayTitle,
+            bool isViewingHistory, bool isLoading)
+        loading,
+    required TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)
         tracking,
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
-        saving,
-    required TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)
-        success,
     required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            String message, bool isLoading)
+            String? displayTitle, bool isViewingHistory, bool isLoading)
+        saving,
+    required TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String? displayTitle, bool isViewingHistory, bool isLoading)
+        success,
+    required TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String message,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isLoading)
         error,
   }) {
-    return error(routine, setLogs, message, isLoading);
+    return error(
+        routine, setLogs, message, displayTitle, isViewingHistory, isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult? Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         initial,
-    TResult? Function(WorkoutRoutine routine, bool isLoading)? loading,
-    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult? Function(WorkoutRoutine routine, String? displayTitle,
+            bool isViewingHistory, bool isLoading)?
+        loading,
+    TResult? Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         tracking,
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        saving,
-    TResult? Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        success,
     TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            String message, bool isLoading)?
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        saving,
+    TResult? Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        success,
+    TResult? Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String message,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isLoading)?
         error,
   }) {
-    return error?.call(routine, setLogs, message, isLoading);
+    return error?.call(
+        routine, setLogs, message, displayTitle, isViewingHistory, isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         initial,
-    TResult Function(WorkoutRoutine routine, bool isLoading)? loading,
-    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            bool isSaving, bool isLoading)?
+    TResult Function(WorkoutRoutine routine, String? displayTitle,
+            bool isViewingHistory, bool isLoading)?
+        loading,
+    TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isSaving,
+            bool isLoading)?
         tracking,
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        saving,
-    TResult Function(
-            WorkoutRoutine routine, List<SetLog> setLogs, bool isLoading)?
-        success,
     TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
-            String message, bool isLoading)?
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        saving,
+    TResult Function(WorkoutRoutine routine, List<SetLog> setLogs,
+            String? displayTitle, bool isViewingHistory, bool isLoading)?
+        success,
+    TResult Function(
+            WorkoutRoutine routine,
+            List<SetLog> setLogs,
+            String message,
+            String? displayTitle,
+            bool isViewingHistory,
+            bool isLoading)?
         error,
     required TResult orElse(),
   }) {
     if (error != null) {
-      return error(routine, setLogs, message, isLoading);
+      return error(
+          routine, setLogs, message, displayTitle, isViewingHistory, isLoading);
     }
     return orElse();
   }
@@ -1623,12 +2215,18 @@ abstract class ActiveWorkoutStateError implements ActiveWorkoutState {
       {required final WorkoutRoutine routine,
       required final List<SetLog> setLogs,
       required final String message,
+      final String? displayTitle,
+      final bool isViewingHistory,
       final bool isLoading}) = _$ActiveWorkoutStateErrorImpl;
 
   @override
   WorkoutRoutine get routine;
   List<SetLog> get setLogs;
   String get message;
+  @override
+  String? get displayTitle;
+  @override
+  bool get isViewingHistory;
   @override
   bool get isLoading;
 
