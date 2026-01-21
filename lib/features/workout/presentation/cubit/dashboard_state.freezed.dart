@@ -18,45 +18,52 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$DashboardState {
   DateTime get selectedDate => throw _privateConstructorUsedError;
   List<WorkoutSession> get sessions => throw _privateConstructorUsedError;
+  WorkoutSession? get incompleteSession => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(
-            DateTime selectedDate, List<WorkoutSession> sessions)
+    required TResult Function(DateTime selectedDate,
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)
         initial,
-    required TResult Function(
-            DateTime selectedDate, List<WorkoutSession> sessions)
+    required TResult Function(DateTime selectedDate,
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)
         loading,
-    required TResult Function(
-            DateTime selectedDate, List<WorkoutSession> sessions)
+    required TResult Function(DateTime selectedDate,
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)
         success,
     required TResult Function(DateTime selectedDate, String message,
-            List<WorkoutSession> sessions)
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)
         error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         initial,
-    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         loading,
-    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         success,
     TResult? Function(DateTime selectedDate, String message,
-            List<WorkoutSession> sessions)?
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)?
         error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         initial,
-    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         loading,
-    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         success,
     TResult Function(DateTime selectedDate, String message,
-            List<WorkoutSession> sessions)?
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)?
         error,
     required TResult orElse(),
   }) =>
@@ -100,7 +107,12 @@ abstract class $DashboardStateCopyWith<$Res> {
           DashboardState value, $Res Function(DashboardState) then) =
       _$DashboardStateCopyWithImpl<$Res, DashboardState>;
   @useResult
-  $Res call({DateTime selectedDate, List<WorkoutSession> sessions});
+  $Res call(
+      {DateTime selectedDate,
+      List<WorkoutSession> sessions,
+      WorkoutSession? incompleteSession});
+
+  $WorkoutSessionCopyWith<$Res>? get incompleteSession;
 }
 
 /// @nodoc
@@ -120,6 +132,7 @@ class _$DashboardStateCopyWithImpl<$Res, $Val extends DashboardState>
   $Res call({
     Object? selectedDate = null,
     Object? sessions = null,
+    Object? incompleteSession = freezed,
   }) {
     return _then(_value.copyWith(
       selectedDate: null == selectedDate
@@ -130,7 +143,25 @@ class _$DashboardStateCopyWithImpl<$Res, $Val extends DashboardState>
           ? _value.sessions
           : sessions // ignore: cast_nullable_to_non_nullable
               as List<WorkoutSession>,
+      incompleteSession: freezed == incompleteSession
+          ? _value.incompleteSession
+          : incompleteSession // ignore: cast_nullable_to_non_nullable
+              as WorkoutSession?,
     ) as $Val);
+  }
+
+  /// Create a copy of DashboardState
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $WorkoutSessionCopyWith<$Res>? get incompleteSession {
+    if (_value.incompleteSession == null) {
+      return null;
+    }
+
+    return $WorkoutSessionCopyWith<$Res>(_value.incompleteSession!, (value) {
+      return _then(_value.copyWith(incompleteSession: value) as $Val);
+    });
   }
 }
 
@@ -143,7 +174,13 @@ abstract class _$$DashboardStateInitialImplCopyWith<$Res>
       __$$DashboardStateInitialImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({DateTime selectedDate, List<WorkoutSession> sessions});
+  $Res call(
+      {DateTime selectedDate,
+      List<WorkoutSession> sessions,
+      WorkoutSession? incompleteSession});
+
+  @override
+  $WorkoutSessionCopyWith<$Res>? get incompleteSession;
 }
 
 /// @nodoc
@@ -161,6 +198,7 @@ class __$$DashboardStateInitialImplCopyWithImpl<$Res>
   $Res call({
     Object? selectedDate = null,
     Object? sessions = null,
+    Object? incompleteSession = freezed,
   }) {
     return _then(_$DashboardStateInitialImpl(
       selectedDate: null == selectedDate
@@ -171,6 +209,10 @@ class __$$DashboardStateInitialImplCopyWithImpl<$Res>
           ? _value._sessions
           : sessions // ignore: cast_nullable_to_non_nullable
               as List<WorkoutSession>,
+      incompleteSession: freezed == incompleteSession
+          ? _value.incompleteSession
+          : incompleteSession // ignore: cast_nullable_to_non_nullable
+              as WorkoutSession?,
     ));
   }
 }
@@ -180,7 +222,8 @@ class __$$DashboardStateInitialImplCopyWithImpl<$Res>
 class _$DashboardStateInitialImpl implements DashboardStateInitial {
   const _$DashboardStateInitialImpl(
       {required this.selectedDate,
-      final List<WorkoutSession> sessions = const []})
+      final List<WorkoutSession> sessions = const [],
+      this.incompleteSession})
       : _sessions = sessions;
 
   @override
@@ -195,8 +238,11 @@ class _$DashboardStateInitialImpl implements DashboardStateInitial {
   }
 
   @override
+  final WorkoutSession? incompleteSession;
+
+  @override
   String toString() {
-    return 'DashboardState.initial(selectedDate: $selectedDate, sessions: $sessions)';
+    return 'DashboardState.initial(selectedDate: $selectedDate, sessions: $sessions, incompleteSession: $incompleteSession)';
   }
 
   @override
@@ -206,12 +252,14 @@ class _$DashboardStateInitialImpl implements DashboardStateInitial {
             other is _$DashboardStateInitialImpl &&
             (identical(other.selectedDate, selectedDate) ||
                 other.selectedDate == selectedDate) &&
-            const DeepCollectionEquality().equals(other._sessions, _sessions));
+            const DeepCollectionEquality().equals(other._sessions, _sessions) &&
+            (identical(other.incompleteSession, incompleteSession) ||
+                other.incompleteSession == incompleteSession));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, selectedDate,
-      const DeepCollectionEquality().hash(_sessions));
+      const DeepCollectionEquality().hash(_sessions), incompleteSession);
 
   /// Create a copy of DashboardState
   /// with the given fields replaced by the non-null parameter values.
@@ -225,54 +273,60 @@ class _$DashboardStateInitialImpl implements DashboardStateInitial {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(
-            DateTime selectedDate, List<WorkoutSession> sessions)
+    required TResult Function(DateTime selectedDate,
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)
         initial,
-    required TResult Function(
-            DateTime selectedDate, List<WorkoutSession> sessions)
+    required TResult Function(DateTime selectedDate,
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)
         loading,
-    required TResult Function(
-            DateTime selectedDate, List<WorkoutSession> sessions)
+    required TResult Function(DateTime selectedDate,
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)
         success,
     required TResult Function(DateTime selectedDate, String message,
-            List<WorkoutSession> sessions)
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)
         error,
   }) {
-    return initial(selectedDate, sessions);
+    return initial(selectedDate, sessions, incompleteSession);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         initial,
-    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         loading,
-    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         success,
     TResult? Function(DateTime selectedDate, String message,
-            List<WorkoutSession> sessions)?
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)?
         error,
   }) {
-    return initial?.call(selectedDate, sessions);
+    return initial?.call(selectedDate, sessions, incompleteSession);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         initial,
-    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         loading,
-    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         success,
     TResult Function(DateTime selectedDate, String message,
-            List<WorkoutSession> sessions)?
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)?
         error,
     required TResult orElse(),
   }) {
     if (initial != null) {
-      return initial(selectedDate, sessions);
+      return initial(selectedDate, sessions, incompleteSession);
     }
     return orElse();
   }
@@ -318,12 +372,15 @@ class _$DashboardStateInitialImpl implements DashboardStateInitial {
 abstract class DashboardStateInitial implements DashboardState {
   const factory DashboardStateInitial(
       {required final DateTime selectedDate,
-      final List<WorkoutSession> sessions}) = _$DashboardStateInitialImpl;
+      final List<WorkoutSession> sessions,
+      final WorkoutSession? incompleteSession}) = _$DashboardStateInitialImpl;
 
   @override
   DateTime get selectedDate;
   @override
   List<WorkoutSession> get sessions;
+  @override
+  WorkoutSession? get incompleteSession;
 
   /// Create a copy of DashboardState
   /// with the given fields replaced by the non-null parameter values.
@@ -342,7 +399,13 @@ abstract class _$$DashboardStateLoadingImplCopyWith<$Res>
       __$$DashboardStateLoadingImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({DateTime selectedDate, List<WorkoutSession> sessions});
+  $Res call(
+      {DateTime selectedDate,
+      List<WorkoutSession> sessions,
+      WorkoutSession? incompleteSession});
+
+  @override
+  $WorkoutSessionCopyWith<$Res>? get incompleteSession;
 }
 
 /// @nodoc
@@ -360,6 +423,7 @@ class __$$DashboardStateLoadingImplCopyWithImpl<$Res>
   $Res call({
     Object? selectedDate = null,
     Object? sessions = null,
+    Object? incompleteSession = freezed,
   }) {
     return _then(_$DashboardStateLoadingImpl(
       selectedDate: null == selectedDate
@@ -370,6 +434,10 @@ class __$$DashboardStateLoadingImplCopyWithImpl<$Res>
           ? _value._sessions
           : sessions // ignore: cast_nullable_to_non_nullable
               as List<WorkoutSession>,
+      incompleteSession: freezed == incompleteSession
+          ? _value.incompleteSession
+          : incompleteSession // ignore: cast_nullable_to_non_nullable
+              as WorkoutSession?,
     ));
   }
 }
@@ -379,7 +447,8 @@ class __$$DashboardStateLoadingImplCopyWithImpl<$Res>
 class _$DashboardStateLoadingImpl implements DashboardStateLoading {
   const _$DashboardStateLoadingImpl(
       {required this.selectedDate,
-      final List<WorkoutSession> sessions = const []})
+      final List<WorkoutSession> sessions = const [],
+      this.incompleteSession})
       : _sessions = sessions;
 
   @override
@@ -394,8 +463,11 @@ class _$DashboardStateLoadingImpl implements DashboardStateLoading {
   }
 
   @override
+  final WorkoutSession? incompleteSession;
+
+  @override
   String toString() {
-    return 'DashboardState.loading(selectedDate: $selectedDate, sessions: $sessions)';
+    return 'DashboardState.loading(selectedDate: $selectedDate, sessions: $sessions, incompleteSession: $incompleteSession)';
   }
 
   @override
@@ -405,12 +477,14 @@ class _$DashboardStateLoadingImpl implements DashboardStateLoading {
             other is _$DashboardStateLoadingImpl &&
             (identical(other.selectedDate, selectedDate) ||
                 other.selectedDate == selectedDate) &&
-            const DeepCollectionEquality().equals(other._sessions, _sessions));
+            const DeepCollectionEquality().equals(other._sessions, _sessions) &&
+            (identical(other.incompleteSession, incompleteSession) ||
+                other.incompleteSession == incompleteSession));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, selectedDate,
-      const DeepCollectionEquality().hash(_sessions));
+      const DeepCollectionEquality().hash(_sessions), incompleteSession);
 
   /// Create a copy of DashboardState
   /// with the given fields replaced by the non-null parameter values.
@@ -424,54 +498,60 @@ class _$DashboardStateLoadingImpl implements DashboardStateLoading {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(
-            DateTime selectedDate, List<WorkoutSession> sessions)
+    required TResult Function(DateTime selectedDate,
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)
         initial,
-    required TResult Function(
-            DateTime selectedDate, List<WorkoutSession> sessions)
+    required TResult Function(DateTime selectedDate,
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)
         loading,
-    required TResult Function(
-            DateTime selectedDate, List<WorkoutSession> sessions)
+    required TResult Function(DateTime selectedDate,
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)
         success,
     required TResult Function(DateTime selectedDate, String message,
-            List<WorkoutSession> sessions)
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)
         error,
   }) {
-    return loading(selectedDate, sessions);
+    return loading(selectedDate, sessions, incompleteSession);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         initial,
-    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         loading,
-    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         success,
     TResult? Function(DateTime selectedDate, String message,
-            List<WorkoutSession> sessions)?
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)?
         error,
   }) {
-    return loading?.call(selectedDate, sessions);
+    return loading?.call(selectedDate, sessions, incompleteSession);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         initial,
-    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         loading,
-    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         success,
     TResult Function(DateTime selectedDate, String message,
-            List<WorkoutSession> sessions)?
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)?
         error,
     required TResult orElse(),
   }) {
     if (loading != null) {
-      return loading(selectedDate, sessions);
+      return loading(selectedDate, sessions, incompleteSession);
     }
     return orElse();
   }
@@ -517,12 +597,15 @@ class _$DashboardStateLoadingImpl implements DashboardStateLoading {
 abstract class DashboardStateLoading implements DashboardState {
   const factory DashboardStateLoading(
       {required final DateTime selectedDate,
-      final List<WorkoutSession> sessions}) = _$DashboardStateLoadingImpl;
+      final List<WorkoutSession> sessions,
+      final WorkoutSession? incompleteSession}) = _$DashboardStateLoadingImpl;
 
   @override
   DateTime get selectedDate;
   @override
   List<WorkoutSession> get sessions;
+  @override
+  WorkoutSession? get incompleteSession;
 
   /// Create a copy of DashboardState
   /// with the given fields replaced by the non-null parameter values.
@@ -541,7 +624,13 @@ abstract class _$$DashboardStateSuccessImplCopyWith<$Res>
       __$$DashboardStateSuccessImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({DateTime selectedDate, List<WorkoutSession> sessions});
+  $Res call(
+      {DateTime selectedDate,
+      List<WorkoutSession> sessions,
+      WorkoutSession? incompleteSession});
+
+  @override
+  $WorkoutSessionCopyWith<$Res>? get incompleteSession;
 }
 
 /// @nodoc
@@ -559,6 +648,7 @@ class __$$DashboardStateSuccessImplCopyWithImpl<$Res>
   $Res call({
     Object? selectedDate = null,
     Object? sessions = null,
+    Object? incompleteSession = freezed,
   }) {
     return _then(_$DashboardStateSuccessImpl(
       selectedDate: null == selectedDate
@@ -569,6 +659,10 @@ class __$$DashboardStateSuccessImplCopyWithImpl<$Res>
           ? _value._sessions
           : sessions // ignore: cast_nullable_to_non_nullable
               as List<WorkoutSession>,
+      incompleteSession: freezed == incompleteSession
+          ? _value.incompleteSession
+          : incompleteSession // ignore: cast_nullable_to_non_nullable
+              as WorkoutSession?,
     ));
   }
 }
@@ -578,7 +672,8 @@ class __$$DashboardStateSuccessImplCopyWithImpl<$Res>
 class _$DashboardStateSuccessImpl implements DashboardStateSuccess {
   const _$DashboardStateSuccessImpl(
       {required this.selectedDate,
-      required final List<WorkoutSession> sessions})
+      required final List<WorkoutSession> sessions,
+      this.incompleteSession})
       : _sessions = sessions;
 
   @override
@@ -592,8 +687,11 @@ class _$DashboardStateSuccessImpl implements DashboardStateSuccess {
   }
 
   @override
+  final WorkoutSession? incompleteSession;
+
+  @override
   String toString() {
-    return 'DashboardState.success(selectedDate: $selectedDate, sessions: $sessions)';
+    return 'DashboardState.success(selectedDate: $selectedDate, sessions: $sessions, incompleteSession: $incompleteSession)';
   }
 
   @override
@@ -603,12 +701,14 @@ class _$DashboardStateSuccessImpl implements DashboardStateSuccess {
             other is _$DashboardStateSuccessImpl &&
             (identical(other.selectedDate, selectedDate) ||
                 other.selectedDate == selectedDate) &&
-            const DeepCollectionEquality().equals(other._sessions, _sessions));
+            const DeepCollectionEquality().equals(other._sessions, _sessions) &&
+            (identical(other.incompleteSession, incompleteSession) ||
+                other.incompleteSession == incompleteSession));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, selectedDate,
-      const DeepCollectionEquality().hash(_sessions));
+      const DeepCollectionEquality().hash(_sessions), incompleteSession);
 
   /// Create a copy of DashboardState
   /// with the given fields replaced by the non-null parameter values.
@@ -622,54 +722,60 @@ class _$DashboardStateSuccessImpl implements DashboardStateSuccess {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(
-            DateTime selectedDate, List<WorkoutSession> sessions)
+    required TResult Function(DateTime selectedDate,
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)
         initial,
-    required TResult Function(
-            DateTime selectedDate, List<WorkoutSession> sessions)
+    required TResult Function(DateTime selectedDate,
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)
         loading,
-    required TResult Function(
-            DateTime selectedDate, List<WorkoutSession> sessions)
+    required TResult Function(DateTime selectedDate,
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)
         success,
     required TResult Function(DateTime selectedDate, String message,
-            List<WorkoutSession> sessions)
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)
         error,
   }) {
-    return success(selectedDate, sessions);
+    return success(selectedDate, sessions, incompleteSession);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         initial,
-    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         loading,
-    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         success,
     TResult? Function(DateTime selectedDate, String message,
-            List<WorkoutSession> sessions)?
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)?
         error,
   }) {
-    return success?.call(selectedDate, sessions);
+    return success?.call(selectedDate, sessions, incompleteSession);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         initial,
-    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         loading,
-    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         success,
     TResult Function(DateTime selectedDate, String message,
-            List<WorkoutSession> sessions)?
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)?
         error,
     required TResult orElse(),
   }) {
     if (success != null) {
-      return success(selectedDate, sessions);
+      return success(selectedDate, sessions, incompleteSession);
     }
     return orElse();
   }
@@ -714,14 +820,16 @@ class _$DashboardStateSuccessImpl implements DashboardStateSuccess {
 
 abstract class DashboardStateSuccess implements DashboardState {
   const factory DashboardStateSuccess(
-          {required final DateTime selectedDate,
-          required final List<WorkoutSession> sessions}) =
-      _$DashboardStateSuccessImpl;
+      {required final DateTime selectedDate,
+      required final List<WorkoutSession> sessions,
+      final WorkoutSession? incompleteSession}) = _$DashboardStateSuccessImpl;
 
   @override
   DateTime get selectedDate;
   @override
   List<WorkoutSession> get sessions;
+  @override
+  WorkoutSession? get incompleteSession;
 
   /// Create a copy of DashboardState
   /// with the given fields replaced by the non-null parameter values.
@@ -740,7 +848,13 @@ abstract class _$$DashboardStateErrorImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {DateTime selectedDate, String message, List<WorkoutSession> sessions});
+      {DateTime selectedDate,
+      String message,
+      List<WorkoutSession> sessions,
+      WorkoutSession? incompleteSession});
+
+  @override
+  $WorkoutSessionCopyWith<$Res>? get incompleteSession;
 }
 
 /// @nodoc
@@ -759,6 +873,7 @@ class __$$DashboardStateErrorImplCopyWithImpl<$Res>
     Object? selectedDate = null,
     Object? message = null,
     Object? sessions = null,
+    Object? incompleteSession = freezed,
   }) {
     return _then(_$DashboardStateErrorImpl(
       selectedDate: null == selectedDate
@@ -773,6 +888,10 @@ class __$$DashboardStateErrorImplCopyWithImpl<$Res>
           ? _value._sessions
           : sessions // ignore: cast_nullable_to_non_nullable
               as List<WorkoutSession>,
+      incompleteSession: freezed == incompleteSession
+          ? _value.incompleteSession
+          : incompleteSession // ignore: cast_nullable_to_non_nullable
+              as WorkoutSession?,
     ));
   }
 }
@@ -783,7 +902,8 @@ class _$DashboardStateErrorImpl implements DashboardStateError {
   const _$DashboardStateErrorImpl(
       {required this.selectedDate,
       required this.message,
-      final List<WorkoutSession> sessions = const []})
+      final List<WorkoutSession> sessions = const [],
+      this.incompleteSession})
       : _sessions = sessions;
 
   @override
@@ -800,8 +920,11 @@ class _$DashboardStateErrorImpl implements DashboardStateError {
   }
 
   @override
+  final WorkoutSession? incompleteSession;
+
+  @override
   String toString() {
-    return 'DashboardState.error(selectedDate: $selectedDate, message: $message, sessions: $sessions)';
+    return 'DashboardState.error(selectedDate: $selectedDate, message: $message, sessions: $sessions, incompleteSession: $incompleteSession)';
   }
 
   @override
@@ -812,12 +935,14 @@ class _$DashboardStateErrorImpl implements DashboardStateError {
             (identical(other.selectedDate, selectedDate) ||
                 other.selectedDate == selectedDate) &&
             (identical(other.message, message) || other.message == message) &&
-            const DeepCollectionEquality().equals(other._sessions, _sessions));
+            const DeepCollectionEquality().equals(other._sessions, _sessions) &&
+            (identical(other.incompleteSession, incompleteSession) ||
+                other.incompleteSession == incompleteSession));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, selectedDate, message,
-      const DeepCollectionEquality().hash(_sessions));
+      const DeepCollectionEquality().hash(_sessions), incompleteSession);
 
   /// Create a copy of DashboardState
   /// with the given fields replaced by the non-null parameter values.
@@ -831,54 +956,60 @@ class _$DashboardStateErrorImpl implements DashboardStateError {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(
-            DateTime selectedDate, List<WorkoutSession> sessions)
+    required TResult Function(DateTime selectedDate,
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)
         initial,
-    required TResult Function(
-            DateTime selectedDate, List<WorkoutSession> sessions)
+    required TResult Function(DateTime selectedDate,
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)
         loading,
-    required TResult Function(
-            DateTime selectedDate, List<WorkoutSession> sessions)
+    required TResult Function(DateTime selectedDate,
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)
         success,
     required TResult Function(DateTime selectedDate, String message,
-            List<WorkoutSession> sessions)
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)
         error,
   }) {
-    return error(selectedDate, message, sessions);
+    return error(selectedDate, message, sessions, incompleteSession);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         initial,
-    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         loading,
-    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult? Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         success,
     TResult? Function(DateTime selectedDate, String message,
-            List<WorkoutSession> sessions)?
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)?
         error,
   }) {
-    return error?.call(selectedDate, message, sessions);
+    return error?.call(selectedDate, message, sessions, incompleteSession);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         initial,
-    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         loading,
-    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions)?
+    TResult Function(DateTime selectedDate, List<WorkoutSession> sessions,
+            WorkoutSession? incompleteSession)?
         success,
     TResult Function(DateTime selectedDate, String message,
-            List<WorkoutSession> sessions)?
+            List<WorkoutSession> sessions, WorkoutSession? incompleteSession)?
         error,
     required TResult orElse(),
   }) {
     if (error != null) {
-      return error(selectedDate, message, sessions);
+      return error(selectedDate, message, sessions, incompleteSession);
     }
     return orElse();
   }
@@ -925,13 +1056,16 @@ abstract class DashboardStateError implements DashboardState {
   const factory DashboardStateError(
       {required final DateTime selectedDate,
       required final String message,
-      final List<WorkoutSession> sessions}) = _$DashboardStateErrorImpl;
+      final List<WorkoutSession> sessions,
+      final WorkoutSession? incompleteSession}) = _$DashboardStateErrorImpl;
 
   @override
   DateTime get selectedDate;
   String get message;
   @override
   List<WorkoutSession> get sessions;
+  @override
+  WorkoutSession? get incompleteSession;
 
   /// Create a copy of DashboardState
   /// with the given fields replaced by the non-null parameter values.

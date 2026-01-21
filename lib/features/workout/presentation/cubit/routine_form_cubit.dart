@@ -49,7 +49,16 @@ class RoutineFormCubit extends Cubit<RoutineFormState> {
       sortOrder: state.routine.exercises.length,
       notes: null,
       restTimeSeconds: 60,
-      templateSets: [],
+      templateSets: [
+        WorkoutSet(
+          id: _uuid.v4(),
+          sortOrder: 0,
+          targetValue1: 0,
+          targetValue2: 0,
+          unit1: WorkoutUnit.kilograms,
+          unit2: WorkoutUnit.repetitions,
+        ),
+      ],
     );
 
     final updatedExercises = List<WorkoutExercise>.from(state.routine.exercises)
@@ -189,7 +198,21 @@ class RoutineFormCubit extends Cubit<RoutineFormState> {
     );
   }
 
-  Future<void> saveRoutine() async {
+  Future<String?> saveRoutine() async {
+    if (state.routine.name.trim().isEmpty) {
+      return 'validation.emptyName';
+    }
+
+    if (state.routine.exercises.isEmpty) {
+      return 'validation.noExercises';
+    }
+
+    for (final exercise in state.routine.exercises) {
+      if (exercise.templateSets.isEmpty) {
+        return 'validation.emptySets';
+      }
+    }
+
     emit(
       RoutineFormState.saving(
         routine: state.routine,
@@ -219,6 +242,8 @@ class RoutineFormCubit extends Cubit<RoutineFormState> {
         );
       },
     );
+
+    return null;
   }
 
   Future<Either<Failure, List<LibraryExerciseEntity>>>

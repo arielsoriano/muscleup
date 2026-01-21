@@ -696,6 +696,7 @@ mixin _$WorkoutSession {
   String get routineName => throw _privateConstructorUsedError;
   DateTime get date => throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
+  bool get isCompleted => throw _privateConstructorUsedError;
 
   /// Create a copy of WorkoutSession
   /// with the given fields replaced by the non-null parameter values.
@@ -715,7 +716,8 @@ abstract class $WorkoutSessionCopyWith<$Res> {
       String routineId,
       String routineName,
       DateTime date,
-      String? notes});
+      String? notes,
+      bool isCompleted});
 }
 
 /// @nodoc
@@ -738,6 +740,7 @@ class _$WorkoutSessionCopyWithImpl<$Res, $Val extends WorkoutSession>
     Object? routineName = null,
     Object? date = null,
     Object? notes = freezed,
+    Object? isCompleted = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -760,6 +763,10 @@ class _$WorkoutSessionCopyWithImpl<$Res, $Val extends WorkoutSession>
           ? _value.notes
           : notes // ignore: cast_nullable_to_non_nullable
               as String?,
+      isCompleted: null == isCompleted
+          ? _value.isCompleted
+          : isCompleted // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -777,7 +784,8 @@ abstract class _$$WorkoutSessionImplCopyWith<$Res>
       String routineId,
       String routineName,
       DateTime date,
-      String? notes});
+      String? notes,
+      bool isCompleted});
 }
 
 /// @nodoc
@@ -798,6 +806,7 @@ class __$$WorkoutSessionImplCopyWithImpl<$Res>
     Object? routineName = null,
     Object? date = null,
     Object? notes = freezed,
+    Object? isCompleted = null,
   }) {
     return _then(_$WorkoutSessionImpl(
       id: null == id
@@ -820,6 +829,10 @@ class __$$WorkoutSessionImplCopyWithImpl<$Res>
           ? _value.notes
           : notes // ignore: cast_nullable_to_non_nullable
               as String?,
+      isCompleted: null == isCompleted
+          ? _value.isCompleted
+          : isCompleted // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -832,7 +845,8 @@ class _$WorkoutSessionImpl implements _WorkoutSession {
       required this.routineId,
       required this.routineName,
       required this.date,
-      this.notes});
+      this.notes,
+      required this.isCompleted});
 
   @override
   final String id;
@@ -844,10 +858,12 @@ class _$WorkoutSessionImpl implements _WorkoutSession {
   final DateTime date;
   @override
   final String? notes;
+  @override
+  final bool isCompleted;
 
   @override
   String toString() {
-    return 'WorkoutSession(id: $id, routineId: $routineId, routineName: $routineName, date: $date, notes: $notes)';
+    return 'WorkoutSession(id: $id, routineId: $routineId, routineName: $routineName, date: $date, notes: $notes, isCompleted: $isCompleted)';
   }
 
   @override
@@ -861,12 +877,14 @@ class _$WorkoutSessionImpl implements _WorkoutSession {
             (identical(other.routineName, routineName) ||
                 other.routineName == routineName) &&
             (identical(other.date, date) || other.date == date) &&
-            (identical(other.notes, notes) || other.notes == notes));
+            (identical(other.notes, notes) || other.notes == notes) &&
+            (identical(other.isCompleted, isCompleted) ||
+                other.isCompleted == isCompleted));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, routineId, routineName, date, notes);
+  int get hashCode => Object.hash(
+      runtimeType, id, routineId, routineName, date, notes, isCompleted);
 
   /// Create a copy of WorkoutSession
   /// with the given fields replaced by the non-null parameter values.
@@ -884,7 +902,8 @@ abstract class _WorkoutSession implements WorkoutSession {
       required final String routineId,
       required final String routineName,
       required final DateTime date,
-      final String? notes}) = _$WorkoutSessionImpl;
+      final String? notes,
+      required final bool isCompleted}) = _$WorkoutSessionImpl;
 
   @override
   String get id;
@@ -896,6 +915,8 @@ abstract class _WorkoutSession implements WorkoutSession {
   DateTime get date;
   @override
   String? get notes;
+  @override
+  bool get isCompleted;
 
   /// Create a copy of WorkoutSession
   /// with the given fields replaced by the non-null parameter values.

@@ -57,6 +57,7 @@ class Sessions extends Table {
   TextColumn get routineName => text()();
   DateTimeColumn get date => dateTime()();
   TextColumn get notes => text().nullable()();
+  BoolColumn get isCompleted => boolean().withDefault(const Constant(true))();
 
   @override
   Set<Column<Object>> get primaryKey => {id};
@@ -137,6 +138,9 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 4) {
           await m.addColumn(routines, routines.isDeleted);
+        }
+        if (from < 5) {
+          await m.addColumn(sessions, sessions.isCompleted);
         }
       },
     );

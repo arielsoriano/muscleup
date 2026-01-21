@@ -98,16 +98,21 @@ class _DashboardPageContent extends StatelessWidget {
       body: BlocBuilder<DashboardCubit, DashboardState>(
         builder: (context, state) {
           return state.when(
-            initial: (selectedDate, sessions) => const SizedBox.shrink(),
-            loading: (selectedDate, sessions) => const Center(
+            initial: (selectedDate, sessions, incompleteSession) =>
+                const SizedBox.shrink(),
+            loading: (selectedDate, sessions, incompleteSession) =>
+                const Center(
               child: CircularProgressIndicator(),
             ),
-            success: (selectedDate, sessions) => _buildSuccessContent(
+            success: (selectedDate, sessions, incompleteSession) =>
+                _buildSuccessContent(
               context,
               selectedDate,
               sessions,
+              incompleteSession,
             ),
-            error: (selectedDate, message, sessions) => Center(
+            error: (selectedDate, message, sessions, incompleteSession) =>
+                Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -135,6 +140,7 @@ class _DashboardPageContent extends StatelessWidget {
     BuildContext context,
     DateTime selectedDate,
     List<WorkoutSession> sessions,
+    WorkoutSession? incompleteSession,
   ) {
     final today = DateTime.now();
     final normalizedToday = DateTime(today.year, today.month, today.day);
@@ -149,6 +155,10 @@ class _DashboardPageContent extends StatelessWidget {
       children: [
         _buildWeeklyCalendarStrip(context, selectedDate),
         const Divider(height: 1),
+        if (incompleteSession != null) ...[
+          _buildResumeWorkoutCard(context, incompleteSession),
+          const Divider(height: 1),
+        ],
         Expanded(
           child: sessions.isEmpty
               ? _buildEmptySessionsList(context)
@@ -156,6 +166,104 @@ class _DashboardPageContent extends StatelessWidget {
         ),
         if (!isFutureDate) _buildStartButton(context),
       ],
+    );
+  }
+
+  Widget _buildResumeWorkoutCard(
+    BuildContext context,
+    WorkoutSession incompleteSession,
+  ) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Card(
+      margin: const EdgeInsets.all(16),
+      elevation: 0,
+      color: colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: colorScheme.outlineVariant,
+          width: 1,
+        ),
+      ),
+      child: InkWell(
+        onTap: () {
+          context.push(
+            AppRoutes.activeWorkout,
+            extra: {
+              'routineId': incompleteSession.routineId,
+              'sessionId': incompleteSession.id,
+            },
+          );
+        },
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              left: BorderSide(
+                color: colorScheme.primary,
+                width: 4,
+              ),
+            ),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.play_arrow_rounded,
+                  color: colorScheme.onPrimaryContainer,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.circle,
+                          size: 8,
+                          color: colorScheme.primary,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          context.l10n.inProgress,
+                          style: textTheme.bodySmall?.copyWith(
+                            color: colorScheme.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      incompleteSession.routineName,
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

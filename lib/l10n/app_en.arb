@@ -278,5 +278,37 @@
   "add30Seconds": "+30s",
   "@add30Seconds": {
     "description": "Add 30 seconds to rest timer action"
+  },
+  "resumeWorkout": "Resume Current Workout",
+  "@resumeWorkout": {
+    "description": "Label for resuming an incomplete workout session"
+  },
+  "noLogsFound": "No logs found for this session",
+  "@noLogsFound": {
+    "description": "Message when workout session has no set logs"
+  },
+  "activeWorkout": "Active Workout",
+  "@activeWorkout": {
+    "description": "Label for currently active workout"
+  },
+  "inProgress": "In progress...",
+  "@inProgress": {
+    "description": "Status text for incomplete workout session"
+  },
+  "errorEmptyName": "Routine name cannot be empty",
+  "@errorEmptyName": {
+    "description": "Error message when routine name is empty"
+  },
+  "errorNoExercises": "Routine must have at least one exercise",
+  "@errorNoExercises": {
+    "description": "Error message when routine has no exercises"
+  },
+  "errorEmptySets": "Each exercise must have at least one set",
+  "@errorEmptySets": {
+    "description": "Error message when an exercise has no sets"
+  },
+  "noSetsDefined": "No sets defined",
+  "@noSetsDefined": {
+    "description": "Message when an exercise has no sets"
   }
 }

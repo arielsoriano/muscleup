@@ -25,26 +25,36 @@ class DashboardCubit extends Cubit<DashboardState> {
   List<WorkoutSession> _allSessions = [];
 
   void _initializeSessionsStream() {
-    emit(DashboardState.loading(
-      selectedDate: state.selectedDate,
-      sessions: state.sessions,
-    ),);
+    emit(
+      DashboardState.loading(
+        selectedDate: state.selectedDate,
+        sessions: state.sessions,
+        incompleteSession: state.incompleteSession,
+      ),
+    );
 
     _sessionsSubscription = _watchSessionsUseCase(NoParams()).listen(
       (either) {
         either.fold(
-          (failure) => emit(DashboardState.error(
-            selectedDate: state.selectedDate,
-            message: _mapFailureToMessage(failure),
-            sessions: state.sessions,
-          ),),
+          (failure) => emit(
+            DashboardState.error(
+              selectedDate: state.selectedDate,
+              message: _mapFailureToMessage(failure),
+              sessions: state.sessions,
+              incompleteSession: state.incompleteSession,
+            ),
+          ),
           (sessions) {
             _allSessions = sessions;
+            final incompleteSession = sessions.where((s) => !s.isCompleted).firstOrNull;
             final filteredSessions = _filterSessionsByDate(state.selectedDate);
-            emit(DashboardState.success(
-              selectedDate: state.selectedDate,
-              sessions: filteredSessions,
-            ),);
+            emit(
+              DashboardState.success(
+                selectedDate: state.selectedDate,
+                sessions: filteredSessions,
+                incompleteSession: incompleteSession,
+              ),
+            );
           },
         );
       },
@@ -54,11 +64,14 @@ class DashboardCubit extends Cubit<DashboardState> {
   void selectDate(DateTime date) {
     final normalizedDate = _normalizeDate(date);
     final filteredSessions = _filterSessionsByDate(normalizedDate);
-    
-    emit(DashboardState.success(
-      selectedDate: normalizedDate,
-      sessions: filteredSessions,
-    ),);
+
+    emit(
+      DashboardState.success(
+        selectedDate: normalizedDate,
+        sessions: filteredSessions,
+        incompleteSession: state.incompleteSession,
+      ),
+    );
   }
 
   Future<void> deleteSession(String sessionId) async {
@@ -67,11 +80,14 @@ class DashboardCubit extends Cubit<DashboardState> {
     );
 
     result.fold(
-      (failure) => emit(DashboardState.error(
-        selectedDate: state.selectedDate,
-        message: _mapFailureToMessage(failure),
-        sessions: state.sessions,
-      ),),
+      (failure) => emit(
+        DashboardState.error(
+          selectedDate: state.selectedDate,
+          message: _mapFailureToMessage(failure),
+          sessions: state.sessions,
+          incompleteSession: state.incompleteSession,
+        ),
+      ),
       (_) {},
     );
   }

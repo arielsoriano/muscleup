@@ -1065,9 +1065,19 @@ class $SessionsTable extends Sessions
   late final GeneratedColumn<String> notes = GeneratedColumn<String>(
       'notes', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _isCompletedMeta =
+      const VerificationMeta('isCompleted');
+  @override
+  late final GeneratedColumn<bool> isCompleted = GeneratedColumn<bool>(
+      'is_completed', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("is_completed" IN (0, 1))'),
+      defaultValue: const Constant(true));
   @override
   List<GeneratedColumn> get $columns =>
-      [id, routineId, routineName, date, notes];
+      [id, routineId, routineName, date, notes, isCompleted];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1107,6 +1117,12 @@ class $SessionsTable extends Sessions
       context.handle(
           _notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
     }
+    if (data.containsKey('is_completed')) {
+      context.handle(
+          _isCompletedMeta,
+          isCompleted.isAcceptableOrUnknown(
+              data['is_completed']!, _isCompletedMeta));
+    }
     return context;
   }
 
@@ -1126,6 +1142,8 @@ class $SessionsTable extends Sessions
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
       notes: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}notes']),
+      isCompleted: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_completed'])!,
     );
   }
 
@@ -1141,12 +1159,14 @@ class SessionData extends DataClass implements Insertable<SessionData> {
   final String routineName;
   final DateTime date;
   final String? notes;
+  final bool isCompleted;
   const SessionData(
       {required this.id,
       required this.routineId,
       required this.routineName,
       required this.date,
-      this.notes});
+      this.notes,
+      required this.isCompleted});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1157,6 +1177,7 @@ class SessionData extends DataClass implements Insertable<SessionData> {
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
     }
+    map['is_completed'] = Variable<bool>(isCompleted);
     return map;
   }
 
@@ -1168,6 +1189,7 @@ class SessionData extends DataClass implements Insertable<SessionData> {
       date: Value(date),
       notes:
           notes == null && nullToAbsent ? const Value.absent() : Value(notes),
+      isCompleted: Value(isCompleted),
     );
   }
 
@@ -1180,6 +1202,7 @@ class SessionData extends DataClass implements Insertable<SessionData> {
       routineName: serializer.fromJson<String>(json['routineName']),
       date: serializer.fromJson<DateTime>(json['date']),
       notes: serializer.fromJson<String?>(json['notes']),
+      isCompleted: serializer.fromJson<bool>(json['isCompleted']),
     );
   }
   @override
@@ -1191,6 +1214,7 @@ class SessionData extends DataClass implements Insertable<SessionData> {
       'routineName': serializer.toJson<String>(routineName),
       'date': serializer.toJson<DateTime>(date),
       'notes': serializer.toJson<String?>(notes),
+      'isCompleted': serializer.toJson<bool>(isCompleted),
     };
   }
 
@@ -1199,13 +1223,15 @@ class SessionData extends DataClass implements Insertable<SessionData> {
           String? routineId,
           String? routineName,
           DateTime? date,
-          Value<String?> notes = const Value.absent()}) =>
+          Value<String?> notes = const Value.absent(),
+          bool? isCompleted}) =>
       SessionData(
         id: id ?? this.id,
         routineId: routineId ?? this.routineId,
         routineName: routineName ?? this.routineName,
         date: date ?? this.date,
         notes: notes.present ? notes.value : this.notes,
+        isCompleted: isCompleted ?? this.isCompleted,
       );
   SessionData copyWithCompanion(SessionsCompanion data) {
     return SessionData(
@@ -1215,6 +1241,8 @@ class SessionData extends DataClass implements Insertable<SessionData> {
           data.routineName.present ? data.routineName.value : this.routineName,
       date: data.date.present ? data.date.value : this.date,
       notes: data.notes.present ? data.notes.value : this.notes,
+      isCompleted:
+          data.isCompleted.present ? data.isCompleted.value : this.isCompleted,
     );
   }
 
@@ -1225,13 +1253,15 @@ class SessionData extends DataClass implements Insertable<SessionData> {
           ..write('routineId: $routineId, ')
           ..write('routineName: $routineName, ')
           ..write('date: $date, ')
-          ..write('notes: $notes')
+          ..write('notes: $notes, ')
+          ..write('isCompleted: $isCompleted')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, routineId, routineName, date, notes);
+  int get hashCode =>
+      Object.hash(id, routineId, routineName, date, notes, isCompleted);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1240,7 +1270,8 @@ class SessionData extends DataClass implements Insertable<SessionData> {
           other.routineId == this.routineId &&
           other.routineName == this.routineName &&
           other.date == this.date &&
-          other.notes == this.notes);
+          other.notes == this.notes &&
+          other.isCompleted == this.isCompleted);
 }
 
 class SessionsCompanion extends UpdateCompanion<SessionData> {
@@ -1249,6 +1280,7 @@ class SessionsCompanion extends UpdateCompanion<SessionData> {
   final Value<String> routineName;
   final Value<DateTime> date;
   final Value<String?> notes;
+  final Value<bool> isCompleted;
   final Value<int> rowid;
   const SessionsCompanion({
     this.id = const Value.absent(),
@@ -1256,6 +1288,7 @@ class SessionsCompanion extends UpdateCompanion<SessionData> {
     this.routineName = const Value.absent(),
     this.date = const Value.absent(),
     this.notes = const Value.absent(),
+    this.isCompleted = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SessionsCompanion.insert({
@@ -1264,6 +1297,7 @@ class SessionsCompanion extends UpdateCompanion<SessionData> {
     required String routineName,
     required DateTime date,
     this.notes = const Value.absent(),
+    this.isCompleted = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         routineId = Value(routineId),
@@ -1275,6 +1309,7 @@ class SessionsCompanion extends UpdateCompanion<SessionData> {
     Expression<String>? routineName,
     Expression<DateTime>? date,
     Expression<String>? notes,
+    Expression<bool>? isCompleted,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1283,6 +1318,7 @@ class SessionsCompanion extends UpdateCompanion<SessionData> {
       if (routineName != null) 'routine_name': routineName,
       if (date != null) 'date': date,
       if (notes != null) 'notes': notes,
+      if (isCompleted != null) 'is_completed': isCompleted,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1293,6 +1329,7 @@ class SessionsCompanion extends UpdateCompanion<SessionData> {
       Value<String>? routineName,
       Value<DateTime>? date,
       Value<String?>? notes,
+      Value<bool>? isCompleted,
       Value<int>? rowid}) {
     return SessionsCompanion(
       id: id ?? this.id,
@@ -1300,6 +1337,7 @@ class SessionsCompanion extends UpdateCompanion<SessionData> {
       routineName: routineName ?? this.routineName,
       date: date ?? this.date,
       notes: notes ?? this.notes,
+      isCompleted: isCompleted ?? this.isCompleted,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1322,6 +1360,9 @@ class SessionsCompanion extends UpdateCompanion<SessionData> {
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
     }
+    if (isCompleted.present) {
+      map['is_completed'] = Variable<bool>(isCompleted.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1336,6 +1377,7 @@ class SessionsCompanion extends UpdateCompanion<SessionData> {
           ..write('routineName: $routineName, ')
           ..write('date: $date, ')
           ..write('notes: $notes, ')
+          ..write('isCompleted: $isCompleted, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3253,6 +3295,7 @@ typedef $$SessionsTableCreateCompanionBuilder = SessionsCompanion Function({
   required String routineName,
   required DateTime date,
   Value<String?> notes,
+  Value<bool> isCompleted,
   Value<int> rowid,
 });
 typedef $$SessionsTableUpdateCompanionBuilder = SessionsCompanion Function({
@@ -3261,6 +3304,7 @@ typedef $$SessionsTableUpdateCompanionBuilder = SessionsCompanion Function({
   Value<String> routineName,
   Value<DateTime> date,
   Value<String?> notes,
+  Value<bool> isCompleted,
   Value<int> rowid,
 });
 
@@ -3318,6 +3362,9 @@ class $$SessionsTableFilterComposer
 
   ColumnFilters<String> get notes => $composableBuilder(
       column: $table.notes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isCompleted => $composableBuilder(
+      column: $table.isCompleted, builder: (column) => ColumnFilters(column));
 
   $$RoutinesTableFilterComposer get routineId {
     final $$RoutinesTableFilterComposer composer = $composerBuilder(
@@ -3382,6 +3429,9 @@ class $$SessionsTableOrderingComposer
   ColumnOrderings<String> get notes => $composableBuilder(
       column: $table.notes, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<bool> get isCompleted => $composableBuilder(
+      column: $table.isCompleted, builder: (column) => ColumnOrderings(column));
+
   $$RoutinesTableOrderingComposer get routineId {
     final $$RoutinesTableOrderingComposer composer = $composerBuilder(
         composer: this,
@@ -3423,6 +3473,9 @@ class $$SessionsTableAnnotationComposer
 
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<bool> get isCompleted => $composableBuilder(
+      column: $table.isCompleted, builder: (column) => column);
 
   $$RoutinesTableAnnotationComposer get routineId {
     final $$RoutinesTableAnnotationComposer composer = $composerBuilder(
@@ -3494,6 +3547,7 @@ class $$SessionsTableTableManager extends RootTableManager<
             Value<String> routineName = const Value.absent(),
             Value<DateTime> date = const Value.absent(),
             Value<String?> notes = const Value.absent(),
+            Value<bool> isCompleted = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               SessionsCompanion(
@@ -3502,6 +3556,7 @@ class $$SessionsTableTableManager extends RootTableManager<
             routineName: routineName,
             date: date,
             notes: notes,
+            isCompleted: isCompleted,
             rowid: rowid,
           ),
           createCompanionCallback: ({
@@ -3510,6 +3565,7 @@ class $$SessionsTableTableManager extends RootTableManager<
             required String routineName,
             required DateTime date,
             Value<String?> notes = const Value.absent(),
+            Value<bool> isCompleted = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               SessionsCompanion.insert(
@@ -3518,6 +3574,7 @@ class $$SessionsTableTableManager extends RootTableManager<
             routineName: routineName,
             date: date,
             notes: notes,
+            isCompleted: isCompleted,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0

@@ -96,6 +96,17 @@ class ActiveWorkoutPage extends StatelessWidget {
 class _ActiveWorkoutPageContent extends StatelessWidget {
   const _ActiveWorkoutPageContent();
 
+  String _translateErrorMessage(BuildContext context, String messageKey) {
+    switch (messageKey) {
+      case 'error.noLogsFound':
+        return context.l10n.noLogsFound;
+      case 'error.noExercises':
+        return context.l10n.noExercisesInRoutine;
+      default:
+        return messageKey;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ActiveWorkoutCubit, ActiveWorkoutState>(
@@ -104,7 +115,8 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
           context.showAppSnackBar(context.l10n.workoutSavedSuccess);
           context.pop();
         } else if (state is ActiveWorkoutStateError) {
-          context.showAppSnackBar(state.message, isError: true);
+          final translatedMessage = _translateErrorMessage(context, state.message);
+          context.showAppSnackBar(translatedMessage, isError: true);
         }
       },
       builder: (context, state) {
@@ -430,9 +442,22 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
               ),
             ],
             const SizedBox(height: 16),
-            ...exerciseLogs.asMap().entries.map((entry) {
-              return _buildSetRow(context, entry.value, entry.key);
-            }),
+            if (exerciseLogs.isEmpty)
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    context.l10n.noSetsDefined,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              )
+            else
+              ...exerciseLogs.asMap().entries.map((entry) {
+                return _buildSetRow(context, entry.value, entry.key);
+              }),
           ],
         ),
       ),

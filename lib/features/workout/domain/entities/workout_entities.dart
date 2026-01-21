@@ -55,6 +55,7 @@ class WorkoutSession with _$WorkoutSession {
     required String routineName,
     required DateTime date,
     String? notes,
+    required bool isCompleted,
   }) = _WorkoutSession;
 }
 

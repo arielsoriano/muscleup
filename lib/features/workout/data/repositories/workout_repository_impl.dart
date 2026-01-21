@@ -261,6 +261,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
               routineName: session.routineName,
               date: session.date,
               notes: Value(session.notes),
+              isCompleted: Value(session.isCompleted),
             ),
           );
       return const Either<Failure, void>.right(null);
@@ -391,6 +392,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
       routineName: data.routineName,
       date: data.date,
       notes: data.notes,
+      isCompleted: data.isCompleted,
     );
   }
 

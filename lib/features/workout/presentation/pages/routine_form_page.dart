@@ -52,6 +52,19 @@ class _RoutineFormPageContentState extends State<_RoutineFormPageContent> {
     super.dispose();
   }
 
+  String _translateValidationError(BuildContext context, String errorKey) {
+    switch (errorKey) {
+      case 'validation.emptyName':
+        return context.l10n.errorEmptyName;
+      case 'validation.noExercises':
+        return context.l10n.errorNoExercises;
+      case 'validation.emptySets':
+        return context.l10n.errorEmptySets;
+      default:
+        return errorKey;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<RoutineFormCubit, RoutineFormState>(
@@ -82,8 +95,17 @@ class _RoutineFormPageContentState extends State<_RoutineFormPageContent> {
             floatingActionButton: isSaving
                 ? null
                 : FloatingActionButton.extended(
-                    onPressed: () =>
-                        context.read<RoutineFormCubit>().saveRoutine(),
+                    onPressed: () async {
+                      final validationError =
+                          await context.read<RoutineFormCubit>().saveRoutine();
+                      if (validationError != null && context.mounted) {
+                        final message = _translateValidationError(
+                          context,
+                          validationError,
+                        );
+                        context.showAppSnackBar(message, isError: true);
+                      }
+                    },
                     icon: const Icon(Icons.check_rounded),
                     label: Text(context.l10n.save),
                   ),
@@ -394,6 +416,7 @@ class _ExerciseFormItemState extends State<_ExerciseFormItem> {
           setNumber: index + 1,
           set: set,
           exerciseId: widget.exercise.id,
+          totalSetsCount: widget.exercise.templateSets.length,
         );
       }).toList(),
     );
@@ -443,12 +466,14 @@ class _SetFormRow extends StatefulWidget {
     required this.setNumber,
     required this.set,
     required this.exerciseId,
+    required this.totalSetsCount,
     super.key,
   });
 
   final int setNumber;
   final WorkoutSet set;
   final String exerciseId;
+  final int totalSetsCount;
 
   @override
   State<_SetFormRow> createState() => _SetFormRowState();
@@ -569,11 +594,13 @@ class _SetFormRowState extends State<_SetFormRow> {
           const SizedBox(width: 8),
           IconButton(
             icon: const Icon(Icons.close_rounded, size: 20),
-            onPressed: () {
-              context
-                  .read<RoutineFormCubit>()
-                  .removeSet(widget.exerciseId, widget.set.id);
-            },
+            onPressed: widget.totalSetsCount > 1
+                ? () {
+                    context
+                        .read<RoutineFormCubit>()
+                        .removeSet(widget.exerciseId, widget.set.id);
+                  }
+                : null,
             visualDensity: VisualDensity.compact,
           ),
         ],

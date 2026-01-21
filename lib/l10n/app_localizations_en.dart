@@ -212,4 +212,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get add30Seconds => '+30s';
+
+  @override
+  String get resumeWorkout => 'Resume Current Workout';
+
+  @override
+  String get noLogsFound => 'No logs found for this session';
+
+  @override
+  String get activeWorkout => 'Active Workout';
+
+  @override
+  String get inProgress => 'In progress...';
+
+  @override
+  String get errorEmptyName => 'Routine name cannot be empty';
+
+  @override
+  String get errorNoExercises => 'Routine must have at least one exercise';
+
+  @override
+  String get errorEmptySets => 'Each exercise must have at least one set';
+
+  @override
+  String get noSetsDefined => 'No sets defined';
 }

@@ -487,6 +487,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'+30s'**
   String get add30Seconds;
+
+  /// Label for resuming an incomplete workout session
+  ///
+  /// In en, this message translates to:
+  /// **'Resume Current Workout'**
+  String get resumeWorkout;
+
+  /// Message when workout session has no set logs
+  ///
+  /// In en, this message translates to:
+  /// **'No logs found for this session'**
+  String get noLogsFound;
+
+  /// Label for currently active workout
+  ///
+  /// In en, this message translates to:
+  /// **'Active Workout'**
+  String get activeWorkout;
+
+  /// Status text for incomplete workout session
+  ///
+  /// In en, this message translates to:
+  /// **'In progress...'**
+  String get inProgress;
+
+  /// Error message when routine name is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Routine name cannot be empty'**
+  String get errorEmptyName;
+
+  /// Error message when routine has no exercises
+  ///
+  /// In en, this message translates to:
+  /// **'Routine must have at least one exercise'**
+  String get errorNoExercises;
+
+  /// Error message when an exercise has no sets
+  ///
+  /// In en, this message translates to:
+  /// **'Each exercise must have at least one set'**
+  String get errorEmptySets;
+
+  /// Message when an exercise has no sets
+  ///
+  /// In en, this message translates to:
+  /// **'No sets defined'**
+  String get noSetsDefined;
 }
 
 class _AppLocalizationsDelegate
