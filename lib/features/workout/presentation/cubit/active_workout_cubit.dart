@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/workout_entities.dart';
+import '../../domain/repositories/workout_repository.dart';
 import '../../domain/usecases/get_logs_for_session_usecase.dart';
 import '../../domain/usecases/get_routine_by_id_usecase.dart';
 import '../../domain/usecases/get_session_by_id_usecase.dart';
@@ -17,6 +18,7 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
   ActiveWorkoutCubit({
     required String routineId,
     required WorkoutRoutine routine,
+    required WorkoutRepository repository,
     required GetRoutineByIdUseCase getRoutineByIdUseCase,
     required GetSessionByIdUseCase getSessionByIdUseCase,
     required SaveSessionUseCase saveSessionUseCase,
@@ -24,6 +26,7 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
     required GetLogsForSessionUseCase getLogsForSessionUseCase,
     String? sessionId,
   })  : _routineId = routineId,
+        _repository = repository,
         _getRoutineByIdUseCase = getRoutineByIdUseCase,
         _getSessionByIdUseCase = getSessionByIdUseCase,
         _saveSessionUseCase = saveSessionUseCase,
@@ -37,6 +40,7 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
   }
 
   final String _routineId;
+  final WorkoutRepository _repository;
   final GetRoutineByIdUseCase _getRoutineByIdUseCase;
   final GetSessionByIdUseCase _getSessionByIdUseCase;
   final SaveSessionUseCase _saveSessionUseCase;
@@ -225,6 +229,8 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
   }
 
   void _createNewSession(WorkoutRoutine routine) async {
+    await _repository.finalizeStaleSessions();
+    
     _sessionId = _uuid.v4();
     final setLogs = <SetLog>[];
 

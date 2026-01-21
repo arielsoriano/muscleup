@@ -29,7 +29,7 @@ class DashboardCubit extends Cubit<DashboardState> {
       DashboardState.loading(
         selectedDate: state.selectedDate,
         sessions: state.sessions,
-        incompleteSession: state.incompleteSession,
+        recentActiveSessions: state.recentActiveSessions,
       ),
     );
 
@@ -41,18 +41,21 @@ class DashboardCubit extends Cubit<DashboardState> {
               selectedDate: state.selectedDate,
               message: _mapFailureToMessage(failure),
               sessions: state.sessions,
-              incompleteSession: state.incompleteSession,
+              recentActiveSessions: state.recentActiveSessions,
             ),
           ),
           (sessions) {
             _allSessions = sessions;
-            final incompleteSession = sessions.where((s) => !s.isCompleted).firstOrNull;
+            final twelveHoursAgo = DateTime.now().subtract(const Duration(hours: 12));
+            final recentActiveSessions = sessions
+                .where((s) => !s.isCompleted && s.date.isAfter(twelveHoursAgo))
+                .toList();
             final filteredSessions = _filterSessionsByDate(state.selectedDate);
             emit(
               DashboardState.success(
                 selectedDate: state.selectedDate,
                 sessions: filteredSessions,
-                incompleteSession: incompleteSession,
+                recentActiveSessions: recentActiveSessions,
               ),
             );
           },
@@ -69,7 +72,7 @@ class DashboardCubit extends Cubit<DashboardState> {
       DashboardState.success(
         selectedDate: normalizedDate,
         sessions: filteredSessions,
-        incompleteSession: state.incompleteSession,
+        recentActiveSessions: state.recentActiveSessions,
       ),
     );
   }
@@ -85,7 +88,7 @@ class DashboardCubit extends Cubit<DashboardState> {
           selectedDate: state.selectedDate,
           message: _mapFailureToMessage(failure),
           sessions: state.sessions,
-          incompleteSession: state.incompleteSession,
+          recentActiveSessions: state.recentActiveSessions,
         ),
       ),
       (_) {},

@@ -283,6 +283,26 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
   }
 
   @override
+  Future<Either<Failure, void>> finalizeStaleSessions() async {
+    try {
+      final twelveHoursAgo = DateTime.now().subtract(const Duration(hours: 12));
+      
+      await (database.update(database.sessions)
+            ..where((session) => session.isCompleted.equals(false))
+            ..where((session) => session.date.isSmallerThanValue(twelveHoursAgo)))
+          .write(
+        const SessionsCompanion(
+          isCompleted: Value(true),
+        ),
+      );
+      
+      return const Either<Failure, void>.right(null);
+    } catch (e) {
+      return Either<Failure, void>.left(DatabaseFailure(e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, void>> saveSetLog(SetLog log) async {
     try {
       await database.into(database.setLogs).insertOnConflictUpdate(

@@ -42,7 +42,10 @@ class _DashboardPageContent extends StatelessWidget {
             onPressed: () {
               context.read<DashboardCubit>().deleteSession(sessionId);
               Navigator.of(dialogContext).pop();
-              context.showAppSnackBar(context.l10n.sessionDeleted);
+              context.showAppSnackBar(
+                context.l10n.sessionDeleted,
+                isError: false,
+              );
             },
             child: Text(context.l10n.delete),
           ),
@@ -140,7 +143,7 @@ class _DashboardPageContent extends StatelessWidget {
     BuildContext context,
     DateTime selectedDate,
     List<WorkoutSession> sessions,
-    WorkoutSession? incompleteSession,
+    List<WorkoutSession> recentActiveSessions,
   ) {
     final today = DateTime.now();
     final normalizedToday = DateTime(today.year, today.month, today.day);
@@ -155,10 +158,10 @@ class _DashboardPageContent extends StatelessWidget {
       children: [
         _buildWeeklyCalendarStrip(context, selectedDate),
         const Divider(height: 1),
-        if (incompleteSession != null) ...[
-          _buildResumeWorkoutCard(context, incompleteSession),
-          const Divider(height: 1),
-        ],
+        if (recentActiveSessions.isNotEmpty) ...
+          recentActiveSessions
+              .map((session) => _buildResumeWorkoutCard(context, session)),
+        if (recentActiveSessions.isNotEmpty) const Divider(height: 1),
         Expanded(
           child: sessions.isEmpty
               ? _buildEmptySessionsList(context)
@@ -171,7 +174,7 @@ class _DashboardPageContent extends StatelessWidget {
 
   Widget _buildResumeWorkoutCard(
     BuildContext context,
-    WorkoutSession incompleteSession,
+    WorkoutSession activeSession,
   ) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
@@ -192,8 +195,8 @@ class _DashboardPageContent extends StatelessWidget {
           context.push(
             AppRoutes.activeWorkout,
             extra: {
-              'routineId': incompleteSession.routineId,
-              'sessionId': incompleteSession.id,
+              'routineId': activeSession.routineId,
+              'sessionId': activeSession.id,
             },
           );
         },
@@ -247,7 +250,7 @@ class _DashboardPageContent extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      incompleteSession.routineName,
+                      activeSession.routineName,
                       style: textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),

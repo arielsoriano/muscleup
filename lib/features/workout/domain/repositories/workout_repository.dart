@@ -23,6 +23,8 @@ abstract class WorkoutRepository {
 
   Future<Either<Failure, void>> deleteSession(String sessionId);
 
+  Future<Either<Failure, void>> finalizeStaleSessions();
+
   Future<Either<Failure, void>> saveSetLog(SetLog log);
 
   Future<Either<Failure, List<SetLog>>> getLogsForSession(String sessionId);

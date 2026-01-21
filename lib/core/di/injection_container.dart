@@ -119,6 +119,7 @@ Future<void> _initializePresentation() async {
     (routine, sessionId) => ActiveWorkoutCubit(
       routineId: routine.id,
       routine: routine,
+      repository: serviceLocator(),
       getRoutineByIdUseCase: serviceLocator(),
       getSessionByIdUseCase: serviceLocator(),
       saveSessionUseCase: serviceLocator(),
