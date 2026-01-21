@@ -614,12 +614,13 @@ class _SetFormRowState extends State<_SetFormRow> {
         ),
         const SizedBox(height: 4),
         DropdownButtonFormField<WorkoutUnit>(
-          value: unit,
+          initialValue: unit,
           isDense: true,
+          isExpanded: true,
           decoration: InputDecoration(
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(
-              horizontal: 8,
+              horizontal: 4,
               vertical: 4,
             ),
             border: OutlineInputBorder(
@@ -632,6 +633,7 @@ class _SetFormRowState extends State<_SetFormRow> {
               child: Text(
                 _formatUnit(unit),
                 style: Theme.of(context).textTheme.bodySmall,
+                overflow: TextOverflow.ellipsis,
               ),
             );
           }).toList(),

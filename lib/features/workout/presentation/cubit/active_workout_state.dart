@@ -13,6 +13,9 @@ class ActiveWorkoutState with _$ActiveWorkoutState {
     @Default(false) bool isViewingHistory,
     @Default(false) bool isSaving,
     @Default(false) bool isLoading,
+    int? restTimerSeconds,
+    int? totalRestTime,
+    @Default(false) bool isResting,
   }) = ActiveWorkoutStateInitial;
 
   const factory ActiveWorkoutState.loading({
@@ -20,6 +23,9 @@ class ActiveWorkoutState with _$ActiveWorkoutState {
     String? displayTitle,
     @Default(false) bool isViewingHistory,
     @Default(true) bool isLoading,
+    int? restTimerSeconds,
+    int? totalRestTime,
+    @Default(false) bool isResting,
   }) = ActiveWorkoutStateLoading;
 
   const factory ActiveWorkoutState.tracking({
@@ -29,6 +35,9 @@ class ActiveWorkoutState with _$ActiveWorkoutState {
     @Default(false) bool isViewingHistory,
     @Default(false) bool isSaving,
     @Default(false) bool isLoading,
+    int? restTimerSeconds,
+    int? totalRestTime,
+    @Default(false) bool isResting,
   }) = ActiveWorkoutStateTracking;
 
   const factory ActiveWorkoutState.saving({
@@ -37,6 +46,9 @@ class ActiveWorkoutState with _$ActiveWorkoutState {
     String? displayTitle,
     @Default(false) bool isViewingHistory,
     @Default(false) bool isLoading,
+    int? restTimerSeconds,
+    int? totalRestTime,
+    @Default(false) bool isResting,
   }) = ActiveWorkoutStateSaving;
 
   const factory ActiveWorkoutState.success({
@@ -45,6 +57,9 @@ class ActiveWorkoutState with _$ActiveWorkoutState {
     String? displayTitle,
     @Default(false) bool isViewingHistory,
     @Default(false) bool isLoading,
+    int? restTimerSeconds,
+    int? totalRestTime,
+    @Default(false) bool isResting,
   }) = ActiveWorkoutStateSuccess;
 
   const factory ActiveWorkoutState.error({
@@ -54,5 +69,8 @@ class ActiveWorkoutState with _$ActiveWorkoutState {
     String? displayTitle,
     @Default(false) bool isViewingHistory,
     @Default(false) bool isLoading,
+    int? restTimerSeconds,
+    int? totalRestTime,
+    @Default(false) bool isResting,
   }) = ActiveWorkoutStateError;
 }

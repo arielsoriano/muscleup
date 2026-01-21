@@ -270,5 +270,13 @@
   "sessionDeleted": "Session deleted",
   "@sessionDeleted": {
     "description": "Success message after deleting a workout session"
+  },
+  "resting": "Resting",
+  "@resting": {
+    "description": "Rest timer label"
+  },
+  "add30Seconds": "+30s",
+  "@add30Seconds": {
+    "description": "Add 30 seconds to rest timer action"
   }
 }

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/utils/l10n_extension.dart';
+import '../../../../core/utils/ui_helpers.dart';
 import '../../domain/entities/workout_entities.dart';
 import '../../domain/usecases/get_routine_by_id_usecase.dart';
 
@@ -18,7 +19,9 @@ class WorkoutDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: serviceLocator<GetRoutineByIdUseCase>()(GetRoutineByIdParams(id: routineId)),
+      future: serviceLocator<GetRoutineByIdUseCase>()(
+        GetRoutineByIdParams(id: routineId),
+      ),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
@@ -98,13 +101,20 @@ class WorkoutDetailsPage extends StatelessWidget {
                                 Icon(
                                   Icons.fitness_center_outlined,
                                   size: 64,
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                 ),
                                 const SizedBox(height: 16),
                                 Text(
                                   context.l10n.noExercisesInRoutine,
-                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge
+                                      ?.copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant,
                                       ),
                                   textAlign: TextAlign.center,
                                 ),
@@ -122,7 +132,10 @@ class WorkoutDetailsPage extends StatelessWidget {
                               child: ExpansionTile(
                                 title: Text(
                                   exercise.name,
-                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(
                                         fontWeight: FontWeight.bold,
                                       ),
                                 ),
@@ -130,46 +143,102 @@ class WorkoutDetailsPage extends StatelessWidget {
                                   '${exercise.templateSets.length} ${context.l10n.sets}',
                                 ),
                                 children: [
-                                  if (exercise.notes != null && exercise.notes!.isNotEmpty)
+                                  if (exercise.notes != null &&
+                                      exercise.notes!.isNotEmpty)
                                     Padding(
                                       padding: const EdgeInsets.all(16),
                                       child: Text(
                                         exercise.notes!,
-                                        style: Theme.of(context).textTheme.bodyMedium,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
                                       ),
                                     ),
                                   if (exercise.templateSets.isNotEmpty)
                                     Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                      ),
                                       child: Column(
-                                        children: exercise.templateSets.asMap().entries.map((entry) {
+                                        children: exercise.templateSets
+                                            .asMap()
+                                            .entries
+                                            .map((entry) {
                                           final setIndex = entry.key + 1;
                                           final set = entry.value;
                                           return Padding(
-                                            padding: const EdgeInsets.only(bottom: 8),
+                                            padding: const EdgeInsets.only(
+                                              bottom: 8,
+                                            ),
                                             child: Row(
                                               children: [
                                                 Container(
                                                   width: 32,
                                                   height: 32,
                                                   decoration: BoxDecoration(
-                                                    color: Theme.of(context).colorScheme.primaryContainer,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .primaryContainer,
                                                     shape: BoxShape.circle,
                                                   ),
                                                   child: Center(
                                                     child: Text(
                                                       setIndex.toString(),
-                                                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                                                            color: Theme.of(context).colorScheme.onPrimaryContainer,
-                                                            fontWeight: FontWeight.bold,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .labelLarge
+                                                          ?.copyWith(
+                                                            color: Theme.of(
+                                                                    context,)
+                                                                .colorScheme
+                                                                .onPrimaryContainer,
+                                                            fontWeight:
+                                                                FontWeight.bold,
                                                           ),
                                                     ),
                                                   ),
                                                 ),
                                                 const SizedBox(width: 12),
-                                                Text(
-                                                  '${set.targetValue1?.toString() ?? '0'} ${_formatUnit(set.unit1)} × ${set.targetValue2?.toString() ?? '0'} ${_formatUnit(set.unit2)}',
-                                                  style: Theme.of(context).textTheme.bodyLarge,
+                                                Builder(
+                                                  builder: (context) {
+                                                    final parts = <String>[];
+
+                                                    if (set.unit1 != null &&
+                                                        set.unit1 !=
+                                                            WorkoutUnit.none) {
+                                                      final value = set
+                                                              .targetValue1
+                                                              ?.formatClean() ??
+                                                          '0';
+                                                      final unit = _formatUnit(
+                                                        set.unit1,
+                                                      );
+                                                      parts.add('$value $unit');
+                                                    }
+
+                                                    if (set.unit2 != null &&
+                                                        set.unit2 !=
+                                                            WorkoutUnit.none) {
+                                                      final value = set
+                                                              .targetValue2
+                                                              ?.formatClean() ??
+                                                          '0';
+                                                      final unit = _formatUnit(
+                                                        set.unit2,
+                                                      );
+                                                      parts.add('$value $unit');
+                                                    }
+
+                                                    return Text(
+                                                      parts.isEmpty
+                                                          ? '-'
+                                                          : parts
+                                                              .join(' \u00d7 '),
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyLarge,
+                                                    );
+                                                  },
                                                 ),
                                               ],
                                             ),

@@ -119,9 +119,11 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
                 constraints: const BoxConstraints(maxWidth: 250),
                 child: Text(
                   state.maybeWhen(
-                    tracking: (routine, setLogs, displayTitle, isViewingHistory, _, __) =>
+                    tracking: (routine, setLogs, displayTitle, isViewingHistory,
+                            _, __, ___, ____, _____,) =>
                         displayTitle ?? routine.name,
-                    initial: (routine, setLogs, displayTitle, isViewingHistory, _, __) =>
+                    initial: (routine, setLogs, displayTitle, isViewingHistory,
+                            _, __, ___, ____, _____,) =>
                         displayTitle ?? routine.name,
                     orElse: () => state.routine.name,
                   ),
@@ -134,24 +136,153 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
             body: isSaving || isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _buildWorkoutContent(context, state),
-            bottomNavigationBar: isSaving ||
+            bottomNavigationBar: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (state.maybeWhen(
+                  tracking: (_, __, ___, ____, _____, ______, _______, ________,
+                          isResting,) =>
+                      isResting,
+                  initial: (_, __, ___, ____, _____, ______, _______, ________,
+                          isResting,) =>
+                      isResting,
+                  orElse: () => false,
+                ))
+                  _buildRestTimerOverlay(context, state),
+                if (!(isSaving ||
                     isLoading ||
                     state.maybeWhen(
-                      tracking: (_, __, ___, isViewingHistory, ____, _____) =>
+                      tracking: (_, __, ___, isViewingHistory, ____, _____,
+                              ______, _______, ________,) =>
                           isViewingHistory,
                       orElse: () => false,
-                    )
-                ? null
-                : _buildFinishButton(context),
+                    )))
+                  _buildFinishButton(context),
+              ],
+            ),
           ),
         );
       },
     );
   }
 
+  Widget _buildRestTimerOverlay(
+      BuildContext context, ActiveWorkoutState state,) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    final restTimerSeconds = state.maybeWhen(
+      tracking: (_, __, ___, ____, _____, ______, restTimerSeconds, ________,
+              _________,) =>
+          restTimerSeconds,
+      initial: (_, __, ___, ____, _____, ______, restTimerSeconds, ________,
+              _________,) =>
+          restTimerSeconds,
+      orElse: () => null,
+    );
+
+    final totalRestTime = state.maybeWhen(
+      tracking:
+          (_, __, ___, ____, _____, ______, _______, totalRestTime, ________) =>
+              totalRestTime,
+      initial:
+          (_, __, ___, ____, _____, ______, _______, totalRestTime, ________) =>
+              totalRestTime,
+      orElse: () => null,
+    );
+
+    if (restTimerSeconds == null || totalRestTime == null) {
+      return const SizedBox.shrink();
+    }
+
+    final progress = totalRestTime > 0
+        ? (totalRestTime - restTimerSeconds) / totalRestTime
+        : 0.0;
+
+    return SafeArea(
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainer,
+              boxShadow: [
+                BoxShadow(
+                  color: colorScheme.shadow.withValues(alpha: 0.15),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              context.l10n.resting,
+                              style: textTheme.labelMedium?.copyWith(
+                                color: colorScheme.onSurface,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${restTimerSeconds}s',
+                              style: textTheme.headlineMedium?.copyWith(
+                                color: colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      FilledButton.tonal(
+                        onPressed: () =>
+                            context.read<ActiveWorkoutCubit>().add30Seconds(),
+                        style: FilledButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12,),
+                        ),
+                        child: Text(context.l10n.add30Seconds),
+                      ),
+                      const SizedBox(width: 8),
+                      TextButton(
+                        onPressed: () =>
+                            context.read<ActiveWorkoutCubit>().stopRestTimer(),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 12,),
+                        ),
+                        child: const Icon(Icons.close_rounded),
+                      ),
+                    ],
+                  ),
+                ),
+                LinearProgressIndicator(
+                  value: progress,
+                  minHeight: 4,
+                  backgroundColor: colorScheme.surfaceContainerHighest,
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(colorScheme.primary),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildFinishButton(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         border: Border(
@@ -173,13 +304,15 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
 
   Widget _buildWorkoutContent(BuildContext context, ActiveWorkoutState state) {
     return state.maybeWhen(
-      tracking: (routine, setLogs, displayTitle, isViewingHistory, _, __) =>
+      tracking: (routine, setLogs, displayTitle, isViewingHistory, _, __, ___,
+              ____, _____,) =>
           _buildExerciseList(
         context,
         routine,
         setLogs,
       ),
-      initial: (routine, setLogs, displayTitle, isViewingHistory, _, __) =>
+      initial: (routine, setLogs, displayTitle, isViewingHistory, _, __, ___,
+              ____, _____,) =>
           _buildExerciseList(
         context,
         routine,
@@ -243,32 +376,46 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
                   ),
                 ),
                 if (exercise.restTimeSeconds > 0)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.secondaryContainer,
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => context
+                          .read<ActiveWorkoutCubit>()
+                          .startRestTimer(exercise.restTimeSeconds),
                       borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.timer_outlined,
-                          size: 16,
-                          color: colorScheme.onSecondaryContainer,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${exercise.restTimeSeconds}s',
-                          style: textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSecondaryContainer,
-                            fontWeight: FontWeight.w600,
+                        decoration: BoxDecoration(
+                          color: colorScheme.primaryContainer
+                              .withValues(alpha: 0.5),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: colorScheme.primary.withValues(alpha: 0.3),
+                            width: 1,
                           ),
                         ),
-                      ],
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.timer_outlined,
+                              size: 16,
+                              color: colorScheme.primary,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${exercise.restTimeSeconds}s',
+                              style: textTheme.bodySmall?.copyWith(
+                                color: colorScheme.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
               ],
@@ -336,7 +483,7 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    if (log.unit1 != null) ...[
+                    if (log.unit1 != null && log.unit1 != WorkoutUnit.none) ...[
                       Expanded(
                         child: _buildValueInput(
                           context,
@@ -350,9 +497,10 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
                           },
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      if (log.unit2 != null && log.unit2 != WorkoutUnit.none)
+                        const SizedBox(width: 8),
                     ],
-                    if (log.unit2 != null) ...[
+                    if (log.unit2 != null && log.unit2 != WorkoutUnit.none) ...[
                       Expanded(
                         child: _buildValueInput(
                           context,
@@ -410,7 +558,7 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
         fontWeight: FontWeight.w600,
       ),
       decoration: InputDecoration(
-        hintText: value?.toString() ?? '0',
+        hintText: value?.formatClean() ?? '0',
         suffixText: _formatUnit(unit),
         suffixStyle: textTheme.bodySmall?.copyWith(
           color: colorScheme.onSurfaceVariant,
@@ -441,16 +589,20 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
   String _formatTargetValues(BuildContext context, SetLog log) {
     final parts = <String>[];
 
-    if (log.unit1 != null) {
-      final value = log.actualValue1?.toString() ?? '0';
+    if (log.unit1 != null && log.unit1 != WorkoutUnit.none) {
+      final value = log.actualValue1?.formatClean() ?? '0';
       final unit = _formatUnit(log.unit1);
       parts.add('$value$unit');
     }
 
-    if (log.unit2 != null) {
-      final value = log.actualValue2?.toString() ?? '0';
+    if (log.unit2 != null && log.unit2 != WorkoutUnit.none) {
+      final value = log.actualValue2?.formatClean() ?? '0';
       final unit = _formatUnit(log.unit2);
       parts.add('$value$unit');
+    }
+
+    if (parts.isEmpty) {
+      return context.l10n.target;
     }
 
     return '${context.l10n.target}: ${parts.join(' × ')}';

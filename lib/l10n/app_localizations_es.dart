@@ -206,4 +206,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get sessionDeleted => 'Sesión eliminada';
+
+  @override
+  String get resting => 'Descansando';
+
+  @override
+  String get add30Seconds => '+30s';
 }

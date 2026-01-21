@@ -475,6 +475,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Session deleted'**
   String get sessionDeleted;
+
+  /// Rest timer label
+  ///
+  /// In en, this message translates to:
+  /// **'Resting'**
+  String get resting;
+
+  /// Add 30 seconds to rest timer action
+  ///
+  /// In en, this message translates to:
+  /// **'+30s'**
+  String get add30Seconds;
 }
 
 class _AppLocalizationsDelegate

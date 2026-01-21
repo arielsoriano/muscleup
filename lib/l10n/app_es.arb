@@ -62,5 +62,7 @@
   "startRoutineName": "Iniciar {name}",
   "addExercisesFirst": "Añade ejercicios primero",
   "deleteSessionConfirm": "¿Estás seguro de que quieres eliminar esta sesión de entrenamiento?",
-  "sessionDeleted": "Sesión eliminada"
+  "sessionDeleted": "Sesión eliminada",
+  "resting": "Descansando",
+  "add30Seconds": "+30s"
 }

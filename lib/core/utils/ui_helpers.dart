@@ -21,3 +21,12 @@ extension BuildContextSnackBarExtension on BuildContext {
     );
   }
 }
+
+extension DoubleFormattingExtension on double {
+  String formatClean() {
+    if (this == toInt()) {
+      return toInt().toString();
+    }
+    return toString();
+  }
+}
