@@ -24,6 +24,7 @@
   "startWorkout": "Iniciar una Rutina",
   "finishWorkout": "Finalizar Entrenamiento",
   "workoutSavedSuccess": "¡Entrenamiento guardado exitosamente!",
+  "finishWorkoutConfirmation": "¿Estás seguro de que quieres finalizar y guardar este entrenamiento?",
   "activeWorkoutTitle": "Entrenamiento Activo",
   "set": "Serie",
   "target": "Objetivo",

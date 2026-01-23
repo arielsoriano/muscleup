@@ -115,7 +115,8 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
           context.showAppSnackBar(context.l10n.workoutSavedSuccess);
           context.pop();
         } else if (state is ActiveWorkoutStateError) {
-          final translatedMessage = _translateErrorMessage(context, state.message);
+          final translatedMessage =
+              _translateErrorMessage(context, state.message);
           context.showAppSnackBar(translatedMessage, isError: true);
         }
       },
@@ -172,8 +173,7 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (isResting)
-                  _buildRestTimerOverlay(context, state),
+                if (isResting) _buildRestTimerOverlay(context, state),
                 if (!isSaving && !isLoading && !isViewingHistory)
                   _buildFinishButton(context),
               ],
@@ -185,7 +185,9 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
   }
 
   Widget _buildRestTimerOverlay(
-      BuildContext context, ActiveWorkoutState state,) {
+    BuildContext context,
+    ActiveWorkoutState state,
+  ) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -258,7 +260,9 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
                             context.read<ActiveWorkoutCubit>().add30Seconds(),
                         style: FilledButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12,),
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
                         ),
                         child: Text(context.l10n.add30Seconds),
                       ),
@@ -268,7 +272,9 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
                             context.read<ActiveWorkoutCubit>().stopRestTimer(),
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 12,),
+                            horizontal: 12,
+                            vertical: 12,
+                          ),
                         ),
                         child: const Icon(Icons.close_rounded),
                       ),
@@ -298,10 +304,10 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: colorScheme.tertiaryContainer,
+        color: colorScheme.primaryContainer.withValues(alpha: 0.3),
         border: Border(
           bottom: BorderSide(
-            color: colorScheme.outline.withValues(alpha: 0.2),
+            color: colorScheme.primary.withValues(alpha: 0.2),
             width: 1,
           ),
         ),
@@ -309,15 +315,15 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
       child: Row(
         children: [
           Icon(
-            Icons.check_circle_rounded,
+            Icons.done_all_rounded,
             size: 20,
-            color: colorScheme.onTertiaryContainer,
+            color: colorScheme.primary,
           ),
           const SizedBox(width: 8),
           Text(
             context.l10n.completedSession,
             style: textTheme.titleSmall?.copyWith(
-              color: colorScheme.onTertiaryContainer,
+              color: colorScheme.primary,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -390,7 +396,8 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
             .where((log) => log.workoutExerciseId == exercise.id)
             .toList();
 
-        return _buildExerciseSection(context, exercise, exerciseLogs, isViewingHistory);
+        return _buildExerciseSection(
+            context, exercise, exerciseLogs, isViewingHistory);
       },
     );
   }
@@ -499,7 +506,8 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
               )
             else
               ...exerciseLogs.asMap().entries.map((entry) {
-                return _buildSetRow(context, entry.value, entry.key, isViewingHistory);
+                return _buildSetRow(
+                    context, entry.value, entry.key, isViewingHistory);
               }),
           ],
         ),
@@ -507,7 +515,8 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
     );
   }
 
-  Widget _buildSetRow(BuildContext context, SetLog log, int index, bool isViewingHistory) {
+  Widget _buildSetRow(
+      BuildContext context, SetLog log, int index, bool isViewingHistory) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final cubit = context.read<ActiveWorkoutCubit>();
@@ -713,7 +722,7 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(context.l10n.finishWorkout),
-        content: Text(context.l10n.workoutSavedSuccess),
+        content: Text(context.l10n.finishWorkoutConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),

@@ -81,6 +81,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get workoutSavedSuccess => 'Workout saved successfully!';
 
   @override
+  String get finishWorkoutConfirmation =>
+      'Are you sure you want to finish and save this workout?';
+
+  @override
   String get activeWorkoutTitle => 'Active Workout';
 
   @override

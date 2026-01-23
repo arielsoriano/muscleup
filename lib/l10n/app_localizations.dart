@@ -242,6 +242,12 @@ abstract class AppLocalizations {
   /// **'Workout saved successfully!'**
   String get workoutSavedSuccess;
 
+  /// Confirmation message for finishing and saving a workout
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to finish and save this workout?'**
+  String get finishWorkoutConfirmation;
+
   /// Active workout page title
   ///
   /// In en, this message translates to:

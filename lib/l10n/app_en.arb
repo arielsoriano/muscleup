@@ -96,6 +96,10 @@
   "@workoutSavedSuccess": {
     "description": "Success message when workout is saved"
   },
+  "finishWorkoutConfirmation": "Are you sure you want to finish and save this workout?",
+  "@finishWorkoutConfirmation": {
+    "description": "Confirmation message for finishing and saving a workout"
+  },
   "activeWorkoutTitle": "Active Workout",
   "@activeWorkoutTitle": {
     "description": "Active workout page title"

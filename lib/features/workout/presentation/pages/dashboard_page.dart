@@ -285,17 +285,13 @@ class _DashboardPageContent extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 0,
-      color: isCompleted
-          ? colorScheme.surfaceContainerHighest
-          : isActive
-              ? colorScheme.surface
-              : colorScheme.surfaceContainerLow,
+      color: isActive
+          ? colorScheme.surface
+          : colorScheme.surfaceContainerLow,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: isCompleted
-              ? colorScheme.outline
-              : colorScheme.outlineVariant,
+          color: colorScheme.outlineVariant,
           width: 1,
         ),
       ),
@@ -346,18 +342,18 @@ class _DashboardPageContent extends StatelessWidget {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: isCompleted
-                      ? colorScheme.tertiaryContainer
+                      ? colorScheme.surfaceContainerHigh
                       : colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   isCompleted
-                      ? Icons.check_circle_rounded
+                      ? Icons.done_all_rounded
                       : isActive
                           ? Icons.play_arrow_rounded
                           : Icons.fitness_center_rounded,
                   color: isCompleted
-                      ? colorScheme.onTertiaryContainer
+                      ? colorScheme.primary
                       : colorScheme.onPrimaryContainer,
                   size: 24,
                 ),
@@ -373,13 +369,13 @@ class _DashboardPageContent extends StatelessWidget {
                           Icon(
                             Icons.check,
                             size: 16,
-                            color: colorScheme.tertiary,
+                            color: colorScheme.primary,
                           ),
                           const SizedBox(width: 6),
                           Text(
                             context.l10n.completed,
                             style: textTheme.bodySmall?.copyWith(
-                              color: colorScheme.tertiary,
+                              color: colorScheme.primary,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -410,9 +406,6 @@ class _DashboardPageContent extends StatelessWidget {
                       routine.name,
                       style: textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: isCompleted
-                            ? colorScheme.onSurfaceVariant
-                            : null,
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
