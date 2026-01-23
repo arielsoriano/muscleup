@@ -181,6 +181,27 @@ class AppLocalizationsEs extends AppLocalizations {
   String get language => 'Idioma';
 
   @override
+  String get appSkin => 'Tema de la App';
+
+  @override
+  String get skinVolt => 'Volt';
+
+  @override
+  String get skinCyan => 'Cian';
+
+  @override
+  String get skinCrimson => 'Carmesí';
+
+  @override
+  String get skinRoyalGold => 'Dorado Real';
+
+  @override
+  String get skinMonochrome => 'Monocromo';
+
+  @override
+  String get selectSkin => 'Seleccionar Tema';
+
+  @override
   String get noExercisesInRoutine => 'No hay ejercicios en esta rutina';
 
   @override

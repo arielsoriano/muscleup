@@ -428,6 +428,48 @@ abstract class AppLocalizations {
   /// **'Language'**
   String get language;
 
+  /// App skin menu item
+  ///
+  /// In en, this message translates to:
+  /// **'App Skin'**
+  String get appSkin;
+
+  /// Volt skin name
+  ///
+  /// In en, this message translates to:
+  /// **'Volt'**
+  String get skinVolt;
+
+  /// Cyan skin name
+  ///
+  /// In en, this message translates to:
+  /// **'Cyan'**
+  String get skinCyan;
+
+  /// Crimson skin name
+  ///
+  /// In en, this message translates to:
+  /// **'Crimson'**
+  String get skinCrimson;
+
+  /// Royal Gold skin name
+  ///
+  /// In en, this message translates to:
+  /// **'Royal Gold'**
+  String get skinRoyalGold;
+
+  /// Monochrome skin name
+  ///
+  /// In en, this message translates to:
+  /// **'Monochrome'**
+  String get skinMonochrome;
+
+  /// Select skin dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Select App Skin'**
+  String get selectSkin;
+
   /// Empty state message when routine has no exercises
   ///
   /// In en, this message translates to:

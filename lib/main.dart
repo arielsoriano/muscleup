@@ -43,9 +43,15 @@ class MuscleupApp extends StatelessWidget {
               GlobalCupertinoLocalizations.delegate,
             ],
             supportedLocales: const [Locale('en'), Locale('es')],
-            theme: AppTheme.lightThemeData,
-            darkTheme: AppTheme.darkThemeData,
-            themeMode: ThemeMode.system,
+            theme: AppTheme.getTheme(
+              skin: state.currentSkin,
+              isDarkMode: false,
+            ),
+            darkTheme: AppTheme.getTheme(
+              skin: state.currentSkin,
+              isDarkMode: true,
+            ),
+            themeMode: state.isDarkMode ? ThemeMode.dark : ThemeMode.light,
           );
         },
       ),

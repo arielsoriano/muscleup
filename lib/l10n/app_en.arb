@@ -234,6 +234,34 @@
   "@language": {
     "description": "Language menu item"
   },
+  "appSkin": "App Skin",
+  "@appSkin": {
+    "description": "App skin menu item"
+  },
+  "skinVolt": "Volt",
+  "@skinVolt": {
+    "description": "Volt skin name"
+  },
+  "skinCyan": "Cyan",
+  "@skinCyan": {
+    "description": "Cyan skin name"
+  },
+  "skinCrimson": "Crimson",
+  "@skinCrimson": {
+    "description": "Crimson skin name"
+  },
+  "skinRoyalGold": "Royal Gold",
+  "@skinRoyalGold": {
+    "description": "Royal Gold skin name"
+  },
+  "skinMonochrome": "Monochrome",
+  "@skinMonochrome": {
+    "description": "Monochrome skin name"
+  },
+  "selectSkin": "Select App Skin",
+  "@selectSkin": {
+    "description": "Select skin dialog title"
+  },
   "noExercisesInRoutine": "No exercises in this routine",
   "@noExercisesInRoutine": {
     "description": "Empty state message when routine has no exercises"

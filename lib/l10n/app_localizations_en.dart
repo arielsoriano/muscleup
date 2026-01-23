@@ -181,6 +181,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get language => 'Language';
 
   @override
+  String get appSkin => 'App Skin';
+
+  @override
+  String get skinVolt => 'Volt';
+
+  @override
+  String get skinCyan => 'Cyan';
+
+  @override
+  String get skinCrimson => 'Crimson';
+
+  @override
+  String get skinRoyalGold => 'Royal Gold';
+
+  @override
+  String get skinMonochrome => 'Monochrome';
+
+  @override
+  String get selectSkin => 'Select App Skin';
+
+  @override
   String get noExercisesInRoutine => 'No exercises in this routine';
 
   @override
