@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -6,7 +7,6 @@ import 'package:intl/intl.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/utils/l10n_extension.dart';
-import '../../../../core/utils/ui_helpers.dart';
 import '../../../settings/presentation/cubit/settings_cubit.dart';
 import '../../domain/entities/workout_entities.dart';
 import '../cubit/dashboard_cubit.dart';
@@ -26,33 +26,6 @@ class DashboardPage extends StatelessWidget {
 
 class _DashboardPageContent extends StatelessWidget {
   const _DashboardPageContent();
-
-  void _showDeleteSessionDialog(BuildContext context, String sessionId) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(context.l10n.delete),
-        content: Text(context.l10n.deleteSessionConfirm),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(context.l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () {
-              context.read<DashboardCubit>().deleteSession(sessionId);
-              Navigator.of(dialogContext).pop();
-              context.showAppSnackBar(
-                context.l10n.sessionDeleted,
-                isError: false,
-              );
-            },
-            child: Text(context.l10n.delete),
-          ),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,22 +73,18 @@ class _DashboardPageContent extends StatelessWidget {
       ),
       body: BlocBuilder<DashboardCubit, DashboardState>(
         builder: (context, state) {
-          return state.when(
-            initial: (selectedDate, sessions, activeSessions, routines) =>
-                const SizedBox.shrink(),
-            loading: (selectedDate, sessions, activeSessions, routines) =>
-                const Center(
+          return state.map(
+            initial: (state) => const SizedBox.shrink(),
+            loading: (state) => const Center(
               child: CircularProgressIndicator(),
             ),
-            success: (selectedDate, sessions, activeSessions, routines) =>
-                _buildSuccessContent(
+            success: (state) => _buildSuccessContent(
               context,
-              selectedDate,
-              sessions,
-              activeSessions,
+              state.selectedDate,
+              state.routines,
+              state.activeSessions,
             ),
-            error: (selectedDate, message, sessions, activeSessions, routines) =>
-                Center(
+            error: (state) => Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -125,7 +94,7 @@ class _DashboardPageContent extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    message,
+                    state.message,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.error,
                         ),
@@ -142,7 +111,7 @@ class _DashboardPageContent extends StatelessWidget {
   Widget _buildSuccessContent(
     BuildContext context,
     DateTime selectedDate,
-    List<WorkoutSession> sessions,
+    List<WorkoutRoutine> routines,
     List<WorkoutSession> activeSessions,
   ) {
     final today = DateTime.now();
@@ -158,117 +127,31 @@ class _DashboardPageContent extends StatelessWidget {
       children: [
         _buildWeeklyCalendarStrip(context, selectedDate),
         const Divider(height: 1),
-        if (activeSessions.isNotEmpty) ...
-          activeSessions
-              .map((session) => _buildResumeWorkoutCard(context, session)),
-        if (activeSessions.isNotEmpty) const Divider(height: 1),
         Expanded(
-          child: sessions.isEmpty
-              ? _buildEmptySessionsList(context)
-              : _buildSessionsList(context, sessions),
+          child: routines.isEmpty
+              ? _buildEmptyRoutinesList(context)
+              : BlocBuilder<DashboardCubit, DashboardState>(
+                  builder: (context, state) {
+                    return state.map(
+                      initial: (_) => const SizedBox.shrink(),
+                      loading: (_) => const SizedBox.shrink(),
+                      success: (state) => _buildRoutinesList(
+                        context,
+                        routines,
+                        activeSessions,
+                        state.completedSessions,
+                      ),
+                      error: (_) => const SizedBox.shrink(),
+                    );
+                  },
+                ),
         ),
         if (!isFutureDate) _buildStartButton(context),
       ],
     );
   }
 
-  Widget _buildResumeWorkoutCard(
-    BuildContext context,
-    WorkoutSession activeSession,
-  ) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
-    return Card(
-      margin: const EdgeInsets.all(16),
-      elevation: 0,
-      color: colorScheme.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: colorScheme.outlineVariant,
-          width: 1,
-        ),
-      ),
-      child: InkWell(
-        onTap: () {
-          context.push(
-            AppRoutes.activeWorkout,
-            extra: {
-              'routineId': activeSession.routineId,
-              'sessionId': activeSession.id,
-            },
-          );
-        },
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border(
-              left: BorderSide(
-                color: colorScheme.primary,
-                width: 4,
-              ),
-            ),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.play_arrow_rounded,
-                  color: colorScheme.onPrimaryContainer,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.circle,
-                          size: 8,
-                          color: colorScheme.primary,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          context.l10n.inProgress,
-                          style: textTheme.bodySmall?.copyWith(
-                            color: colorScheme.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      activeSession.routineName,
-                      style: textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget _buildWeeklyCalendarStrip(
     BuildContext context,
@@ -361,61 +244,121 @@ class _DashboardPageContent extends StatelessWidget {
     );
   }
 
-  Widget _buildSessionsList(
+  Widget _buildRoutinesList(
     BuildContext context,
-    List<WorkoutSession> sessions,
+    List<WorkoutRoutine> routines,
+    List<WorkoutSession> activeSessions,
+    List<WorkoutSession> completedSessions,
   ) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: sessions.length,
+      itemCount: routines.length,
       itemBuilder: (context, index) {
-        return _buildSessionCard(context, sessions[index]);
+        final routine = routines[index];
+        final activeSession = activeSessions.firstWhereOrNull(
+          (s) => s.routineId == routine.id,
+        );
+        final completedSession = completedSessions.firstWhereOrNull(
+          (s) => s.routineId == routine.id,
+        );
+        return _buildRoutineCard(
+          context,
+          routine,
+          activeSession,
+          completedSession,
+        );
       },
     );
   }
 
-  Widget _buildSessionCard(BuildContext context, WorkoutSession session) {
+  Widget _buildRoutineCard(
+    BuildContext context,
+    WorkoutRoutine routine,
+    WorkoutSession? activeSession,
+    WorkoutSession? completedSession,
+  ) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final timeFormat = DateFormat.jm(
-      Localizations.localeOf(context).languageCode,
-    );
+    final isActive = activeSession != null;
+    final isCompleted = completedSession != null;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 0,
-      color: colorScheme.surfaceContainerLow,
+      color: isCompleted
+          ? colorScheme.surfaceContainerHighest
+          : isActive
+              ? colorScheme.surface
+              : colorScheme.surfaceContainerLow,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: colorScheme.outlineVariant,
+          color: isCompleted
+              ? colorScheme.outline
+              : colorScheme.outlineVariant,
           width: 1,
         ),
       ),
       child: InkWell(
         onTap: () {
-          context.push(
-            AppRoutes.activeWorkout,
-            extra: {
-              'routineId': session.routineId,
-              'sessionId': session.id,
-            },
-          );
+          if (isCompleted) {
+            context.push(
+              AppRoutes.activeWorkout,
+              extra: {
+                'routineId': routine.id,
+                'sessionId': completedSession.id,
+              },
+            );
+          } else if (isActive) {
+            context.push(
+              AppRoutes.activeWorkout,
+              extra: {
+                'routineId': routine.id,
+                'sessionId': activeSession.id,
+              },
+            );
+          } else {
+            context.push(
+              AppRoutes.activeWorkout,
+              extra: {
+                'routine': routine,
+              },
+            );
+          }
         },
         borderRadius: BorderRadius.circular(16),
-        child: Padding(
+        child: Container(
+          decoration: BoxDecoration(
+            border: isActive && !isCompleted
+                ? Border(
+                    left: BorderSide(
+                      color: colorScheme.primary,
+                      width: 4,
+                    ),
+                  )
+                : null,
+            borderRadius: BorderRadius.circular(16),
+          ),
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer,
+                  color: isCompleted
+                      ? colorScheme.tertiaryContainer
+                      : colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
-                  Icons.fitness_center_rounded,
-                  color: colorScheme.onPrimaryContainer,
+                  isCompleted
+                      ? Icons.check_circle_rounded
+                      : isActive
+                          ? Icons.play_arrow_rounded
+                          : Icons.fitness_center_rounded,
+                  color: isCompleted
+                      ? colorScheme.onTertiaryContainer
+                      : colorScheme.onPrimaryContainer,
                   size: 24,
                 ),
               ),
@@ -424,32 +367,66 @@ class _DashboardPageContent extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    if (isCompleted) ...[
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.check,
+                            size: 16,
+                            color: colorScheme.tertiary,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            context.l10n.completed,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: colorScheme.tertiary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                    ] else if (isActive) ...[
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.circle,
+                            size: 8,
+                            color: colorScheme.primary,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            context.l10n.inProgress,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: colorScheme.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                    ],
                     Text(
-                      session.routineName,
+                      routine.name,
                       style: textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
+                        color: isCompleted
+                            ? colorScheme.onSurfaceVariant
+                            : null,
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      timeFormat.format(session.date),
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
+                    if (!isActive && !isCompleted) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        '${routine.exercises.length} ${context.l10n.exercises}',
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
                       ),
-                    ),
+                    ],
                   ],
-                ),
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.delete_outline_rounded,
-                  color: colorScheme.error,
-                ),
-                onPressed: () => _showDeleteSessionDialog(
-                  context,
-                  session.id,
                 ),
               ),
               Icon(
@@ -463,7 +440,7 @@ class _DashboardPageContent extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptySessionsList(BuildContext context) {
+  Widget _buildEmptyRoutinesList(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -474,7 +451,7 @@ class _DashboardPageContent extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.event_available_rounded,
+              Icons.fitness_center_rounded,
               size: 80,
               color: colorScheme.onSurfaceVariant.withValues(
                 alpha: 0.5,
@@ -482,8 +459,16 @@ class _DashboardPageContent extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              context.l10n.noWorkoutToday,
+              context.l10n.noRoutinesAvailable,
               style: textTheme.titleLarge?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              context.l10n.createRoutineToGetStarted,
+              style: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,

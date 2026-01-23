@@ -512,11 +512,35 @@ abstract class AppLocalizations {
   /// **'In progress...'**
   String get inProgress;
 
+  /// Status label for a finished session
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completed;
+
+  /// Header label indicating a workout session is already finished
+  ///
+  /// In en, this message translates to:
+  /// **'Completed Session'**
+  String get completedSession;
+
   /// Error message when routine name is empty
   ///
   /// In en, this message translates to:
   /// **'Routine name cannot be empty'**
   String get errorEmptyName;
+
+  /// Empty state message when no routines exist
+  ///
+  /// In en, this message translates to:
+  /// **'No routines available'**
+  String get noRoutinesAvailable;
+
+  /// Helper text for creating first routine
+  ///
+  /// In en, this message translates to:
+  /// **'Create a routine to get started'**
+  String get createRoutineToGetStarted;
 
   /// Error message when routine has no exercises
   ///

@@ -295,9 +295,25 @@
   "@inProgress": {
     "description": "Status text for incomplete workout session"
   },
+  "completed": "Completed",
+  "@completed": {
+    "description": "Status label for a finished session"
+  },
+  "completedSession": "Completed Session",
+  "@completedSession": {
+    "description": "Header label indicating a workout session is already finished"
+  },
   "errorEmptyName": "Routine name cannot be empty",
   "@errorEmptyName": {
     "description": "Error message when routine name is empty"
+  },
+  "noRoutinesAvailable": "No routines available",
+  "@noRoutinesAvailable": {
+    "description": "Empty state message when no routines exist"
+  },
+  "createRoutineToGetStarted": "Create a routine to get started",
+  "@createRoutineToGetStarted": {
+    "description": "Helper text for creating first routine"
   },
   "errorNoExercises": "Routine must have at least one exercise",
   "@errorNoExercises": {

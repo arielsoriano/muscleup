@@ -110,6 +110,7 @@ Future<void> _initializePresentation() async {
 
   serviceLocator.registerFactory(
     () => DashboardCubit(
+      watchRoutinesUseCase: serviceLocator(),
       watchSessionsUseCase: serviceLocator(),
       deleteSessionUseCase: serviceLocator(),
     ),

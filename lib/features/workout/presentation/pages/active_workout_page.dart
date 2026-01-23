@@ -158,9 +158,16 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
                 ),
               ),
             ),
-            body: isSaving || isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _buildWorkoutContent(context, state),
+            body: Column(
+              children: [
+                if (isViewingHistory) _buildCompletedSessionBanner(context),
+                Expanded(
+                  child: isSaving || isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : _buildWorkoutContent(context, state),
+                ),
+              ],
+            ),
             bottomNavigationBar: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -283,6 +290,42 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
     );
   }
 
+  Widget _buildCompletedSessionBanner(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: colorScheme.tertiaryContainer,
+        border: Border(
+          bottom: BorderSide(
+            color: colorScheme.outline.withValues(alpha: 0.2),
+            width: 1,
+          ),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.check_circle_rounded,
+            size: 20,
+            color: colorScheme.onTertiaryContainer,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            context.l10n.completedSession,
+            style: textTheme.titleSmall?.copyWith(
+              color: colorScheme.onTertiaryContainer,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildFinishButton(BuildContext context) {
     return Container(
       width: double.infinity,
@@ -309,16 +352,24 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
   }
 
   Widget _buildWorkoutContent(BuildContext context, ActiveWorkoutState state) {
+    final isViewingHistory = state.maybeMap(
+      tracking: (s) => s.isViewingHistory,
+      initial: (s) => s.isViewingHistory,
+      orElse: () => false,
+    );
+
     return state.maybeMap(
       tracking: (s) => _buildExerciseList(
         context,
         s.routine,
         s.setLogs,
+        isViewingHistory,
       ),
       initial: (s) => _buildExerciseList(
         context,
         s.routine,
         s.setLogs,
+        isViewingHistory,
       ),
       orElse: () => const SizedBox.shrink(),
     );
@@ -328,6 +379,7 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
     BuildContext context,
     WorkoutRoutine routine,
     List<SetLog> setLogs,
+    bool isViewingHistory,
   ) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
@@ -338,7 +390,7 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
             .where((log) => log.workoutExerciseId == exercise.id)
             .toList();
 
-        return _buildExerciseSection(context, exercise, exerciseLogs);
+        return _buildExerciseSection(context, exercise, exerciseLogs, isViewingHistory);
       },
     );
   }
@@ -347,6 +399,7 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
     BuildContext context,
     WorkoutExercise exercise,
     List<SetLog> exerciseLogs,
+    bool isViewingHistory,
   ) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
@@ -446,7 +499,7 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
               )
             else
               ...exerciseLogs.asMap().entries.map((entry) {
-                return _buildSetRow(context, entry.value, entry.key);
+                return _buildSetRow(context, entry.value, entry.key, isViewingHistory);
               }),
           ],
         ),
@@ -454,7 +507,7 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
     );
   }
 
-  Widget _buildSetRow(BuildContext context, SetLog log, int index) {
+  Widget _buildSetRow(BuildContext context, SetLog log, int index, bool isViewingHistory) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final cubit = context.read<ActiveWorkoutCubit>();
@@ -504,11 +557,14 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
                           context,
                           log,
                           true,
+                          isViewingHistory,
                           onChanged: (value) {
-                            final updatedLog = log.copyWith(
-                              actualValue1: double.tryParse(value),
-                            );
-                            cubit.updateSetLog(updatedLog);
+                            if (!isViewingHistory) {
+                              final updatedLog = log.copyWith(
+                                actualValue1: double.tryParse(value),
+                              );
+                              cubit.updateSetLog(updatedLog);
+                            }
                           },
                         ),
                       ),
@@ -521,11 +577,14 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
                           context,
                           log,
                           false,
+                          isViewingHistory,
                           onChanged: (value) {
-                            final updatedLog = log.copyWith(
-                              actualValue2: double.tryParse(value),
-                            );
-                            cubit.updateSetLog(updatedLog);
+                            if (!isViewingHistory) {
+                              final updatedLog = log.copyWith(
+                                actualValue2: double.tryParse(value),
+                              );
+                              cubit.updateSetLog(updatedLog);
+                            }
                           },
                         ),
                       ),
@@ -536,20 +595,21 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          IconButton(
-            onPressed: () {
-              final updatedLog = log.copyWith(isCompleted: !log.isCompleted);
-              cubit.updateSetLog(updatedLog);
-            },
-            icon: Icon(
-              log.isCompleted
-                  ? Icons.check_circle_rounded
-                  : Icons.check_circle_outline_rounded,
-              color: log.isCompleted
-                  ? colorScheme.primary
-                  : colorScheme.onSurfaceVariant,
+          if (!isViewingHistory)
+            IconButton(
+              onPressed: () {
+                final updatedLog = log.copyWith(isCompleted: !log.isCompleted);
+                cubit.updateSetLog(updatedLog);
+              },
+              icon: Icon(
+                log.isCompleted
+                    ? Icons.check_circle_rounded
+                    : Icons.check_circle_outline_rounded,
+                color: log.isCompleted
+                    ? colorScheme.primary
+                    : colorScheme.onSurfaceVariant,
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -558,7 +618,8 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
   Widget _buildValueInput(
     BuildContext context,
     SetLog log,
-    bool isFirstValue, {
+    bool isFirstValue,
+    bool isViewingHistory, {
     required ValueChanged<String> onChanged,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -567,6 +628,7 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
     final value = isFirstValue ? log.actualValue1 : log.actualValue2;
 
     return TextField(
+      enabled: !isViewingHistory,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       textAlign: TextAlign.center,
       style: textTheme.bodyLarge?.copyWith(

@@ -226,7 +226,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get inProgress => 'En progreso...';
 
   @override
+  String get completed => 'Completado';
+
+  @override
+  String get completedSession => 'Sesión Completada';
+
+  @override
   String get errorEmptyName => 'El nombre de la rutina no puede estar vacío';
+
+  @override
+  String get noRoutinesAvailable => 'No hay rutinas disponibles';
+
+  @override
+  String get createRoutineToGetStarted => 'Crea una rutina para comenzar';
 
   @override
   String get errorNoExercises => 'La rutina debe tener al menos un ejercicio';

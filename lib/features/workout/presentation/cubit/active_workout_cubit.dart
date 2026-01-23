@@ -49,6 +49,7 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
   final String? _existingSessionId;
   final _uuid = const Uuid();
   late final String _sessionId;
+  bool _isSessionPersisted = false;
   Timer? _restTimer;
 
   Future<void> loadInitialData() async {
@@ -106,6 +107,8 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
   }
 
   Future<void> _loadExistingSession(WorkoutRoutine routine) async {
+    _isSessionPersisted = true;
+    
     final sessionResult = await _getSessionByIdUseCase(
       GetSessionByIdParams(sessionId: _sessionId),
     );
@@ -222,6 +225,7 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
     await _repository.finalizeStaleSessions();
     
     _sessionId = _uuid.v4();
+    _isSessionPersisted = false;
     final setLogs = <SetLog>[];
 
     for (final exercise in routine.exercises) {
@@ -256,49 +260,43 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
       return;
     }
 
-    final workoutSession = WorkoutSession(
-      id: _sessionId,
-      routineId: routine.id,
-      routineName: routine.name,
-      date: DateTime.now(),
-      notes: null,
-      isCompleted: false,
+    emit(
+      ActiveWorkoutState.tracking(
+        routine: routine.copyWith(exercises: List.from(routine.exercises)),
+        setLogs: setLogs,
+        displayTitle: null,
+      ),
     );
+  }
 
-    final sessionResult = await _saveSessionUseCase(
-      SaveSessionParams(session: workoutSession),
-    );
+  Future<void> _ensureSessionPersisted(WorkoutRoutine routine) async {
+    if (!_isSessionPersisted) {
+      final workoutSession = WorkoutSession(
+        id: _sessionId,
+        routineId: routine.id,
+        routineName: routine.name,
+        date: DateTime.now(),
+        notes: null,
+        isCompleted: false,
+      );
 
-    await sessionResult.fold(
-      (failure) async {
-        emit(
-          ActiveWorkoutState.error(
-            routine: routine.copyWith(exercises: List.from(routine.exercises)),
-            setLogs: [],
-            displayTitle: null,
-            message: _mapFailureToMessage(failure),
-          ),
-        );
-      },
-      (_) async {
-        for (final log in setLogs) {
-          await _saveSetLogUseCase(SaveSetLogParams(log: log));
-        }
+      final sessionResult = await _saveSessionUseCase(
+        SaveSessionParams(session: workoutSession),
+      );
 
-        emit(
-          ActiveWorkoutState.tracking(
-            routine: routine.copyWith(exercises: List.from(routine.exercises)),
-            setLogs: setLogs,
-            displayTitle: null,
-          ),
-        );
-      },
-    );
+      sessionResult.fold(
+        (failure) {},
+        (_) {
+          _isSessionPersisted = true;
+        },
+      );
+    }
   }
 
   void updateSetLog(SetLog updatedLog) {
     state.maybeWhen(
       tracking: (routine, setLogs, displayTitle, isViewingHistory, _, __, ___, ____, _____) async {
+        await _ensureSessionPersisted(routine);
         final updatedLogs = setLogs.map((log) {
           return log.id == updatedLog.id ? updatedLog : log;
         }).toList();
@@ -321,21 +319,27 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
   }
 
   Future<void> finishWorkout() async {
-    state.maybeWhen(
-      tracking: (routine, setLogs, displayTitle, isViewingHistory, _, __, ___, ____, _____) async {
+    state.mapOrNull(
+      tracking: (trackingState) async {
+        if (trackingState.isViewingHistory) {
+          return;
+        }
+
+        await _ensureSessionPersisted(trackingState.routine);
+
         emit(
           ActiveWorkoutState.saving(
-            routine: routine,
-            setLogs: setLogs,
-            displayTitle: displayTitle,
-            isViewingHistory: isViewingHistory,
+            routine: trackingState.routine,
+            setLogs: trackingState.setLogs,
+            displayTitle: trackingState.displayTitle,
+            isViewingHistory: trackingState.isViewingHistory,
           ),
         );
 
         final workoutSession = WorkoutSession(
           id: _sessionId,
-          routineId: routine.id,
-          routineName: routine.name,
+          routineId: trackingState.routine.id,
+          routineName: trackingState.routine.name,
           date: DateTime.now(),
           notes: null,
           isCompleted: true,
@@ -349,10 +353,10 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
           (failure) {
             emit(
               ActiveWorkoutState.error(
-                routine: routine,
-                setLogs: setLogs,
-                displayTitle: displayTitle,
-                isViewingHistory: isViewingHistory,
+                routine: trackingState.routine,
+                setLogs: trackingState.setLogs,
+                displayTitle: trackingState.displayTitle,
+                isViewingHistory: trackingState.isViewingHistory,
                 message: _mapFailureToMessage(failure),
               ),
             );
@@ -360,16 +364,15 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
           (_) {
             emit(
               ActiveWorkoutState.success(
-                routine: routine,
-                setLogs: setLogs,
-                displayTitle: displayTitle,
-                isViewingHistory: isViewingHistory,
+                routine: trackingState.routine,
+                setLogs: trackingState.setLogs,
+                displayTitle: trackingState.displayTitle,
+                isViewingHistory: true,
               ),
             );
           },
         );
       },
-      orElse: () {},
     );
   }
 

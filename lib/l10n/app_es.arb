@@ -69,7 +69,11 @@
   "noLogsFound": "No se encontraron registros para esta sesión",
   "activeWorkout": "Entrenamiento Activo",
   "inProgress": "En progreso...",
+  "completed": "Completado",
+  "completedSession": "Sesión Completada",
   "errorEmptyName": "El nombre de la rutina no puede estar vacío",
+  "noRoutinesAvailable": "No hay rutinas disponibles",
+  "createRoutineToGetStarted": "Crea una rutina para comenzar",
   "errorNoExercises": "La rutina debe tener al menos un ejercicio",
   "errorEmptySets": "Cada ejercicio debe tener al menos una serie",
   "noSetsDefined": "No hay series definidas"
