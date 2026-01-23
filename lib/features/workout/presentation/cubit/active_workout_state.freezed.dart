@@ -17,8 +17,10 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$ActiveWorkoutState {
   WorkoutRoutine get routine => throw _privateConstructorUsedError;
+  List<SetLog> get setLogs => throw _privateConstructorUsedError;
   String? get displayTitle => throw _privateConstructorUsedError;
   bool get isViewingHistory => throw _privateConstructorUsedError;
+  bool get isSaving => throw _privateConstructorUsedError;
   bool get isLoading => throw _privateConstructorUsedError;
   int? get restTimerSeconds => throw _privateConstructorUsedError;
   int? get totalRestTime => throw _privateConstructorUsedError;
@@ -38,8 +40,10 @@ mixin _$ActiveWorkoutState {
         initial,
     required TResult Function(
             WorkoutRoutine routine,
+            List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -61,6 +65,7 @@ mixin _$ActiveWorkoutState {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -71,6 +76,7 @@ mixin _$ActiveWorkoutState {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -82,6 +88,7 @@ mixin _$ActiveWorkoutState {
             String message,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -104,8 +111,10 @@ mixin _$ActiveWorkoutState {
         initial,
     TResult? Function(
             WorkoutRoutine routine,
+            List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -127,6 +136,7 @@ mixin _$ActiveWorkoutState {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -137,6 +147,7 @@ mixin _$ActiveWorkoutState {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -148,6 +159,7 @@ mixin _$ActiveWorkoutState {
             String message,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -170,8 +182,10 @@ mixin _$ActiveWorkoutState {
         initial,
     TResult Function(
             WorkoutRoutine routine,
+            List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -193,6 +207,7 @@ mixin _$ActiveWorkoutState {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -203,6 +218,7 @@ mixin _$ActiveWorkoutState {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -214,6 +230,7 @@ mixin _$ActiveWorkoutState {
             String message,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -269,8 +286,10 @@ abstract class $ActiveWorkoutStateCopyWith<$Res> {
   @useResult
   $Res call(
       {WorkoutRoutine routine,
+      List<SetLog> setLogs,
       String? displayTitle,
       bool isViewingHistory,
+      bool isSaving,
       bool isLoading,
       int? restTimerSeconds,
       int? totalRestTime,
@@ -295,8 +314,10 @@ class _$ActiveWorkoutStateCopyWithImpl<$Res, $Val extends ActiveWorkoutState>
   @override
   $Res call({
     Object? routine = null,
+    Object? setLogs = null,
     Object? displayTitle = freezed,
     Object? isViewingHistory = null,
+    Object? isSaving = null,
     Object? isLoading = null,
     Object? restTimerSeconds = freezed,
     Object? totalRestTime = freezed,
@@ -307,6 +328,10 @@ class _$ActiveWorkoutStateCopyWithImpl<$Res, $Val extends ActiveWorkoutState>
           ? _value.routine
           : routine // ignore: cast_nullable_to_non_nullable
               as WorkoutRoutine,
+      setLogs: null == setLogs
+          ? _value.setLogs
+          : setLogs // ignore: cast_nullable_to_non_nullable
+              as List<SetLog>,
       displayTitle: freezed == displayTitle
           ? _value.displayTitle
           : displayTitle // ignore: cast_nullable_to_non_nullable
@@ -314,6 +339,10 @@ class _$ActiveWorkoutStateCopyWithImpl<$Res, $Val extends ActiveWorkoutState>
       isViewingHistory: null == isViewingHistory
           ? _value.isViewingHistory
           : isViewingHistory // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isSaving: null == isSaving
+          ? _value.isSaving
+          : isSaving // ignore: cast_nullable_to_non_nullable
               as bool,
       isLoading: null == isLoading
           ? _value.isLoading
@@ -546,8 +575,10 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
         initial,
     required TResult Function(
             WorkoutRoutine routine,
+            List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -569,6 +600,7 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -579,6 +611,7 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -590,6 +623,7 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
             String message,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -616,8 +650,10 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
         initial,
     TResult? Function(
             WorkoutRoutine routine,
+            List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -639,6 +675,7 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -649,6 +686,7 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -660,6 +698,7 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
             String message,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -686,8 +725,10 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
         initial,
     TResult Function(
             WorkoutRoutine routine,
+            List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -709,6 +750,7 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -719,6 +761,7 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -730,6 +773,7 @@ class _$ActiveWorkoutStateInitialImpl implements ActiveWorkoutStateInitial {
             String message,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -802,11 +846,13 @@ abstract class ActiveWorkoutStateInitial implements ActiveWorkoutState {
 
   @override
   WorkoutRoutine get routine;
+  @override
   List<SetLog> get setLogs;
   @override
   String? get displayTitle;
   @override
   bool get isViewingHistory;
+  @override
   bool get isSaving;
   @override
   bool get isLoading;
@@ -836,8 +882,10 @@ abstract class _$$ActiveWorkoutStateLoadingImplCopyWith<$Res>
   @useResult
   $Res call(
       {WorkoutRoutine routine,
+      List<SetLog> setLogs,
       String? displayTitle,
       bool isViewingHistory,
+      bool isSaving,
       bool isLoading,
       int? restTimerSeconds,
       int? totalRestTime,
@@ -863,8 +911,10 @@ class __$$ActiveWorkoutStateLoadingImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? routine = null,
+    Object? setLogs = null,
     Object? displayTitle = freezed,
     Object? isViewingHistory = null,
+    Object? isSaving = null,
     Object? isLoading = null,
     Object? restTimerSeconds = freezed,
     Object? totalRestTime = freezed,
@@ -875,6 +925,10 @@ class __$$ActiveWorkoutStateLoadingImplCopyWithImpl<$Res>
           ? _value.routine
           : routine // ignore: cast_nullable_to_non_nullable
               as WorkoutRoutine,
+      setLogs: null == setLogs
+          ? _value._setLogs
+          : setLogs // ignore: cast_nullable_to_non_nullable
+              as List<SetLog>,
       displayTitle: freezed == displayTitle
           ? _value.displayTitle
           : displayTitle // ignore: cast_nullable_to_non_nullable
@@ -882,6 +936,10 @@ class __$$ActiveWorkoutStateLoadingImplCopyWithImpl<$Res>
       isViewingHistory: null == isViewingHistory
           ? _value.isViewingHistory
           : isViewingHistory // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isSaving: null == isSaving
+          ? _value.isSaving
+          : isSaving // ignore: cast_nullable_to_non_nullable
               as bool,
       isLoading: null == isLoading
           ? _value.isLoading
@@ -908,20 +966,35 @@ class __$$ActiveWorkoutStateLoadingImplCopyWithImpl<$Res>
 class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
   const _$ActiveWorkoutStateLoadingImpl(
       {required this.routine,
+      final List<SetLog> setLogs = const [],
       this.displayTitle,
       this.isViewingHistory = false,
+      this.isSaving = false,
       this.isLoading = true,
       this.restTimerSeconds,
       this.totalRestTime,
-      this.isResting = false});
+      this.isResting = false})
+      : _setLogs = setLogs;
 
   @override
   final WorkoutRoutine routine;
+  final List<SetLog> _setLogs;
+  @override
+  @JsonKey()
+  List<SetLog> get setLogs {
+    if (_setLogs is EqualUnmodifiableListView) return _setLogs;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_setLogs);
+  }
+
   @override
   final String? displayTitle;
   @override
   @JsonKey()
   final bool isViewingHistory;
+  @override
+  @JsonKey()
+  final bool isSaving;
   @override
   @JsonKey()
   final bool isLoading;
@@ -935,7 +1008,7 @@ class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
 
   @override
   String toString() {
-    return 'ActiveWorkoutState.loading(routine: $routine, displayTitle: $displayTitle, isViewingHistory: $isViewingHistory, isLoading: $isLoading, restTimerSeconds: $restTimerSeconds, totalRestTime: $totalRestTime, isResting: $isResting)';
+    return 'ActiveWorkoutState.loading(routine: $routine, setLogs: $setLogs, displayTitle: $displayTitle, isViewingHistory: $isViewingHistory, isSaving: $isSaving, isLoading: $isLoading, restTimerSeconds: $restTimerSeconds, totalRestTime: $totalRestTime, isResting: $isResting)';
   }
 
   @override
@@ -944,10 +1017,13 @@ class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
         (other.runtimeType == runtimeType &&
             other is _$ActiveWorkoutStateLoadingImpl &&
             (identical(other.routine, routine) || other.routine == routine) &&
+            const DeepCollectionEquality().equals(other._setLogs, _setLogs) &&
             (identical(other.displayTitle, displayTitle) ||
                 other.displayTitle == displayTitle) &&
             (identical(other.isViewingHistory, isViewingHistory) ||
                 other.isViewingHistory == isViewingHistory) &&
+            (identical(other.isSaving, isSaving) ||
+                other.isSaving == isSaving) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
             (identical(other.restTimerSeconds, restTimerSeconds) ||
@@ -959,8 +1035,17 @@ class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, routine, displayTitle,
-      isViewingHistory, isLoading, restTimerSeconds, totalRestTime, isResting);
+  int get hashCode => Object.hash(
+      runtimeType,
+      routine,
+      const DeepCollectionEquality().hash(_setLogs),
+      displayTitle,
+      isViewingHistory,
+      isSaving,
+      isLoading,
+      restTimerSeconds,
+      totalRestTime,
+      isResting);
 
   /// Create a copy of ActiveWorkoutState
   /// with the given fields replaced by the non-null parameter values.
@@ -987,8 +1072,10 @@ class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
         initial,
     required TResult Function(
             WorkoutRoutine routine,
+            List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1010,6 +1097,7 @@ class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1020,6 +1108,7 @@ class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1031,14 +1120,15 @@ class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
             String message,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
             bool isResting)
         error,
   }) {
-    return loading(routine, displayTitle, isViewingHistory, isLoading,
-        restTimerSeconds, totalRestTime, isResting);
+    return loading(routine, setLogs, displayTitle, isViewingHistory, isSaving,
+        isLoading, restTimerSeconds, totalRestTime, isResting);
   }
 
   @override
@@ -1057,8 +1147,10 @@ class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
         initial,
     TResult? Function(
             WorkoutRoutine routine,
+            List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1080,6 +1172,7 @@ class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1090,6 +1183,7 @@ class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1101,14 +1195,15 @@ class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
             String message,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
             bool isResting)?
         error,
   }) {
-    return loading?.call(routine, displayTitle, isViewingHistory, isLoading,
-        restTimerSeconds, totalRestTime, isResting);
+    return loading?.call(routine, setLogs, displayTitle, isViewingHistory,
+        isSaving, isLoading, restTimerSeconds, totalRestTime, isResting);
   }
 
   @override
@@ -1127,8 +1222,10 @@ class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
         initial,
     TResult Function(
             WorkoutRoutine routine,
+            List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1150,6 +1247,7 @@ class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1160,6 +1258,7 @@ class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1171,6 +1270,7 @@ class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
             String message,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1179,8 +1279,8 @@ class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
     required TResult orElse(),
   }) {
     if (loading != null) {
-      return loading(routine, displayTitle, isViewingHistory, isLoading,
-          restTimerSeconds, totalRestTime, isResting);
+      return loading(routine, setLogs, displayTitle, isViewingHistory, isSaving,
+          isLoading, restTimerSeconds, totalRestTime, isResting);
     }
     return orElse();
   }
@@ -1232,8 +1332,10 @@ class _$ActiveWorkoutStateLoadingImpl implements ActiveWorkoutStateLoading {
 abstract class ActiveWorkoutStateLoading implements ActiveWorkoutState {
   const factory ActiveWorkoutStateLoading(
       {required final WorkoutRoutine routine,
+      final List<SetLog> setLogs,
       final String? displayTitle,
       final bool isViewingHistory,
+      final bool isSaving,
       final bool isLoading,
       final int? restTimerSeconds,
       final int? totalRestTime,
@@ -1242,9 +1344,13 @@ abstract class ActiveWorkoutStateLoading implements ActiveWorkoutState {
   @override
   WorkoutRoutine get routine;
   @override
+  List<SetLog> get setLogs;
+  @override
   String? get displayTitle;
   @override
   bool get isViewingHistory;
+  @override
+  bool get isSaving;
   @override
   bool get isLoading;
   @override
@@ -1462,8 +1568,10 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
         initial,
     required TResult Function(
             WorkoutRoutine routine,
+            List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1485,6 +1593,7 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1495,6 +1604,7 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1506,6 +1616,7 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
             String message,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1532,8 +1643,10 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
         initial,
     TResult? Function(
             WorkoutRoutine routine,
+            List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1555,6 +1668,7 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1565,6 +1679,7 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1576,6 +1691,7 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
             String message,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1602,8 +1718,10 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
         initial,
     TResult Function(
             WorkoutRoutine routine,
+            List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1625,6 +1743,7 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1635,6 +1754,7 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1646,6 +1766,7 @@ class _$ActiveWorkoutStateTrackingImpl implements ActiveWorkoutStateTracking {
             String message,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1718,11 +1839,13 @@ abstract class ActiveWorkoutStateTracking implements ActiveWorkoutState {
 
   @override
   WorkoutRoutine get routine;
+  @override
   List<SetLog> get setLogs;
   @override
   String? get displayTitle;
   @override
   bool get isViewingHistory;
+  @override
   bool get isSaving;
   @override
   bool get isLoading;
@@ -1755,6 +1878,7 @@ abstract class _$$ActiveWorkoutStateSavingImplCopyWith<$Res>
       List<SetLog> setLogs,
       String? displayTitle,
       bool isViewingHistory,
+      bool isSaving,
       bool isLoading,
       int? restTimerSeconds,
       int? totalRestTime,
@@ -1783,6 +1907,7 @@ class __$$ActiveWorkoutStateSavingImplCopyWithImpl<$Res>
     Object? setLogs = null,
     Object? displayTitle = freezed,
     Object? isViewingHistory = null,
+    Object? isSaving = null,
     Object? isLoading = null,
     Object? restTimerSeconds = freezed,
     Object? totalRestTime = freezed,
@@ -1804,6 +1929,10 @@ class __$$ActiveWorkoutStateSavingImplCopyWithImpl<$Res>
       isViewingHistory: null == isViewingHistory
           ? _value.isViewingHistory
           : isViewingHistory // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isSaving: null == isSaving
+          ? _value.isSaving
+          : isSaving // ignore: cast_nullable_to_non_nullable
               as bool,
       isLoading: null == isLoading
           ? _value.isLoading
@@ -1833,6 +1962,7 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
       required final List<SetLog> setLogs,
       this.displayTitle,
       this.isViewingHistory = false,
+      this.isSaving = true,
       this.isLoading = false,
       this.restTimerSeconds,
       this.totalRestTime,
@@ -1856,6 +1986,9 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
   final bool isViewingHistory;
   @override
   @JsonKey()
+  final bool isSaving;
+  @override
+  @JsonKey()
   final bool isLoading;
   @override
   final int? restTimerSeconds;
@@ -1867,7 +2000,7 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
 
   @override
   String toString() {
-    return 'ActiveWorkoutState.saving(routine: $routine, setLogs: $setLogs, displayTitle: $displayTitle, isViewingHistory: $isViewingHistory, isLoading: $isLoading, restTimerSeconds: $restTimerSeconds, totalRestTime: $totalRestTime, isResting: $isResting)';
+    return 'ActiveWorkoutState.saving(routine: $routine, setLogs: $setLogs, displayTitle: $displayTitle, isViewingHistory: $isViewingHistory, isSaving: $isSaving, isLoading: $isLoading, restTimerSeconds: $restTimerSeconds, totalRestTime: $totalRestTime, isResting: $isResting)';
   }
 
   @override
@@ -1881,6 +2014,8 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
                 other.displayTitle == displayTitle) &&
             (identical(other.isViewingHistory, isViewingHistory) ||
                 other.isViewingHistory == isViewingHistory) &&
+            (identical(other.isSaving, isSaving) ||
+                other.isSaving == isSaving) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
             (identical(other.restTimerSeconds, restTimerSeconds) ||
@@ -1898,6 +2033,7 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
       const DeepCollectionEquality().hash(_setLogs),
       displayTitle,
       isViewingHistory,
+      isSaving,
       isLoading,
       restTimerSeconds,
       totalRestTime,
@@ -1928,8 +2064,10 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
         initial,
     required TResult Function(
             WorkoutRoutine routine,
+            List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1951,6 +2089,7 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1961,6 +2100,7 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -1972,14 +2112,15 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
             String message,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
             bool isResting)
         error,
   }) {
-    return saving(routine, setLogs, displayTitle, isViewingHistory, isLoading,
-        restTimerSeconds, totalRestTime, isResting);
+    return saving(routine, setLogs, displayTitle, isViewingHistory, isSaving,
+        isLoading, restTimerSeconds, totalRestTime, isResting);
   }
 
   @override
@@ -1998,8 +2139,10 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
         initial,
     TResult? Function(
             WorkoutRoutine routine,
+            List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2021,6 +2164,7 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2031,6 +2175,7 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2042,6 +2187,7 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
             String message,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2049,7 +2195,7 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
         error,
   }) {
     return saving?.call(routine, setLogs, displayTitle, isViewingHistory,
-        isLoading, restTimerSeconds, totalRestTime, isResting);
+        isSaving, isLoading, restTimerSeconds, totalRestTime, isResting);
   }
 
   @override
@@ -2068,8 +2214,10 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
         initial,
     TResult Function(
             WorkoutRoutine routine,
+            List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2091,6 +2239,7 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2101,6 +2250,7 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2112,6 +2262,7 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
             String message,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2120,8 +2271,8 @@ class _$ActiveWorkoutStateSavingImpl implements ActiveWorkoutStateSaving {
     required TResult orElse(),
   }) {
     if (saving != null) {
-      return saving(routine, setLogs, displayTitle, isViewingHistory, isLoading,
-          restTimerSeconds, totalRestTime, isResting);
+      return saving(routine, setLogs, displayTitle, isViewingHistory, isSaving,
+          isLoading, restTimerSeconds, totalRestTime, isResting);
     }
     return orElse();
   }
@@ -2176,6 +2327,7 @@ abstract class ActiveWorkoutStateSaving implements ActiveWorkoutState {
       required final List<SetLog> setLogs,
       final String? displayTitle,
       final bool isViewingHistory,
+      final bool isSaving,
       final bool isLoading,
       final int? restTimerSeconds,
       final int? totalRestTime,
@@ -2183,11 +2335,14 @@ abstract class ActiveWorkoutStateSaving implements ActiveWorkoutState {
 
   @override
   WorkoutRoutine get routine;
+  @override
   List<SetLog> get setLogs;
   @override
   String? get displayTitle;
   @override
   bool get isViewingHistory;
+  @override
+  bool get isSaving;
   @override
   bool get isLoading;
   @override
@@ -2219,6 +2374,7 @@ abstract class _$$ActiveWorkoutStateSuccessImplCopyWith<$Res>
       List<SetLog> setLogs,
       String? displayTitle,
       bool isViewingHistory,
+      bool isSaving,
       bool isLoading,
       int? restTimerSeconds,
       int? totalRestTime,
@@ -2247,6 +2403,7 @@ class __$$ActiveWorkoutStateSuccessImplCopyWithImpl<$Res>
     Object? setLogs = null,
     Object? displayTitle = freezed,
     Object? isViewingHistory = null,
+    Object? isSaving = null,
     Object? isLoading = null,
     Object? restTimerSeconds = freezed,
     Object? totalRestTime = freezed,
@@ -2268,6 +2425,10 @@ class __$$ActiveWorkoutStateSuccessImplCopyWithImpl<$Res>
       isViewingHistory: null == isViewingHistory
           ? _value.isViewingHistory
           : isViewingHistory // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isSaving: null == isSaving
+          ? _value.isSaving
+          : isSaving // ignore: cast_nullable_to_non_nullable
               as bool,
       isLoading: null == isLoading
           ? _value.isLoading
@@ -2297,6 +2458,7 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
       required final List<SetLog> setLogs,
       this.displayTitle,
       this.isViewingHistory = false,
+      this.isSaving = false,
       this.isLoading = false,
       this.restTimerSeconds,
       this.totalRestTime,
@@ -2320,6 +2482,9 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
   final bool isViewingHistory;
   @override
   @JsonKey()
+  final bool isSaving;
+  @override
+  @JsonKey()
   final bool isLoading;
   @override
   final int? restTimerSeconds;
@@ -2331,7 +2496,7 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
 
   @override
   String toString() {
-    return 'ActiveWorkoutState.success(routine: $routine, setLogs: $setLogs, displayTitle: $displayTitle, isViewingHistory: $isViewingHistory, isLoading: $isLoading, restTimerSeconds: $restTimerSeconds, totalRestTime: $totalRestTime, isResting: $isResting)';
+    return 'ActiveWorkoutState.success(routine: $routine, setLogs: $setLogs, displayTitle: $displayTitle, isViewingHistory: $isViewingHistory, isSaving: $isSaving, isLoading: $isLoading, restTimerSeconds: $restTimerSeconds, totalRestTime: $totalRestTime, isResting: $isResting)';
   }
 
   @override
@@ -2345,6 +2510,8 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
                 other.displayTitle == displayTitle) &&
             (identical(other.isViewingHistory, isViewingHistory) ||
                 other.isViewingHistory == isViewingHistory) &&
+            (identical(other.isSaving, isSaving) ||
+                other.isSaving == isSaving) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
             (identical(other.restTimerSeconds, restTimerSeconds) ||
@@ -2362,6 +2529,7 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
       const DeepCollectionEquality().hash(_setLogs),
       displayTitle,
       isViewingHistory,
+      isSaving,
       isLoading,
       restTimerSeconds,
       totalRestTime,
@@ -2392,8 +2560,10 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
         initial,
     required TResult Function(
             WorkoutRoutine routine,
+            List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2415,6 +2585,7 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2425,6 +2596,7 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2436,14 +2608,15 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
             String message,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
             bool isResting)
         error,
   }) {
-    return success(routine, setLogs, displayTitle, isViewingHistory, isLoading,
-        restTimerSeconds, totalRestTime, isResting);
+    return success(routine, setLogs, displayTitle, isViewingHistory, isSaving,
+        isLoading, restTimerSeconds, totalRestTime, isResting);
   }
 
   @override
@@ -2462,8 +2635,10 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
         initial,
     TResult? Function(
             WorkoutRoutine routine,
+            List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2485,6 +2660,7 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2495,6 +2671,7 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2506,6 +2683,7 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
             String message,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2513,7 +2691,7 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
         error,
   }) {
     return success?.call(routine, setLogs, displayTitle, isViewingHistory,
-        isLoading, restTimerSeconds, totalRestTime, isResting);
+        isSaving, isLoading, restTimerSeconds, totalRestTime, isResting);
   }
 
   @override
@@ -2532,8 +2710,10 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
         initial,
     TResult Function(
             WorkoutRoutine routine,
+            List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2555,6 +2735,7 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2565,6 +2746,7 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2576,6 +2758,7 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
             String message,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2584,7 +2767,7 @@ class _$ActiveWorkoutStateSuccessImpl implements ActiveWorkoutStateSuccess {
     required TResult orElse(),
   }) {
     if (success != null) {
-      return success(routine, setLogs, displayTitle, isViewingHistory,
+      return success(routine, setLogs, displayTitle, isViewingHistory, isSaving,
           isLoading, restTimerSeconds, totalRestTime, isResting);
     }
     return orElse();
@@ -2640,6 +2823,7 @@ abstract class ActiveWorkoutStateSuccess implements ActiveWorkoutState {
       required final List<SetLog> setLogs,
       final String? displayTitle,
       final bool isViewingHistory,
+      final bool isSaving,
       final bool isLoading,
       final int? restTimerSeconds,
       final int? totalRestTime,
@@ -2647,11 +2831,14 @@ abstract class ActiveWorkoutStateSuccess implements ActiveWorkoutState {
 
   @override
   WorkoutRoutine get routine;
+  @override
   List<SetLog> get setLogs;
   @override
   String? get displayTitle;
   @override
   bool get isViewingHistory;
+  @override
+  bool get isSaving;
   @override
   bool get isLoading;
   @override
@@ -2684,6 +2871,7 @@ abstract class _$$ActiveWorkoutStateErrorImplCopyWith<$Res>
       String message,
       String? displayTitle,
       bool isViewingHistory,
+      bool isSaving,
       bool isLoading,
       int? restTimerSeconds,
       int? totalRestTime,
@@ -2713,6 +2901,7 @@ class __$$ActiveWorkoutStateErrorImplCopyWithImpl<$Res>
     Object? message = null,
     Object? displayTitle = freezed,
     Object? isViewingHistory = null,
+    Object? isSaving = null,
     Object? isLoading = null,
     Object? restTimerSeconds = freezed,
     Object? totalRestTime = freezed,
@@ -2738,6 +2927,10 @@ class __$$ActiveWorkoutStateErrorImplCopyWithImpl<$Res>
       isViewingHistory: null == isViewingHistory
           ? _value.isViewingHistory
           : isViewingHistory // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isSaving: null == isSaving
+          ? _value.isSaving
+          : isSaving // ignore: cast_nullable_to_non_nullable
               as bool,
       isLoading: null == isLoading
           ? _value.isLoading
@@ -2768,6 +2961,7 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
       required this.message,
       this.displayTitle,
       this.isViewingHistory = false,
+      this.isSaving = false,
       this.isLoading = false,
       this.restTimerSeconds,
       this.totalRestTime,
@@ -2793,6 +2987,9 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
   final bool isViewingHistory;
   @override
   @JsonKey()
+  final bool isSaving;
+  @override
+  @JsonKey()
   final bool isLoading;
   @override
   final int? restTimerSeconds;
@@ -2804,7 +3001,7 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
 
   @override
   String toString() {
-    return 'ActiveWorkoutState.error(routine: $routine, setLogs: $setLogs, message: $message, displayTitle: $displayTitle, isViewingHistory: $isViewingHistory, isLoading: $isLoading, restTimerSeconds: $restTimerSeconds, totalRestTime: $totalRestTime, isResting: $isResting)';
+    return 'ActiveWorkoutState.error(routine: $routine, setLogs: $setLogs, message: $message, displayTitle: $displayTitle, isViewingHistory: $isViewingHistory, isSaving: $isSaving, isLoading: $isLoading, restTimerSeconds: $restTimerSeconds, totalRestTime: $totalRestTime, isResting: $isResting)';
   }
 
   @override
@@ -2819,6 +3016,8 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
                 other.displayTitle == displayTitle) &&
             (identical(other.isViewingHistory, isViewingHistory) ||
                 other.isViewingHistory == isViewingHistory) &&
+            (identical(other.isSaving, isSaving) ||
+                other.isSaving == isSaving) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
             (identical(other.restTimerSeconds, restTimerSeconds) ||
@@ -2837,6 +3036,7 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
       message,
       displayTitle,
       isViewingHistory,
+      isSaving,
       isLoading,
       restTimerSeconds,
       totalRestTime,
@@ -2867,8 +3067,10 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
         initial,
     required TResult Function(
             WorkoutRoutine routine,
+            List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2890,6 +3092,7 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2900,6 +3103,7 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2911,6 +3115,7 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
             String message,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2918,7 +3123,7 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
         error,
   }) {
     return error(routine, setLogs, message, displayTitle, isViewingHistory,
-        isLoading, restTimerSeconds, totalRestTime, isResting);
+        isSaving, isLoading, restTimerSeconds, totalRestTime, isResting);
   }
 
   @override
@@ -2937,8 +3142,10 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
         initial,
     TResult? Function(
             WorkoutRoutine routine,
+            List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2960,6 +3167,7 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2970,6 +3178,7 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2981,6 +3190,7 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
             String message,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -2993,6 +3203,7 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
         message,
         displayTitle,
         isViewingHistory,
+        isSaving,
         isLoading,
         restTimerSeconds,
         totalRestTime,
@@ -3015,8 +3226,10 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
         initial,
     TResult Function(
             WorkoutRoutine routine,
+            List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -3038,6 +3251,7 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -3048,6 +3262,7 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
             List<SetLog> setLogs,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -3059,6 +3274,7 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
             String message,
             String? displayTitle,
             bool isViewingHistory,
+            bool isSaving,
             bool isLoading,
             int? restTimerSeconds,
             int? totalRestTime,
@@ -3068,7 +3284,7 @@ class _$ActiveWorkoutStateErrorImpl implements ActiveWorkoutStateError {
   }) {
     if (error != null) {
       return error(routine, setLogs, message, displayTitle, isViewingHistory,
-          isLoading, restTimerSeconds, totalRestTime, isResting);
+          isSaving, isLoading, restTimerSeconds, totalRestTime, isResting);
     }
     return orElse();
   }
@@ -3124,6 +3340,7 @@ abstract class ActiveWorkoutStateError implements ActiveWorkoutState {
       required final String message,
       final String? displayTitle,
       final bool isViewingHistory,
+      final bool isSaving,
       final bool isLoading,
       final int? restTimerSeconds,
       final int? totalRestTime,
@@ -3131,12 +3348,15 @@ abstract class ActiveWorkoutStateError implements ActiveWorkoutState {
 
   @override
   WorkoutRoutine get routine;
+  @override
   List<SetLog> get setLogs;
   String get message;
   @override
   String? get displayTitle;
   @override
   bool get isViewingHistory;
+  @override
+  bool get isSaving;
   @override
   bool get isLoading;
   @override

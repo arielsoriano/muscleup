@@ -101,20 +101,20 @@ class _DashboardPageContent extends StatelessWidget {
       body: BlocBuilder<DashboardCubit, DashboardState>(
         builder: (context, state) {
           return state.when(
-            initial: (selectedDate, sessions, incompleteSession) =>
+            initial: (selectedDate, sessions, activeSessions, routines) =>
                 const SizedBox.shrink(),
-            loading: (selectedDate, sessions, incompleteSession) =>
+            loading: (selectedDate, sessions, activeSessions, routines) =>
                 const Center(
               child: CircularProgressIndicator(),
             ),
-            success: (selectedDate, sessions, incompleteSession) =>
+            success: (selectedDate, sessions, activeSessions, routines) =>
                 _buildSuccessContent(
               context,
               selectedDate,
               sessions,
-              incompleteSession,
+              activeSessions,
             ),
-            error: (selectedDate, message, sessions, incompleteSession) =>
+            error: (selectedDate, message, sessions, activeSessions, routines) =>
                 Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -143,7 +143,7 @@ class _DashboardPageContent extends StatelessWidget {
     BuildContext context,
     DateTime selectedDate,
     List<WorkoutSession> sessions,
-    List<WorkoutSession> recentActiveSessions,
+    List<WorkoutSession> activeSessions,
   ) {
     final today = DateTime.now();
     final normalizedToday = DateTime(today.year, today.month, today.day);
@@ -158,10 +158,10 @@ class _DashboardPageContent extends StatelessWidget {
       children: [
         _buildWeeklyCalendarStrip(context, selectedDate),
         const Divider(height: 1),
-        if (recentActiveSessions.isNotEmpty) ...
-          recentActiveSessions
+        if (activeSessions.isNotEmpty) ...
+          activeSessions
               .map((session) => _buildResumeWorkoutCard(context, session)),
-        if (recentActiveSessions.isNotEmpty) const Divider(height: 1),
+        if (activeSessions.isNotEmpty) const Divider(height: 1),
         Expanded(
           child: sessions.isEmpty
               ? _buildEmptySessionsList(context)

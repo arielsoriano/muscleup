@@ -52,7 +52,7 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
   Timer? _restTimer;
 
   Future<void> loadInitialData() async {
-    emit(ActiveWorkoutState.loading(routine: state.routine, isLoading: true));
+    emit(ActiveWorkoutState.loading(routine: state.routine));
 
     final routineResult = await _getRoutineByIdUseCase(
       GetRoutineByIdParams(id: _routineId),
@@ -65,9 +65,7 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
             routine: state.routine,
             setLogs: [],
             displayTitle: null,
-            isViewingHistory: false,
             message: _mapFailureToMessage(failure),
-            isLoading: false,
           ),
         );
         return null;
@@ -87,9 +85,7 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
           routine: fullRoutine,
           setLogs: [],
           displayTitle: null,
-          isViewingHistory: false,
           message: 'error.noExercises',
-          isLoading: false,
         ),
       );
       return;
@@ -98,7 +94,6 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
     emit(
       ActiveWorkoutState.loading(
         routine: fullRoutine.copyWith(exercises: List.from(fullRoutine.exercises)),
-        isLoading: true,
       ),
     );
 
@@ -122,7 +117,6 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
             routine: routine.copyWith(exercises: List.from(routine.exercises)),
             setLogs: [],
             message: _mapFailureToMessage(failure),
-            isLoading: false,
           ),
         );
         return null;
@@ -145,9 +139,8 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
             routine: routine.copyWith(exercises: List.from(routine.exercises)),
             setLogs: [],
             displayTitle: historicalSession.routineName,
-            isViewingHistory: true,
+            isViewingHistory: historicalSession.isCompleted,
             message: _mapFailureToMessage(failure),
-            isLoading: false,
           ),
         );
       },
@@ -159,9 +152,8 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
                   exercises: List.from(routine.exercises),),
               setLogs: [],
               displayTitle: historicalSession.routineName,
-              isViewingHistory: true,
+              isViewingHistory: historicalSession.isCompleted,
               message: 'error.noLogsFound',
-              isLoading: false,
             ),
           );
           return;
@@ -207,9 +199,8 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
               routine: updatedRoutine,
               setLogs: [],
               displayTitle: historicalSession.routineName,
-              isViewingHistory: true,
+              isViewingHistory: historicalSession.isCompleted,
               message: 'error.noExercises',
-              isLoading: false,
             ),
           );
           return;
@@ -220,8 +211,7 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
             routine: updatedRoutine,
             setLogs: existingLogs,
             displayTitle: historicalSession.routineName,
-            isViewingHistory: true,
-            isLoading: false,
+            isViewingHistory: historicalSession.isCompleted,
           ),
         );
       },
@@ -260,9 +250,7 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
           routine: routine.copyWith(exercises: List.from(routine.exercises)),
           setLogs: [],
           displayTitle: null,
-          isViewingHistory: false,
           message: 'error.noExercises',
-          isLoading: false,
         ),
       );
       return;
@@ -288,9 +276,7 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
             routine: routine.copyWith(exercises: List.from(routine.exercises)),
             setLogs: [],
             displayTitle: null,
-            isViewingHistory: false,
             message: _mapFailureToMessage(failure),
-            isLoading: false,
           ),
         );
       },
@@ -304,8 +290,6 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
             routine: routine.copyWith(exercises: List.from(routine.exercises)),
             setLogs: setLogs,
             displayTitle: null,
-            isViewingHistory: false,
-            isLoading: false,
           ),
         );
       },

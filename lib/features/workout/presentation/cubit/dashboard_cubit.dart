@@ -29,7 +29,8 @@ class DashboardCubit extends Cubit<DashboardState> {
       DashboardState.loading(
         selectedDate: state.selectedDate,
         sessions: state.sessions,
-        recentActiveSessions: state.recentActiveSessions,
+        activeSessions: state.activeSessions,
+        routines: state.routines,
       ),
     );
 
@@ -41,13 +42,14 @@ class DashboardCubit extends Cubit<DashboardState> {
               selectedDate: state.selectedDate,
               message: _mapFailureToMessage(failure),
               sessions: state.sessions,
-              recentActiveSessions: state.recentActiveSessions,
+              activeSessions: state.activeSessions,
+              routines: state.routines,
             ),
           ),
           (sessions) {
             _allSessions = sessions;
             final twelveHoursAgo = DateTime.now().subtract(const Duration(hours: 12));
-            final recentActiveSessions = sessions
+            final activeSessions = sessions
                 .where((s) => !s.isCompleted && s.date.isAfter(twelveHoursAgo))
                 .toList();
             final filteredSessions = _filterSessionsByDate(state.selectedDate);
@@ -55,7 +57,8 @@ class DashboardCubit extends Cubit<DashboardState> {
               DashboardState.success(
                 selectedDate: state.selectedDate,
                 sessions: filteredSessions,
-                recentActiveSessions: recentActiveSessions,
+                activeSessions: activeSessions,
+                routines: state.routines,
               ),
             );
           },
@@ -72,7 +75,8 @@ class DashboardCubit extends Cubit<DashboardState> {
       DashboardState.success(
         selectedDate: normalizedDate,
         sessions: filteredSessions,
-        recentActiveSessions: state.recentActiveSessions,
+        activeSessions: state.activeSessions,
+        routines: state.routines,
       ),
     );
   }
@@ -88,7 +92,8 @@ class DashboardCubit extends Cubit<DashboardState> {
           selectedDate: state.selectedDate,
           message: _mapFailureToMessage(failure),
           sessions: state.sessions,
-          recentActiveSessions: state.recentActiveSessions,
+          activeSessions: state.activeSessions,
+          routines: state.routines,
         ),
       ),
       (_) {},

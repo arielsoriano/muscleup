@@ -122,6 +122,27 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
       builder: (context, state) {
         final isSaving = state is ActiveWorkoutStateSaving;
         final isLoading = state is ActiveWorkoutStateLoading;
+        final isViewingHistory = state.maybeMap(
+          tracking: (s) => s.isViewingHistory,
+          initial: (s) => s.isViewingHistory,
+          error: (s) => s.isViewingHistory,
+          success: (s) => s.isViewingHistory,
+          saving: (s) => s.isViewingHistory,
+          orElse: () => false,
+        );
+        final isResting = state.maybeMap(
+          tracking: (s) => s.isResting,
+          initial: (s) => s.isResting,
+          orElse: () => false,
+        );
+        final displayTitle = state.maybeMap(
+          tracking: (s) => s.displayTitle,
+          initial: (s) => s.displayTitle,
+          error: (s) => s.displayTitle,
+          success: (s) => s.displayTitle,
+          saving: (s) => s.displayTitle,
+          orElse: () => null,
+        );
 
         return PopScope(
           canPop: !isSaving,
@@ -130,15 +151,7 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
               title: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 250),
                 child: Text(
-                  state.maybeWhen(
-                    tracking: (routine, setLogs, displayTitle, isViewingHistory,
-                            _, __, ___, ____, _____,) =>
-                        displayTitle ?? routine.name,
-                    initial: (routine, setLogs, displayTitle, isViewingHistory,
-                            _, __, ___, ____, _____,) =>
-                        displayTitle ?? routine.name,
-                    orElse: () => state.routine.name,
-                  ),
+                  displayTitle ?? state.routine.name,
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
@@ -150,25 +163,11 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
                 : _buildWorkoutContent(context, state),
             bottomNavigationBar: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (state.maybeWhen(
-                  tracking: (_, __, ___, ____, _____, ______, _______, ________,
-                          isResting,) =>
-                      isResting,
-                  initial: (_, __, ___, ____, _____, ______, _______, ________,
-                          isResting,) =>
-                      isResting,
-                  orElse: () => false,
-                ))
+                if (isResting)
                   _buildRestTimerOverlay(context, state),
-                if (!(isSaving ||
-                    isLoading ||
-                    state.maybeWhen(
-                      tracking: (_, __, ___, isViewingHistory, ____, _____,
-                              ______, _______, ________,) =>
-                          isViewingHistory,
-                      orElse: () => false,
-                    )))
+                if (!isSaving && !isLoading && !isViewingHistory)
                   _buildFinishButton(context),
               ],
             ),
@@ -183,23 +182,15 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    final restTimerSeconds = state.maybeWhen(
-      tracking: (_, __, ___, ____, _____, ______, restTimerSeconds, ________,
-              _________,) =>
-          restTimerSeconds,
-      initial: (_, __, ___, ____, _____, ______, restTimerSeconds, ________,
-              _________,) =>
-          restTimerSeconds,
+    final restTimerSeconds = state.maybeMap(
+      tracking: (s) => s.restTimerSeconds,
+      initial: (s) => s.restTimerSeconds,
       orElse: () => null,
     );
 
-    final totalRestTime = state.maybeWhen(
-      tracking:
-          (_, __, ___, ____, _____, ______, _______, totalRestTime, ________) =>
-              totalRestTime,
-      initial:
-          (_, __, ___, ____, _____, ______, _______, totalRestTime, ________) =>
-              totalRestTime,
+    final totalRestTime = state.maybeMap(
+      tracking: (s) => s.totalRestTime,
+      initial: (s) => s.totalRestTime,
       orElse: () => null,
     );
 
@@ -294,7 +285,7 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
 
   Widget _buildFinishButton(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      width: double.infinity,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         border: Border(
@@ -305,30 +296,29 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
         ),
       ),
       child: SafeArea(
-        child: FilledButton.icon(
-          onPressed: () => _showFinishConfirmation(context),
-          icon: const Icon(Icons.check_circle_outline_rounded),
-          label: Text(context.l10n.finishWorkout),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: FilledButton.icon(
+            onPressed: () => _showFinishConfirmation(context),
+            icon: const Icon(Icons.check_circle_outline_rounded),
+            label: Text(context.l10n.finishWorkout),
+          ),
         ),
       ),
     );
   }
 
   Widget _buildWorkoutContent(BuildContext context, ActiveWorkoutState state) {
-    return state.maybeWhen(
-      tracking: (routine, setLogs, displayTitle, isViewingHistory, _, __, ___,
-              ____, _____,) =>
-          _buildExerciseList(
+    return state.maybeMap(
+      tracking: (s) => _buildExerciseList(
         context,
-        routine,
-        setLogs,
+        s.routine,
+        s.setLogs,
       ),
-      initial: (routine, setLogs, displayTitle, isViewingHistory, _, __, ___,
-              ____, _____,) =>
-          _buildExerciseList(
+      initial: (s) => _buildExerciseList(
         context,
-        routine,
-        setLogs,
+        s.routine,
+        s.setLogs,
       ),
       orElse: () => const SizedBox.shrink(),
     );
