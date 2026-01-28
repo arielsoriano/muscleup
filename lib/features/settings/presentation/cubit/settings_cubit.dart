@@ -13,7 +13,7 @@ class SettingsCubit extends Cubit<SettingsState> {
           locale: Locale('en'),
           currentSkin: AppSkin.volt,
           isDarkMode: true,
-        )) {
+        ),) {
     _initialize();
   }
 
@@ -46,7 +46,7 @@ class SettingsCubit extends Cubit<SettingsState> {
       locale: locale,
       currentSkin: currentSkin,
       isDarkMode: isDarkMode,
-    ));
+    ),);
   }
 
   Future<void> changeLanguage(String languageCode) async {
@@ -55,7 +55,7 @@ class SettingsCubit extends Cubit<SettingsState> {
       locale: Locale(languageCode),
       currentSkin: state.currentSkin,
       isDarkMode: state.isDarkMode,
-    ));
+    ),);
   }
 
   Future<void> changeSkin(AppSkin newSkin) async {
@@ -64,7 +64,7 @@ class SettingsCubit extends Cubit<SettingsState> {
       locale: state.locale,
       currentSkin: newSkin,
       isDarkMode: state.isDarkMode,
-    ));
+    ),);
   }
 
   Future<void> toggleDarkMode() async {
@@ -74,6 +74,6 @@ class SettingsCubit extends Cubit<SettingsState> {
       locale: state.locale,
       currentSkin: state.currentSkin,
       isDarkMode: newIsDarkMode,
-    ));
+    ),);
   }
 }

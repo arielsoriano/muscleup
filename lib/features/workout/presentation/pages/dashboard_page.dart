@@ -570,12 +570,12 @@ class _DashboardPageContent extends StatelessWidget {
                         color: Theme.of(context)
                             .colorScheme
                             .outline
-                            .withOpacity(0.2),
+                            .withValues(alpha: 0.2),
                         width: 1,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: skin.primaryColor.withOpacity(0.4),
+                          color: skin.primaryColor.withValues(alpha: 0.4),
                           blurRadius: 8,
                           spreadRadius: 1,
                         ),
@@ -601,21 +601,21 @@ class _DashboardPageContent extends StatelessWidget {
                           color: Theme.of(context)
                               .colorScheme
                               .outline
-                              .withOpacity(0.3),
+                              .withValues(alpha: 0.3),
                           size: 28,
                         ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   tileColor: isSelected
-                      ? skin.primaryColor.withOpacity(0.1)
+                      ? skin.primaryColor.withValues(alpha: 0.1)
                       : null,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16.0,
                     vertical: 8.0,
                   ),
                 );
-              }).toList(),
+              }),
               const SizedBox(height: 8),
             ],
           ),

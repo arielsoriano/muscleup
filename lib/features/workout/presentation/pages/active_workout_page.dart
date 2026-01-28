@@ -397,7 +397,7 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
             .toList();
 
         return _buildExerciseSection(
-            context, exercise, exerciseLogs, isViewingHistory);
+            context, exercise, exerciseLogs, isViewingHistory,);
       },
     );
   }
@@ -507,7 +507,7 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
             else
               ...exerciseLogs.asMap().entries.map((entry) {
                 return _buildSetRow(
-                    context, entry.value, entry.key, isViewingHistory);
+                    context, entry.value, entry.key, isViewingHistory,);
               }),
           ],
         ),
@@ -516,7 +516,7 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
   }
 
   Widget _buildSetRow(
-      BuildContext context, SetLog log, int index, bool isViewingHistory) {
+      BuildContext context, SetLog log, int index, bool isViewingHistory,) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final cubit = context.read<ActiveWorkoutCubit>();
