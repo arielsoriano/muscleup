@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/workout_entities.dart';
 import '../../domain/repositories/workout_repository.dart';
@@ -49,11 +50,21 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
   final String? _existingSessionId;
   final _uuid = const Uuid();
   late final String _sessionId;
-  bool _isSessionPersisted = false;
   Timer? _restTimer;
 
   Future<void> loadInitialData() async {
+    if (AppConstants.enableDebugLogging) {
+      print('=== ACTIVE WORKOUT CUBIT LOAD INITIAL DATA ===');
+      print('loadInitialData called');
+      print('routineId: $_routineId');
+      print('existingSessionId: $_existingSessionId');
+    }
+    
     emit(ActiveWorkoutState.loading(routine: state.routine));
+
+    if (AppConstants.enableDebugLogging) {
+      print('Step 1: Fetching routine from database...');
+    }
 
     final routineResult = await _getRoutineByIdUseCase(
       GetRoutineByIdParams(id: _routineId),
@@ -61,6 +72,9 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
 
     final fullRoutineOrNull = await routineResult.fold(
       (failure) async {
+        if (AppConstants.enableDebugLogging) {
+          print('ERROR: Failed to load routine: $failure');
+        }
         emit(
           ActiveWorkoutState.error(
             routine: state.routine,
@@ -72,15 +86,31 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
         return null;
       },
       (fetchedRoutine) async {
+        if (AppConstants.enableDebugLogging) {
+          print('SUCCESS: Routine loaded: ${fetchedRoutine.name}');
+          print('Routine ID: ${fetchedRoutine.id}');
+          print('Exercises count: ${fetchedRoutine.exercises.length}');
+          for (var exercise in fetchedRoutine.exercises) {
+            print('  - Exercise: ${exercise.name}, sets: ${exercise.templateSets.length}');
+          }
+        }
         return fetchedRoutine;
       },
     );
 
-    if (fullRoutineOrNull == null) return;
+    if (fullRoutineOrNull == null) {
+      if (AppConstants.enableDebugLogging) {
+        print('ERROR: Routine is null, aborting');
+      }
+      return;
+    }
 
     final fullRoutine = fullRoutineOrNull;
 
     if (fullRoutine.exercises.isEmpty) {
+      if (AppConstants.enableDebugLogging) {
+        print('ERROR: Routine has no exercises');
+      }
       emit(
         ActiveWorkoutState.error(
           routine: fullRoutine,
@@ -100,21 +130,33 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
 
     if (_existingSessionId != null) {
       _sessionId = _existingSessionId!;
+      if (AppConstants.enableDebugLogging) {
+        print('Loading existing session: $_sessionId');
+      }
       await _loadExistingSession(fullRoutine);
     } else {
+      if (AppConstants.enableDebugLogging) {
+        print('No existing session - calling _createNewSession');
+      }
       _createNewSession(fullRoutine);
     }
   }
 
   Future<void> _loadExistingSession(WorkoutRoutine routine) async {
-    _isSessionPersisted = true;
-    
+    if (AppConstants.enableDebugLogging) {
+      print('Step 2: Loading existing session...');
+      print('SessionId: $_sessionId');
+    }
+
     final sessionResult = await _getSessionByIdUseCase(
       GetSessionByIdParams(sessionId: _sessionId),
     );
 
     final sessionOrNull = await sessionResult.fold(
       (failure) async {
+        if (AppConstants.enableDebugLogging) {
+          print('ERROR: Failed to load session: $failure');
+        }
         emit(
           ActiveWorkoutState.error(
             routine: routine.copyWith(exercises: List.from(routine.exercises)),
@@ -124,12 +166,29 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
         );
         return null;
       },
-      (session) async => session,
+      (session) async {
+        if (AppConstants.enableDebugLogging) {
+          print('SUCCESS: Session loaded: ${session.id}');
+          print('Session routineId: ${session.routineId}');
+          print('Session routineName: ${session.routineName}');
+          print('Session isCompleted: ${session.isCompleted}');
+        }
+        return session;
+      },
     );
 
-    if (sessionOrNull == null) return;
+    if (sessionOrNull == null) {
+      if (AppConstants.enableDebugLogging) {
+        print('ERROR: Session is null, aborting');
+      }
+      return;
+    }
 
     final historicalSession = sessionOrNull;
+
+    if (AppConstants.enableDebugLogging) {
+      print('Step 3: Loading set logs for session...');
+    }
 
     final result = await _getLogsForSessionUseCase(
       GetLogsForSessionParams(sessionId: _sessionId),
@@ -137,6 +196,9 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
 
     result.fold(
       (failure) {
+        if (AppConstants.enableDebugLogging) {
+          print('ERROR: Failed to load set logs: $failure');
+        }
         emit(
           ActiveWorkoutState.error(
             routine: routine.copyWith(exercises: List.from(routine.exercises)),
@@ -148,28 +210,23 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
         );
       },
       (existingLogs) {
-        if (existingLogs.isEmpty) {
-          emit(
-            ActiveWorkoutState.error(
-              routine: routine.copyWith(
-                  exercises: List.from(routine.exercises),),
-              setLogs: [],
-              displayTitle: historicalSession.routineName,
-              isViewingHistory: historicalSession.isCompleted,
-              message: 'error.noLogsFound',
-            ),
-          );
-          return;
+        if (AppConstants.enableDebugLogging) {
+          print('SUCCESS: Set logs loaded: ${existingLogs.length}');
+          if (existingLogs.isEmpty) {
+            print('INFO: No set logs found yet - this is normal for new sessions');
+          } else {
+            for (var log in existingLogs) {
+              print('  - SetLog: exerciseId=${log.workoutExerciseId}, setNumber=${log.setNumber}, completed=${log.isCompleted}');
+            }
+          }
         }
 
-        final exerciseIdsWithLogs =
-            existingLogs.map((log) => log.workoutExerciseId).toSet();
+        if (AppConstants.enableDebugLogging) {
+          print('Step 4: Building exercise state with logs...');
+          print('Total exercises in routine: ${routine.exercises.length}');
+        }
 
-        final filteredExercises = routine.exercises
-            .where((exercise) => exerciseIdsWithLogs.contains(exercise.id))
-            .toList();
-
-        final updatedExercises = filteredExercises.map((exercise) {
+        final updatedExercises = routine.exercises.map((exercise) {
           final exerciseLogs = existingLogs
               .where((log) => log.workoutExerciseId == exercise.id)
               .toList();
@@ -196,17 +253,11 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
 
         final updatedRoutine = routine.copyWith(exercises: updatedExercises);
 
-        if (updatedRoutine.exercises.isEmpty) {
-          emit(
-            ActiveWorkoutState.error(
-              routine: updatedRoutine,
-              setLogs: [],
-              displayTitle: historicalSession.routineName,
-              isViewingHistory: historicalSession.isCompleted,
-              message: 'error.noExercises',
-            ),
-          );
-          return;
+        if (AppConstants.enableDebugLogging) {
+          print('Step 5: Emitting success state');
+          print('Final exercises count: ${updatedRoutine.exercises.length}');
+          print('Final set logs count: ${existingLogs.length}');
+          print('Is viewing history: ${historicalSession.isCompleted}');
         }
 
         emit(
@@ -222,33 +273,101 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
   }
 
   void _createNewSession(WorkoutRoutine routine) async {
+    if (AppConstants.enableDebugLogging) {
+      print('=== ACTIVE WORKOUT CUBIT CREATE NEW SESSION ===');
+      print('_createNewSession called for routine: ${routine.name} (id=${routine.id})');
+    }
+    
     await _repository.finalizeStaleSessions();
     
     _sessionId = _uuid.v4();
-    _isSessionPersisted = false;
+    
+    if (AppConstants.enableDebugLogging) {
+      print('Generated new sessionId: $_sessionId');
+      print('Creating session in database immediately');
+    }
+    
+    final workoutSession = WorkoutSession(
+      id: _sessionId,
+      routineId: routine.id,
+      routineName: routine.name,
+      createdAt: DateTime.now(),
+      notes: null,
+      isCompleted: false,
+    );
+
+    final sessionResult = await _saveSessionUseCase(
+      SaveSessionParams(session: workoutSession),
+    );
+
+    sessionResult.fold(
+      (failure) {
+        if (AppConstants.enableDebugLogging) {
+          print('ERROR: Session creation failed: $failure');
+        }
+        emit(
+          ActiveWorkoutState.error(
+            routine: routine.copyWith(exercises: List.from(routine.exercises)),
+            setLogs: [],
+            displayTitle: null,
+            message: 'Failed to create session',
+          ),
+        );
+        return;
+      },
+      (_) {
+        if (AppConstants.enableDebugLogging) {
+          print('Session created successfully in database: $_sessionId');
+        }
+      },
+    );
+    
     final setLogs = <SetLog>[];
 
     for (final exercise in routine.exercises) {
       for (var i = 0; i < exercise.templateSets.length; i++) {
         final templateSet = exercise.templateSets[i];
-        setLogs.add(
-          SetLog(
-            id: _uuid.v4(),
-            sessionId: _sessionId,
-            workoutExerciseId: exercise.id,
-            setNumber: i + 1,
-            actualValue1: templateSet.targetValue1,
-            actualValue2: templateSet.targetValue2,
-            unit1: templateSet.unit1,
-            unit2: templateSet.unit2,
-            isCompleted: false,
-            timestamp: DateTime.now(),
-          ),
+        final setLog = SetLog(
+          id: _uuid.v4(),
+          sessionId: _sessionId,
+          workoutExerciseId: exercise.id,
+          setNumber: i + 1,
+          actualValue1: templateSet.targetValue1,
+          actualValue2: templateSet.targetValue2,
+          unit1: templateSet.unit1,
+          unit2: templateSet.unit2,
+          isCompleted: false,
+          timestamp: DateTime.now(),
+        );
+        setLogs.add(setLog);
+
+        if (AppConstants.enableDebugLogging) {
+          print('Saving SetLog to database: exercise=${exercise.name}, setNumber=${i + 1}');
+        }
+
+        final saveResult = await _saveSetLogUseCase(
+          SaveSetLogParams(log: setLog),
+        );
+
+        saveResult.fold(
+          (failure) {
+            if (AppConstants.enableDebugLogging) {
+              print('ERROR: Failed to save SetLog: $failure');
+            }
+          },
+          (_) {
+            if (AppConstants.enableDebugLogging) {
+              print('SUCCESS: SetLog saved to database');
+            }
+          },
         );
       }
     }
 
     if (routine.exercises.isEmpty) {
+      if (AppConstants.enableDebugLogging) {
+        print('ERROR: Routine has no exercises');
+      }
       emit(
         ActiveWorkoutState.error(
           routine: routine.copyWith(exercises: List.from(routine.exercises)),
@@ -260,6 +379,12 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
       return;
     }
 
+    if (AppConstants.enableDebugLogging) {
+      print('Step 5: Emitting tracking state');
+      print('Final exercises count: ${routine.exercises.length}');
+      print('Final set logs count: ${setLogs.length}');
+    }
+
     emit(
       ActiveWorkoutState.tracking(
         routine: routine.copyWith(exercises: List.from(routine.exercises)),
@@ -269,34 +394,9 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
     );
   }
 
-  Future<void> _ensureSessionPersisted(WorkoutRoutine routine) async {
-    if (!_isSessionPersisted) {
-      final workoutSession = WorkoutSession(
-        id: _sessionId,
-        routineId: routine.id,
-        routineName: routine.name,
-        date: DateTime.now(),
-        notes: null,
-        isCompleted: false,
-      );
-
-      final sessionResult = await _saveSessionUseCase(
-        SaveSessionParams(session: workoutSession),
-      );
-
-      sessionResult.fold(
-        (failure) {},
-        (_) {
-          _isSessionPersisted = true;
-        },
-      );
-    }
-  }
-
   void updateSetLog(SetLog updatedLog) {
     state.maybeWhen(
       tracking: (routine, setLogs, displayTitle, isViewingHistory, _, __, ___, ____, _____) async {
-        await _ensureSessionPersisted(routine);
         final updatedLogs = setLogs.map((log) {
           return log.id == updatedLog.id ? updatedLog : log;
         }).toList();
@@ -325,8 +425,6 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
           return;
         }
 
-        await _ensureSessionPersisted(trackingState.routine);
-
         emit(
           ActiveWorkoutState.saving(
             routine: trackingState.routine,
@@ -340,7 +438,7 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
           id: _sessionId,
           routineId: trackingState.routine.id,
           routineName: trackingState.routine.name,
-          date: DateTime.now(),
+          createdAt: DateTime.now(),
           notes: null,
           isCompleted: true,
         );

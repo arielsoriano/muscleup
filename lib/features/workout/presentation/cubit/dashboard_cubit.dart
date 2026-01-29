@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../domain/entities/workout_entities.dart';
@@ -87,10 +88,28 @@ class DashboardCubit extends Cubit<DashboardState> {
             _allSessions = sessions;
             final twelveHoursAgo = DateTime.now().subtract(const Duration(hours: 12));
             final activeSessions = sessions
-                .where((s) => !s.isCompleted && s.date.isAfter(twelveHoursAgo))
+                .where((s) => !s.isCompleted && s.createdAt.isAfter(twelveHoursAgo))
                 .toList();
             final filteredSessions = _filterSessionsByDate(state.selectedDate);
             final completedSessions = _filterCompletedSessionsByDate(state.selectedDate);
+            
+            if (AppConstants.enableDebugLogging) {
+              print('=== DASHBOARD CUBIT SESSIONS RECEIVED ===');
+              print('Total sessions: ${sessions.length}');
+              print('twelveHoursAgo threshold: $twelveHoursAgo');
+              for (var session in sessions) {
+                print('Session: id=${session.id}, routineId=${session.routineId}, routineName=${session.routineName}, createdAt=${session.createdAt}, isCompleted=${session.isCompleted}');
+              }
+              print('Active sessions count: ${activeSessions.length}');
+              for (var session in activeSessions) {
+                print('ActiveSession: id=${session.id}, routineId=${session.routineId}, routineName=${session.routineName}, createdAt=${session.createdAt}');
+              }
+              print('Completed sessions count: ${completedSessions.length}');
+              for (var session in completedSessions) {
+                print('CompletedSession: id=${session.id}, routineId=${session.routineId}, routineName=${session.routineName}, createdAt=${session.createdAt}');
+              }
+            }
+            
             emit(
               DashboardState.success(
                 selectedDate: state.selectedDate,
@@ -145,7 +164,7 @@ class DashboardCubit extends Cubit<DashboardState> {
   List<WorkoutSession> _filterSessionsByDate(DateTime date) {
     final normalizedDate = _normalizeDate(date);
     return _allSessions.where((session) {
-      final sessionDate = _normalizeDate(session.date);
+      final sessionDate = _normalizeDate(session.createdAt);
       return sessionDate.isAtSameMomentAs(normalizedDate);
     }).toList();
   }
@@ -153,7 +172,7 @@ class DashboardCubit extends Cubit<DashboardState> {
   List<WorkoutSession> _filterCompletedSessionsByDate(DateTime date) {
     final normalizedDate = _normalizeDate(date);
     return _allSessions.where((session) {
-      final sessionDate = _normalizeDate(session.date);
+      final sessionDate = _normalizeDate(session.createdAt);
       return sessionDate.isAtSameMomentAs(normalizedDate) && session.isCompleted;
     }).toList();
   }

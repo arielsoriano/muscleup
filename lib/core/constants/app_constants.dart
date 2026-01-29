@@ -1,5 +1,6 @@
 class AppConstants {
   static const String appName = 'Muscleup';
   static const String databaseName = 'muscleup.db';
-  static const int databaseVersion = 5;
+  static const int databaseVersion = 1;
+  static const bool enableDebugLogging = true;
 }

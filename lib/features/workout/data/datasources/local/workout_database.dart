@@ -55,7 +55,7 @@ class Sessions extends Table {
   TextColumn get id => text()();
   TextColumn get routineId => text().references(Routines, #id)();
   TextColumn get routineName => text()();
-  DateTimeColumn get date => dateTime()();
+  DateTimeColumn get createdAt => dateTime()();
   TextColumn get notes => text().nullable()();
   BoolColumn get isCompleted => boolean().withDefault(const Constant(true))();
 
@@ -125,23 +125,6 @@ class AppDatabase extends _$AppDatabase {
       onCreate: (Migrator m) async {
         await m.createAll();
         await _seedLibraryExercises();
-      },
-      onUpgrade: (Migrator m, int from, int to) async {
-        if (from < 2) {
-          await m.createTable(libraryExercises);
-          await _seedLibraryExercises();
-        }
-        if (from < 3) {
-          await customStatement(
-            'ALTER TABLE sessions ADD COLUMN routine_name TEXT NOT NULL DEFAULT "";',
-          );
-        }
-        if (from < 4) {
-          await m.addColumn(routines, routines.isDeleted);
-        }
-        if (from < 5) {
-          await m.addColumn(sessions, sessions.isCompleted);
-        }
       },
     );
   }

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -127,6 +128,14 @@ class _DashboardPageContent extends StatelessWidget {
     List<WorkoutRoutine> routines,
     List<WorkoutSession> activeSessions,
   ) {
+    if (AppConstants.enableDebugLogging) {
+      print('=== DASHBOARD PAGE SUCCESS STATE ===');
+      print('Active sessions count: ${activeSessions.length}');
+      for (var session in activeSessions) {
+        print('ActiveSession: id=${session.id}, routineId=${session.routineId}, routineName=${session.routineName}');
+      }
+    }
+    
     final today = DateTime.now();
     final normalizedToday = DateTime(today.year, today.month, today.day);
     final normalizedSelected = DateTime(
@@ -263,6 +272,11 @@ class _DashboardPageContent extends StatelessWidget {
     List<WorkoutSession> activeSessions,
     List<WorkoutSession> completedSessions,
   ) {
+    if (AppConstants.enableDebugLogging) {
+      print('=== BUILDING ROUTINES LIST ===');
+      print('Total routines: ${routines.length}');
+    }
+    
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: routines.length,
@@ -274,6 +288,15 @@ class _DashboardPageContent extends StatelessWidget {
         final completedSession = completedSessions.firstWhereOrNull(
           (s) => s.routineId == routine.id,
         );
+        
+        if (AppConstants.enableDebugLogging) {
+          print('Routine: id=${routine.id}, name=${routine.name}');
+          print('Has activeSession: ${activeSession != null}');
+          if (activeSession != null) {
+            print('ActiveSession match: sessionId=${activeSession.id}, routineId=${activeSession.routineId}');
+          }
+        }
+        
         return _buildRoutineCard(
           context,
           routine,
@@ -290,6 +313,20 @@ class _DashboardPageContent extends StatelessWidget {
     WorkoutSession? activeSession,
     WorkoutSession? completedSession,
   ) {
+    if (AppConstants.enableDebugLogging) {
+      print('=== RENDERING ROUTINE CARD ===');
+      print('Routine: ${routine.name} (id=${routine.id})');
+      print('activeSession is null: ${activeSession == null}');
+      print('completedSession is null: ${completedSession == null}');
+      if (activeSession != null && completedSession == null) {
+        print('Will show: In Progress badge');
+      } else if (completedSession != null) {
+        print('Will show: Completed badge');
+      } else {
+        print('Will show: No badge');
+      }
+    }
+    
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final isActive = activeSession != null;
@@ -310,6 +347,19 @@ class _DashboardPageContent extends StatelessWidget {
       ),
       child: InkWell(
         onTap: () {
+          if (AppConstants.enableDebugLogging) {
+            print('=== ROUTINES PAGE START SESSION BUTTON ===');
+            print('User tapped routine card: ${routine.name} (id=${routine.id})');
+            if (isCompleted) {
+              print('Opening completed session: ${completedSession.id}');
+            } else if (isActive) {
+              print('Opening active session: ${activeSession.id}');
+            } else {
+              print('Starting NEW session for routine: ${routine.id}');
+            }
+            print('Navigating to active workout page');
+          }
+          
           if (isCompleted) {
             context.push(
               AppRoutes.activeWorkout,

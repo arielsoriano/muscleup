@@ -694,7 +694,7 @@ mixin _$WorkoutSession {
   String get id => throw _privateConstructorUsedError;
   String get routineId => throw _privateConstructorUsedError;
   String get routineName => throw _privateConstructorUsedError;
-  DateTime get date => throw _privateConstructorUsedError;
+  DateTime get createdAt => throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
   bool get isCompleted => throw _privateConstructorUsedError;
 
@@ -715,7 +715,7 @@ abstract class $WorkoutSessionCopyWith<$Res> {
       {String id,
       String routineId,
       String routineName,
-      DateTime date,
+      DateTime createdAt,
       String? notes,
       bool isCompleted});
 }
@@ -738,7 +738,7 @@ class _$WorkoutSessionCopyWithImpl<$Res, $Val extends WorkoutSession>
     Object? id = null,
     Object? routineId = null,
     Object? routineName = null,
-    Object? date = null,
+    Object? createdAt = null,
     Object? notes = freezed,
     Object? isCompleted = null,
   }) {
@@ -755,9 +755,9 @@ class _$WorkoutSessionCopyWithImpl<$Res, $Val extends WorkoutSession>
           ? _value.routineName
           : routineName // ignore: cast_nullable_to_non_nullable
               as String,
-      date: null == date
-          ? _value.date
-          : date // ignore: cast_nullable_to_non_nullable
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
       notes: freezed == notes
           ? _value.notes
@@ -783,7 +783,7 @@ abstract class _$$WorkoutSessionImplCopyWith<$Res>
       {String id,
       String routineId,
       String routineName,
-      DateTime date,
+      DateTime createdAt,
       String? notes,
       bool isCompleted});
 }
@@ -804,7 +804,7 @@ class __$$WorkoutSessionImplCopyWithImpl<$Res>
     Object? id = null,
     Object? routineId = null,
     Object? routineName = null,
-    Object? date = null,
+    Object? createdAt = null,
     Object? notes = freezed,
     Object? isCompleted = null,
   }) {
@@ -821,9 +821,9 @@ class __$$WorkoutSessionImplCopyWithImpl<$Res>
           ? _value.routineName
           : routineName // ignore: cast_nullable_to_non_nullable
               as String,
-      date: null == date
-          ? _value.date
-          : date // ignore: cast_nullable_to_non_nullable
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
       notes: freezed == notes
           ? _value.notes
@@ -844,7 +844,7 @@ class _$WorkoutSessionImpl implements _WorkoutSession {
       {required this.id,
       required this.routineId,
       required this.routineName,
-      required this.date,
+      required this.createdAt,
       this.notes,
       required this.isCompleted});
 
@@ -855,7 +855,7 @@ class _$WorkoutSessionImpl implements _WorkoutSession {
   @override
   final String routineName;
   @override
-  final DateTime date;
+  final DateTime createdAt;
   @override
   final String? notes;
   @override
@@ -863,7 +863,7 @@ class _$WorkoutSessionImpl implements _WorkoutSession {
 
   @override
   String toString() {
-    return 'WorkoutSession(id: $id, routineId: $routineId, routineName: $routineName, date: $date, notes: $notes, isCompleted: $isCompleted)';
+    return 'WorkoutSession(id: $id, routineId: $routineId, routineName: $routineName, createdAt: $createdAt, notes: $notes, isCompleted: $isCompleted)';
   }
 
   @override
@@ -876,7 +876,8 @@ class _$WorkoutSessionImpl implements _WorkoutSession {
                 other.routineId == routineId) &&
             (identical(other.routineName, routineName) ||
                 other.routineName == routineName) &&
-            (identical(other.date, date) || other.date == date) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
             (identical(other.notes, notes) || other.notes == notes) &&
             (identical(other.isCompleted, isCompleted) ||
                 other.isCompleted == isCompleted));
@@ -884,7 +885,7 @@ class _$WorkoutSessionImpl implements _WorkoutSession {
 
   @override
   int get hashCode => Object.hash(
-      runtimeType, id, routineId, routineName, date, notes, isCompleted);
+      runtimeType, id, routineId, routineName, createdAt, notes, isCompleted);
 
   /// Create a copy of WorkoutSession
   /// with the given fields replaced by the non-null parameter values.
@@ -901,7 +902,7 @@ abstract class _WorkoutSession implements WorkoutSession {
       {required final String id,
       required final String routineId,
       required final String routineName,
-      required final DateTime date,
+      required final DateTime createdAt,
       final String? notes,
       required final bool isCompleted}) = _$WorkoutSessionImpl;
 
@@ -912,7 +913,7 @@ abstract class _WorkoutSession implements WorkoutSession {
   @override
   String get routineName;
   @override
-  DateTime get date;
+  DateTime get createdAt;
   @override
   String? get notes;
   @override
