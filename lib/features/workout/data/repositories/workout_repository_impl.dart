@@ -1,7 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../domain/entities/workout_entities.dart';
@@ -206,46 +205,21 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
   @override
   Stream<Either<Failure, List<WorkoutSession>>> watchSessions() {
     try {
-      if (AppConstants.enableDebugLogging) {
-        print('=== WATCH SESSIONS STREAM EMISSION ===');
-        print('Starting watchSessions stream');
-      }
       
       return database.select(database.sessions).watch().map((sessionDataList) {
         try {
-          if (AppConstants.enableDebugLogging) {
-            print('=== DATABASE QUERY SESSIONS ===');
-            print('Raw sessions from database count: ${sessionDataList.length}');
-            for (var sessionData in sessionDataList) {
-              print('DB Session: id=${sessionData.id}, routineId=${sessionData.routineId}, createdAt=${sessionData.createdAt}, isCompleted=${sessionData.isCompleted}');
-            }
-          }
-          
           final sessions = sessionDataList
               .map((sessionData) => _mapSessionDataToEntity(sessionData))
               .toList();
           
-          if (AppConstants.enableDebugLogging) {
-            print('Mapped sessions count: ${sessions.length}');
-            for (var session in sessions) {
-              print('Mapped Session: id=${session.id}, routineId=${session.routineId}, createdAt=${session.createdAt}, isCompleted=${session.isCompleted}');
-            }
-          }
-          
           return Either<Failure, List<WorkoutSession>>.right(sessions);
         } catch (e) {
-          if (AppConstants.enableDebugLogging) {
-            print('ERROR mapping sessions: $e');
-          }
           return Either<Failure, List<WorkoutSession>>.left(
             DatabaseFailure(e.toString()),
           );
         }
       });
     } catch (e) {
-      if (AppConstants.enableDebugLogging) {
-        print('ERROR starting watchSessions stream: $e');
-      }
       return Stream.value(
         Either<Failure, List<WorkoutSession>>.left(
           DatabaseFailure(e.toString()),
@@ -282,16 +256,6 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
   @override
   Future<Either<Failure, void>> saveSession(WorkoutSession session) async {
     try {
-      if (AppConstants.enableDebugLogging) {
-        print('=== CREATE SESSION IN REPOSITORY ===');
-        print('Input parameters:');
-        print('  routineId: ${session.routineId}');
-        print('  routineName: ${session.routineName}');
-        print('  sessionId: ${session.id}');
-        print('  createdAt: ${session.createdAt}');
-        print('  isCompleted: ${session.isCompleted}');
-      }
-      
       await database.into(database.sessions).insertOnConflictUpdate(
             SessionsCompanion.insert(
               id: session.id,
@@ -303,27 +267,8 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
             ),
           );
       
-      if (AppConstants.enableDebugLogging) {
-        print('=== SESSION CREATED IN DB ===');
-        print('sessionId: ${session.id}');
-        print('routineId: ${session.routineId}');
-        print('createdAt: ${session.createdAt}');
-        print('isCompleted: ${session.isCompleted}');
-        print('Complete session object:');
-        print('  id: ${session.id}');
-        print('  routineId: ${session.routineId}');
-        print('  routineName: ${session.routineName}');
-        print('  createdAt: ${session.createdAt}');
-        print('  notes: ${session.notes}');
-        print('  isCompleted: ${session.isCompleted}');
-        print('Session created successfully');
-      }
-      
       return const Either<Failure, void>.right(null);
     } catch (e) {
-      if (AppConstants.enableDebugLogging) {
-        print('ERROR creating session: $e');
-      }
       return Either<Failure, void>.left(DatabaseFailure(e.toString()));
     }
   }

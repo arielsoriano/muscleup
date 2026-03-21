@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/l10n_extension.dart';
 import '../../../../core/utils/ui_helpers.dart';
@@ -25,21 +24,6 @@ class ActiveWorkoutPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (AppConstants.enableDebugLogging) {
-      print('=== ACTIVE WORKOUT PAGE INIT ===');
-      print('Active workout page build called');
-      if (routine != null) {
-        print('Routine provided: ${routine!.name} (id=${routine!.id})');
-      } else if (routineId != null) {
-        print('RoutineId provided: $routineId');
-      }
-      if (sessionId != null) {
-        print('SessionId provided: $sessionId');
-      } else {
-        print('No sessionId - creating NEW session');
-      }
-    }
-    
     if (routine != null) {
       return _buildWithRoutine(routine!);
     } else if (routineId != null) {

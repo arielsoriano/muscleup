@@ -165,6 +165,7 @@ class _RoutineFormPageContentState extends State<_RoutineFormPageContent> {
           borderSide: BorderSide(color: colorScheme.primary, width: 2),
         ),
       ),
+      textCapitalization: TextCapitalization.sentences,
       onChanged: (value) => context.read<RoutineFormCubit>().updateName(value),
     );
   }
