@@ -1514,56 +1514,89 @@ context.l10n.retry
 
 ### UI Patterns
 
-**Centralized Messaging System**
+**Centralized Messaging System (Unified Snackbars)**
 
 **Implementation**: `lib/core/utils/ui_helpers.dart`
 
-```dart
-extension BuildContextSnackBarExtension on BuildContext {
-  void showAppSnackBar(String message, {bool isError = false}) {
-    final colorScheme = Theme.of(this).colorScheme;
+The app uses a centralized, theme-aware snackbar system that automatically adapts to the selected app skin.
 
-    ScaffoldMessenger.of(this).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: TextStyle(
-            color: isError
-                ? colorScheme.onErrorContainer
-                : colorScheme.onSecondaryContainer,
-          ),
-        ),
-        backgroundColor: isError
-            ? colorScheme.errorContainer
-            : colorScheme.secondaryContainer,
+```dart
+/// Enum for message types - single source of truth
+enum SnackBarType {
+  success,  // Uses secondaryContainer colors
+  error,    // Uses errorContainer colors  
+  info,     // Uses tertiaryContainer colors
+}
+
+extension BuildContextSnackBarExtension on BuildContext {
+  /// Unified method with theme-aware styling
+  void showAppSnackBar({
+    required String message,
+    SnackBarType type = SnackBarType.success,
+    Duration duration = const Duration(seconds: 3),
+  }) {
+    final colorScheme = Theme.of(this).colorScheme;
+    
+    final (backgroundColor, textColor) = switch (type) {
+      SnackBarType.success => (
+        colorScheme.secondaryContainer,
+        colorScheme.onSecondaryContainer,
       ),
-    );
+      SnackBarType.error => (
+        colorScheme.errorContainer,
+        colorScheme.onErrorContainer,
+      ),
+      SnackBarType.info => (
+        colorScheme.tertiaryContainer,
+        colorScheme.onTertiaryContainer,
+      ),
+    };
+    
+    ScaffoldMessenger.of(this).showSnackBar(/* ... */);
   }
 }
 ```
 
 **Design Philosophy**:
-- **Tonal Colors**: Uses Material 3 container colors (secondaryContainer, errorContainer)
-- **Contextual Styling**: Automatic text color adjustment (onErrorContainer, onSecondaryContainer)
-- **Ergonomic Access**: Extension on BuildContext enables `context.showAppSnackBar(message)`
-- **Type Safety**: isError parameter controls color scheme selection
-- **Consistency**: All pages use same messaging pattern (RoutineFormPage, ActiveWorkoutPage, DashboardPage)
+- **Theme-Aware**: Uses Material 3 semantic colors (secondaryContainer, errorContainer, tertiaryContainer) that adapt to app skin
+- **Type-Safe Enum**: `SnackBarType` ensures consistency across app; no magic strings or booleans
+- **Single Source of Truth**: All changes to styling happen in one place
+- **Contextual Colors**: Automatic text color for accessibility based on message type
+- **Ergonomic API**: Clear named parameters for intuitive usage
 
-**Usage Across Pages**:
+**Usage Examples**:
 ```dart
-// Success message
-context.showAppSnackBar(context.l10n.saveRoutineSuccess);
+// Success message (uses secondary color theme)
+context.showAppSnackBar(
+  message: context.l10n.saveRoutineSuccess,
+  type: SnackBarType.success,
+);
 
-// Error message
-context.showAppSnackBar(state.message, isError: true);
+// Error message (uses error color theme)
+context.showAppSnackBar(
+  message: state.message,
+  type: SnackBarType.error,
+);
+
+// Info message (uses tertiary color theme)
+context.showAppSnackBar(
+  message: context.l10n.routineAlreadyActive(routine.name),
+  type: SnackBarType.info,
+);
 ```
 
+**Migration & Maintenance**:
+- **Change Colors Globally**: Modify the enum switch statement in one place
+- **Support New Message Types**: Add new case to enum (e.g., `warning`) and update switch logic
+- **Localization-Ready**: Works automatically with `context.l10n.*` keys
+- **No Dependencies on Brightness**: Uses Material 3 semantic colors instead of hardcoded Colors.green, Colors.red
+
 **Benefits**:
-- Single source of truth for user feedback
-- Material 3 design compliance
-- Accessible color contrast ratios
-- Eliminates duplicate SnackBar configuration
-- Localization-ready
+- Unified look & feel across all pages (RoutineFormPage, RoutinesPage, WorkoutDetailsPage, ActiveWorkoutPage)
+- Automatically syncs with app skin/theme changes
+- Accessible color contrast ratios guaranteed by Material 3 design system
+- Single point of control for message styling throughout the app
+- Type-safe: eliminates error-prone boolean flags
 
 **Modal-Based Search Pattern**
 

@@ -124,6 +124,18 @@
   "@exerciseName": {
     "description": "Exercise name label"
   },
+  "notes": "Notes",
+  "@notes": {
+    "description": "Generic notes label"
+  },
+  "exerciseNotesLabel": "Notes (optional)",
+  "@exerciseNotesLabel": {
+    "description": "Label for exercise notes field in routine form"
+  },
+  "exerciseNotesHint": "e.g. Elliptical or bike",
+  "@exerciseNotesHint": {
+    "description": "Hint for exercise notes field in routine form"
+  },
   "removeExercise": "Remove Exercise",
   "@removeExercise": {
     "description": "Remove exercise action"
@@ -274,6 +286,10 @@
   "@delete": {
     "description": "Delete action"
   },
+  "routineDeletedSuccess": "Routine deleted successfully!",
+  "@routineDeletedSuccess": {
+    "description": "Success message when a routine is deleted"
+  },
   "emptyRoutine": "Empty",
   "@emptyRoutine": {
     "description": "Label for routines with no exercises"
@@ -314,6 +330,15 @@
   "resumeWorkout": "Resume Current Workout",
   "@resumeWorkout": {
     "description": "Label for resuming an incomplete workout session"
+  },
+  "routineAlreadyActive": "You already have {name} in progress. Resuming it.",
+  "@routineAlreadyActive": {
+    "description": "Message shown when routine already has an active session",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "noLogsFound": "No logs found for this session",
   "@noLogsFound": {

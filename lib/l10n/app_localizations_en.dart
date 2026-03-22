@@ -103,6 +103,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exerciseName => 'Exercise Name';
 
   @override
+  String get notes => 'Notes';
+
+  @override
+  String get exerciseNotesLabel => 'Notes (optional)';
+
+  @override
+  String get exerciseNotesHint => 'e.g. Elliptical or bike';
+
+  @override
   String get removeExercise => 'Remove Exercise';
 
   @override
@@ -212,6 +221,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get delete => 'Delete';
 
   @override
+  String get routineDeletedSuccess => 'Routine deleted successfully!';
+
+  @override
   String get emptyRoutine => 'Empty';
 
   @override
@@ -240,6 +252,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get resumeWorkout => 'Resume Current Workout';
+
+  @override
+  String routineAlreadyActive(String name) {
+    return 'You already have $name in progress. Resuming it.';
+  }
 
   @override
   String get noLogsFound => 'No logs found for this session';

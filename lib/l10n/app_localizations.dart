@@ -284,6 +284,24 @@ abstract class AppLocalizations {
   /// **'Exercise Name'**
   String get exerciseName;
 
+  /// Generic notes label
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get notes;
+
+  /// Label for exercise notes field in routine form
+  ///
+  /// In en, this message translates to:
+  /// **'Notes (optional)'**
+  String get exerciseNotesLabel;
+
+  /// Hint for exercise notes field in routine form
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Elliptical or bike'**
+  String get exerciseNotesHint;
+
   /// Remove exercise action
   ///
   /// In en, this message translates to:
@@ -488,6 +506,12 @@ abstract class AppLocalizations {
   /// **'Delete'**
   String get delete;
 
+  /// Success message when a routine is deleted
+  ///
+  /// In en, this message translates to:
+  /// **'Routine deleted successfully!'**
+  String get routineDeletedSuccess;
+
   /// Label for routines with no exercises
   ///
   /// In en, this message translates to:
@@ -541,6 +565,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Resume Current Workout'**
   String get resumeWorkout;
+
+  /// Message shown when routine already has an active session
+  ///
+  /// In en, this message translates to:
+  /// **'You already have {name} in progress. Resuming it.'**
+  String routineAlreadyActive(String name);
 
   /// Message when workout session has no set logs
   ///

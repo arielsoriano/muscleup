@@ -254,6 +254,36 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
   }
 
   @override
+  Future<Either<Failure, WorkoutSession?>> getLatestActiveSessionForRoutine(
+    String routineId,
+  ) async {
+    try {
+      final twelveHoursAgo = DateTime.now().subtract(
+        const Duration(hours: 12),
+      );
+
+      final sessionData = await (database.select(database.sessions)
+            ..where((session) => session.routineId.equals(routineId))
+            ..where((session) => session.isCompleted.equals(false))
+            ..where(
+              (session) =>
+                  session.createdAt.isBiggerOrEqualValue(twelveHoursAgo),
+            )
+            ..orderBy([(session) => OrderingTerm.desc(session.createdAt)])
+            ..limit(1))
+          .getSingleOrNull();
+
+      return Either<Failure, WorkoutSession?>.right(
+        sessionData == null ? null : _mapSessionDataToEntity(sessionData),
+      );
+    } catch (e) {
+      return Either<Failure, WorkoutSession?>.left(
+        DatabaseFailure(e.toString()),
+      );
+    }
+  }
+
+  @override
   Future<Either<Failure, void>> saveSession(WorkoutSession session) async {
     try {
       await database.into(database.sessions).insertOnConflictUpdate(
@@ -288,7 +318,9 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
   @override
   Future<Either<Failure, void>> finalizeStaleSessions() async {
     try {
-      final twelveHoursAgo = DateTime.now().subtract(const Duration(hours: 12));
+      final twelveHoursAgo = DateTime.now().subtract(
+        const Duration(hours: 12),
+      );
       
       await (database.update(database.sessions)
             ..where((session) => session.isCompleted.equals(false))

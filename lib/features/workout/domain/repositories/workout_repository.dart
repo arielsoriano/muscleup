@@ -19,6 +19,10 @@ abstract class WorkoutRepository {
 
   Future<Either<Failure, WorkoutSession>> getSessionById(String sessionId);
 
+  Future<Either<Failure, WorkoutSession?>> getLatestActiveSessionForRoutine(
+    String routineId,
+  );
+
   Future<Either<Failure, void>> saveSession(WorkoutSession session);
 
   Future<Either<Failure, void>> deleteSession(String sessionId);

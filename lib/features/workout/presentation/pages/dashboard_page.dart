@@ -7,6 +7,7 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/l10n_extension.dart';
+import '../../../../core/utils/ui_helpers.dart';
 import '../../../settings/presentation/cubit/settings_cubit.dart';
 import '../../domain/entities/workout_entities.dart';
 import '../cubit/dashboard_cubit.dart';
@@ -22,6 +23,64 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   int _currentIndex = 0;
+  bool _returnToTodayAfterRoutineDetails = false;
+
+  void _handleTabSelected(int index) {
+    setState(() {
+      _currentIndex = index;
+      if (index != 1) {
+        _returnToTodayAfterRoutineDetails = false;
+      }
+    });
+  }
+
+  void _handleGoToRoutinesFromToday() {
+    setState(() {
+      _currentIndex = 1;
+      _returnToTodayAfterRoutineDetails = true;
+    });
+  }
+
+  Future<void> _handleOpenRoutineDetails(
+    BuildContext context,
+    String routineId,
+  ) async {
+    await context.push(AppRoutes.routineDetailsPath(routineId));
+
+    if (!mounted) return;
+
+    if (_returnToTodayAfterRoutineDetails) {
+      setState(() {
+        _currentIndex = 0;
+        _returnToTodayAfterRoutineDetails = false;
+      });
+    }
+  }
+
+  Future<void> _handleStartRoutineFromRoutinesList(
+    BuildContext context,
+    WorkoutRoutine routine, {
+    String? sessionId,
+  }) async {
+    await context.push(
+      AppRoutes.activeWorkout,
+      extra: {
+        'routine': routine,
+        if (sessionId != null) 'sessionId': sessionId,
+        if (_returnToTodayAfterRoutineDetails) 'returnTo': 'today',
+      },
+    );
+
+    if (!mounted) return;
+
+    if (_returnToTodayAfterRoutineDetails) {
+      setState(() {
+        _currentIndex = 0;
+        _returnToTodayAfterRoutineDetails = false;
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +88,11 @@ class _DashboardPageState extends State<DashboardPage> {
       create: (_) => serviceLocator<DashboardCubit>(),
       child: _ShellContent(
         currentIndex: _currentIndex,
-        onTabSelected: (index) => setState(() => _currentIndex = index),
+        onTabSelected: _handleTabSelected,
+        onGoToRoutinesFromToday: _handleGoToRoutinesFromToday,
+        onOpenRoutineDetails: _handleOpenRoutineDetails,
+        onStartRoutineFromList: _handleStartRoutineFromRoutinesList,
+        returnToTodayAfterRoutineDetails: _returnToTodayAfterRoutineDetails,
       ),
     );
   }
@@ -39,10 +102,23 @@ class _ShellContent extends StatelessWidget {
   const _ShellContent({
     required this.currentIndex,
     required this.onTabSelected,
+    required this.onGoToRoutinesFromToday,
+    required this.onOpenRoutineDetails,
+    required this.onStartRoutineFromList,
+    required this.returnToTodayAfterRoutineDetails,
   });
 
   final int currentIndex;
   final ValueChanged<int> onTabSelected;
+  final VoidCallback onGoToRoutinesFromToday;
+  final Future<void> Function(BuildContext context, String routineId)
+      onOpenRoutineDetails;
+  final Future<void> Function(
+    BuildContext context,
+    WorkoutRoutine routine, {
+    String? sessionId,
+  }) onStartRoutineFromList;
+  final bool returnToTodayAfterRoutineDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -72,8 +148,12 @@ class _ShellContent extends StatelessWidget {
         body: IndexedStack(
           index: currentIndex,
           children: [
-            _TodayTab(onGoToRoutines: () => onTabSelected(1)),
-            const RoutinesPage(),
+            _TodayTab(onGoToRoutines: onGoToRoutinesFromToday),
+            RoutinesPage(
+              onOpenRoutineDetails: onOpenRoutineDetails,
+              onStartRoutine: onStartRoutineFromList,
+              returnToToday: returnToTodayAfterRoutineDetails,
+            ),
             const _HistoryTab(),
           ],
         ),
@@ -293,6 +373,7 @@ class _TodayTab extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: const ValueKey('fab-today'),
         onPressed: onGoToRoutines,
         icon: const Icon(Icons.play_arrow_rounded),
         label: Text(context.l10n.startWorkout),
@@ -461,8 +542,9 @@ class _ActiveSessionCard extends StatelessWidget {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(context.l10n.sessionDeleted)),
+    context.showAppSnackBar(
+      message: context.l10n.sessionDeleted,
+      type: SnackBarType.success,
     );
   }
 }

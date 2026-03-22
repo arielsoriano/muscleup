@@ -70,10 +70,16 @@ class _RoutineFormPageContentState extends State<_RoutineFormPageContent> {
     return BlocConsumer<RoutineFormCubit, RoutineFormState>(
       listener: (context, state) {
         if (state is RoutineFormStateSuccess) {
-          context.showAppSnackBar(context.l10n.saveRoutineSuccess);
+          context.showAppSnackBar(
+            message: context.l10n.saveRoutineSuccess,
+            type: SnackBarType.success,
+          );
           context.pop();
         } else if (state is RoutineFormStateError) {
-          context.showAppSnackBar(state.message, isError: true);
+          context.showAppSnackBar(
+            message: state.message,
+            type: SnackBarType.error,
+          );
         }
       },
       builder: (context, state) {
@@ -103,7 +109,10 @@ class _RoutineFormPageContentState extends State<_RoutineFormPageContent> {
                           context,
                           validationError,
                         );
-                        context.showAppSnackBar(message, isError: true);
+                        context.showAppSnackBar(
+                          message: message,
+                          type: SnackBarType.error,
+                        );
                       }
                     },
                     icon: const Icon(Icons.check_rounded),
@@ -316,19 +325,43 @@ class _ExerciseFormItemState extends State<_ExerciseFormItem> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            subtitle: widget.exercise.templateSets.isEmpty
-                ? Text(
-                    context.l10n.noSetsAdded,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  )
-                : Text(
-                    context.l10n.setsCount(widget.exercise.templateSets.length),
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.exercise.templateSets.isEmpty
+                      ? context.l10n.noSetsAdded
+                      : context.l10n.setsCount(widget.exercise.templateSets.length),
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                   ),
+                ),
+                if (widget.exercise.notes != null &&
+                    widget.exercise.notes!.trim().isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.sticky_note_2_outlined,
+                        size: 14,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          widget.exercise.notes!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -355,6 +388,8 @@ class _ExerciseFormItemState extends State<_ExerciseFormItem> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  _buildExerciseNotesField(context),
+                  const SizedBox(height: 12),
                   _buildRestTimeField(context),
                   const SizedBox(height: 16),
                   if (widget.exercise.templateSets.isNotEmpty)
@@ -404,6 +439,38 @@ class _ExerciseFormItemState extends State<_ExerciseFormItem> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildExerciseNotesField(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return TextFormField(
+      key: ValueKey('exercise-notes-${widget.exercise.id}'),
+      initialValue: widget.exercise.notes ?? '',
+      textCapitalization: TextCapitalization.sentences,
+      minLines: 2,
+      maxLines: 4,
+      decoration: InputDecoration(
+        labelText: context.l10n.exerciseNotesLabel,
+        hintText: context.l10n.exerciseNotesHint,
+        alignLabelWithHint: true,
+        prefixIcon: Icon(
+          Icons.sticky_note_2_outlined,
+          color: colorScheme.onSurfaceVariant,
+        ),
+        isDense: true,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+      onChanged: (value) {
+        final trimmedValue = value.trim();
+        context.read<RoutineFormCubit>().updateExercise(
+              widget.exercise.id,
+              notes: trimmedValue.isEmpty ? null : value,
+            );
+      },
     );
   }
 

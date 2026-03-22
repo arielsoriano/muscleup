@@ -6,6 +6,7 @@ import '../../../../core/router/app_router.dart';
 import '../../../../core/utils/l10n_extension.dart';
 import '../../../../core/utils/ui_helpers.dart';
 import '../../domain/entities/workout_entities.dart';
+import '../../domain/repositories/workout_repository.dart';
 import '../../domain/usecases/get_routine_by_id_usecase.dart';
 
 class WorkoutDetailsPage extends StatelessWidget {
@@ -15,6 +16,47 @@ class WorkoutDetailsPage extends StatelessWidget {
   });
 
   final String routineId;
+
+  Future<void> _startRoutine(
+    BuildContext context,
+    WorkoutRoutine routine,
+  ) async {
+    final result = await serviceLocator<WorkoutRepository>()
+        .getLatestActiveSessionForRoutine(routine.id);
+
+    if (!context.mounted) return;
+
+    result.fold(
+      (_) {
+        context.push(
+          AppRoutes.activeWorkout,
+          extra: {'routine': routine},
+        );
+      },
+      (activeSession) {
+        if (activeSession != null) {
+          context.showAppSnackBar(
+            message: context.l10n.routineAlreadyActive(routine.name),
+            type: SnackBarType.info,
+          );
+
+          context.push(
+            AppRoutes.activeWorkout,
+            extra: {
+              'routine': routine,
+              'sessionId': activeSession.id,
+            },
+          );
+          return;
+        }
+
+        context.push(
+          AppRoutes.activeWorkout,
+          extra: {'routine': routine},
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -147,11 +189,48 @@ class WorkoutDetailsPage extends StatelessWidget {
                                       exercise.notes!.isNotEmpty)
                                     Padding(
                                       padding: const EdgeInsets.all(16),
-                                      child: Text(
-                                        exercise.notes!,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium,
+                                      child: Container(
+                                        width: double.infinity,
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .surfaceContainerHighest
+                                              .withValues(alpha: 0.5),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .outlineVariant,
+                                          ),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              context.l10n.notes,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .labelSmall
+                                                  ?.copyWith(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSurfaceVariant,
+                                                    fontWeight:
+                                                        FontWeight.w700,
+                                                  ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              exercise.notes!,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium,
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   if (exercise.templateSets.isNotEmpty)
@@ -259,10 +338,7 @@ class WorkoutDetailsPage extends StatelessWidget {
                     child: FilledButton.tonal(
                       onPressed: routine.exercises.isEmpty
                           ? null
-                          : () => context.push(
-                                AppRoutes.activeWorkout,
-                                extra: {'routine': routine},
-                              ),
+                          : () => _startRoutine(context, routine),
                       style: FilledButton.styleFrom(
                         minimumSize: const Size(double.infinity, 56),
                       ),

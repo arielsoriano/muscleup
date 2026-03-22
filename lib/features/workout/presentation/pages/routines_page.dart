@@ -7,24 +7,57 @@ import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/l10n_extension.dart';
 import '../../../../core/utils/ui_helpers.dart';
+import '../../domain/entities/workout_entities.dart';
+import '../../domain/repositories/workout_repository.dart';
 import '../../../settings/presentation/cubit/settings_cubit.dart';
 import '../cubit/workout_cubit.dart';
 import '../cubit/workout_state.dart';
 
 class RoutinesPage extends StatelessWidget {
-  const RoutinesPage({super.key});
+  const RoutinesPage({
+    this.onOpenRoutineDetails,
+    this.onStartRoutine,
+    this.returnToToday = false,
+    super.key,
+  });
+
+  final Future<void> Function(BuildContext context, String routineId)?
+      onOpenRoutineDetails;
+  final Future<void> Function(
+    BuildContext context,
+    WorkoutRoutine routine, {
+    String? sessionId,
+  })? onStartRoutine;
+  final bool returnToToday;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => serviceLocator<WorkoutCubit>(),
-      child: const _RoutinesPageContent(),
+      child: _RoutinesPageContent(
+        onOpenRoutineDetails: onOpenRoutineDetails,
+        onStartRoutine: onStartRoutine,
+        returnToToday: returnToToday,
+      ),
     );
   }
 }
 
 class _RoutinesPageContent extends StatelessWidget {
-  const _RoutinesPageContent();
+  const _RoutinesPageContent({
+    this.onOpenRoutineDetails,
+    this.onStartRoutine,
+    this.returnToToday = false,
+  });
+
+  final Future<void> Function(BuildContext context, String routineId)?
+      onOpenRoutineDetails;
+  final Future<void> Function(
+    BuildContext context,
+    WorkoutRoutine routine, {
+    String? sessionId,
+  })? onStartRoutine;
+  final bool returnToToday;
 
   void _showSkinSelector(BuildContext context) {
     final settingsCubit = context.read<SettingsCubit>();
@@ -157,11 +190,82 @@ class _RoutinesPageContent extends StatelessWidget {
             onPressed: () {
               context.read<WorkoutCubit>().deleteRoutine(routineId);
               Navigator.of(dialogContext).pop();
+              // Show success message right after deletion
+              context.showAppSnackBar(
+                message: context.l10n.routineDeletedSuccess,
+                type: SnackBarType.success,
+              );
             },
             child: Text(context.l10n.delete),
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _startRoutine(
+    BuildContext context,
+    WorkoutRoutine routine,
+  ) async {
+    final result = await serviceLocator<WorkoutRepository>()
+        .getLatestActiveSessionForRoutine(routine.id);
+
+    if (!context.mounted) return;
+
+    result.fold(
+      (_) {
+        // No existing session - create new
+        if (onStartRoutine != null) {
+          onStartRoutine!(context, routine);
+        } else {
+          final baseExtra = <String, dynamic>{'routine': routine};
+          if (returnToToday) {
+            baseExtra['returnTo'] = 'today';
+          }
+          context.push(
+            AppRoutes.activeWorkout,
+            extra: baseExtra,
+          );
+        }
+      },
+      (activeSession) {
+        if (activeSession != null) {
+          // Existing session - show message and resume
+          context.showAppSnackBar(
+            message: context.l10n.routineAlreadyActive(routine.name),
+            type: SnackBarType.info,
+          );
+
+          // Use callback with sessionId if available, else push directly
+          if (onStartRoutine != null) {
+            onStartRoutine!(context, routine, sessionId: activeSession.id);
+          } else {
+            context.push(
+              AppRoutes.activeWorkout,
+              extra: {
+                'routine': routine,
+                'sessionId': activeSession.id,
+                if (returnToToday) 'returnTo': 'today',
+              },
+            );
+          }
+          return;
+        }
+
+        // No existing session found - create new (fallback)
+        if (onStartRoutine != null) {
+          onStartRoutine!(context, routine);
+        } else {
+          final baseExtra = <String, dynamic>{'routine': routine};
+          if (returnToToday) {
+            baseExtra['returnTo'] = 'today';
+          }
+          context.push(
+            AppRoutes.activeWorkout,
+            extra: baseExtra,
+          );
+        }
+      },
     );
   }
 
@@ -268,12 +372,11 @@ class _RoutinesPageContent extends StatelessWidget {
                             onPressed: isEmptyRoutine
                                 ? () {
                                     context.showAppSnackBar(
-                                        context.l10n.addExercisesFirst,);
+                                      message: context.l10n.addExercisesFirst,
+                                      type: SnackBarType.info,
+                                    );
                                   }
-                                : () => context.push(
-                                      AppRoutes.activeWorkout,
-                                      extra: {'routine': routine},
-                                    ),
+                                : () => _startRoutine(context, routine),
                             tooltip: context.l10n.startWorkout,
                           ),
                           IconButton(
@@ -286,9 +389,16 @@ class _RoutinesPageContent extends StatelessWidget {
                           const Icon(Icons.chevron_right),
                         ],
                       ),
-                      onTap: () => context.push(
-                        AppRoutes.routineDetailsPath(routine.id),
-                      ),
+                      onTap: () async {
+                        if (onOpenRoutineDetails != null) {
+                          await onOpenRoutineDetails!(context, routine.id);
+                          return;
+                        }
+
+                        context.push(
+                          AppRoutes.routineDetailsPath(routine.id),
+                        );
+                      },
                     ),
                   );
                 },
@@ -316,6 +426,7 @@ class _RoutinesPageContent extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: const ValueKey('fab-routines'),
         onPressed: () => context.push(AppRoutes.manageRoutine),
         icon: const Icon(Icons.add_rounded),
         label: Text(context.l10n.addRoutine),

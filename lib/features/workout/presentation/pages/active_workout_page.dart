@@ -112,12 +112,18 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
     return BlocConsumer<ActiveWorkoutCubit, ActiveWorkoutState>(
       listener: (context, state) {
         if (state is ActiveWorkoutStateSuccess) {
-          context.showAppSnackBar(context.l10n.workoutSavedSuccess);
+          context.showAppSnackBar(
+            message: context.l10n.workoutSavedSuccess,
+            type: SnackBarType.success,
+          );
           context.pop();
         } else if (state is ActiveWorkoutStateError) {
           final translatedMessage =
               _translateErrorMessage(context, state.message);
-          context.showAppSnackBar(translatedMessage, isError: true);
+          context.showAppSnackBar(
+            message: translatedMessage,
+            type: SnackBarType.error,
+          );
         }
       },
       builder: (context, state) {
@@ -484,10 +490,36 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
             ),
             if (exercise.notes != null && exercise.notes!.isNotEmpty) ...[
               const SizedBox(height: 8),
-              Text(
-                exercise.notes!,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.5,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: colorScheme.outlineVariant,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      context.l10n.notes,
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      exercise.notes!,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

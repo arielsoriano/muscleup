@@ -103,6 +103,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get exerciseName => 'Nombre de Ejercicio';
 
   @override
+  String get notes => 'Notas';
+
+  @override
+  String get exerciseNotesLabel => 'Notas (opcional)';
+
+  @override
+  String get exerciseNotesHint => 'ej. Elíptica o bici';
+
+  @override
   String get removeExercise => 'Eliminar Ejercicio';
 
   @override
@@ -212,6 +221,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get delete => 'Eliminar';
 
   @override
+  String get routineDeletedSuccess => '¡Rutina eliminada exitosamente!';
+
+  @override
   String get emptyRoutine => 'Vacía';
 
   @override
@@ -240,6 +252,11 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get resumeWorkout => 'Continuar entrenamiento actual';
+
+  @override
+  String routineAlreadyActive(String name) {
+    return 'Ya tienes $name en progreso. Continuando sesión.';
+  }
 
   @override
   String get noLogsFound => 'No se encontraron registros para esta sesión';
