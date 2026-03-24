@@ -7,6 +7,7 @@ import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/l10n_extension.dart';
 import '../../../../core/utils/ui_helpers.dart';
+import '../../../../core/widgets/app_logo.dart';
 import '../../domain/entities/workout_entities.dart';
 import '../../domain/repositories/workout_repository.dart';
 import '../../../settings/presentation/cubit/settings_cubit.dart';
@@ -273,6 +274,10 @@ class _RoutinesPageContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 12),
+          child: Center(child: AppLogo()),
+        ),
         title: Text(context.l10n.routines),
         actions: [
           PopupMenuButton<String>(
