@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../features/workout/domain/entities/workout_entities.dart';
 import '../../features/workout/presentation/pages/active_workout_page.dart';
 import '../../features/workout/presentation/pages/dashboard_page.dart';
@@ -15,7 +16,8 @@ class AppRoutes {
   static const String activeWorkout = '/active-workout';
   static const String manageRoutine = '/manage-routine';
   static const String editRoutine = '/edit-routine/:id';
-  
+  static const String settings = '/settings';
+
   static String routineDetailsPath(String id) => '/routine/$id';
   static String editRoutinePath(String id) => '/edit-routine/$id';
 }
@@ -78,6 +80,16 @@ GoRouter createAppRouter() {
             child: RoutineFormPage(
               routine: routine as dynamic,
             ),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.settings,
+        pageBuilder: (context, state) {
+          return _buildFadeTransitionPage(
+            context: context,
+            state: state,
+            child: const SettingsPage(),
           );
         },
       ),

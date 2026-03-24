@@ -8,6 +8,7 @@ import 'package:intl/intl_standalone.dart';
 
 import 'core/di/injection_container.dart' as di;
 import 'core/theme/app_theme.dart';
+import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/settings/presentation/cubit/settings_cubit.dart';
 import 'features/settings/presentation/cubit/settings_state.dart';
 import 'l10n/app_localizations.dart';
@@ -87,9 +88,13 @@ class MuscleupApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final router = di.serviceLocator<GoRouter>();
     final settingsCubit = di.serviceLocator<SettingsCubit>();
+    final authCubit = di.serviceLocator<AuthCubit>();
 
-    return BlocProvider.value(
-      value: settingsCubit,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: settingsCubit),
+        BlocProvider.value(value: authCubit),
+      ],
       child: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, state) {
           return MaterialApp.router(

@@ -1,0 +1,20 @@
+Muscleup Android certificate fingerprints for Firebase/Google Sign-In
+
+Application ID:
+com.arielsoriano.muscleup
+
+Debug keystore (local machine):
+SHA-1: 63:0B:2F:25:2B:59:08:2B:B8:EF:74:B5:6F:E9:73:95:BD:80:2D:49
+SHA-256: B2:A0:DC:44:35:90:46:FA:AF:A1:6E:DD:72:80:40:82:C0:17:45:34:38:E5:FB:81:F9:3F:43:7A:99:EA:FE:8D
+
+Google services certificate hash in current google-services.json:
+630b2f252b59082bb8ef74b56fe97395bd802d49
+
+Release (to complete when available in Play Console):
+Upload key SHA-1: PENDING
+Upload key SHA-256: PENDING
+App signing key SHA-1: PENDING
+App signing key SHA-256: PENDING
+
+Where to register all fingerprints:
+Firebase Console > Project settings > General > Your apps > Android app > SHA certificate fingerprints

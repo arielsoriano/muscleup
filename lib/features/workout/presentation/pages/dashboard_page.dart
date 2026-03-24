@@ -200,9 +200,21 @@ class _DashboardTopMenu extends StatelessWidget {
           context.read<SettingsCubit>().changeLanguage(newLanguageCode);
         } else if (value == 'appSkin') {
           _showSkinSelector(context);
+        } else if (value == 'settings') {
+          context.push(AppRoutes.settings);
         }
       },
       itemBuilder: (_) => [
+        PopupMenuItem<String>(
+          value: 'settings',
+          child: Row(
+            children: [
+              const Icon(Icons.settings_rounded),
+              const SizedBox(width: 12),
+              Text(context.l10n.settings),
+            ],
+          ),
+        ),
         PopupMenuItem<String>(
           value: 'appSkin',
           child: Row(

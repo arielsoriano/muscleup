@@ -290,4 +290,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noSetsDefined => 'No sets defined';
+
+  @override
+  String get authAccount => 'Account';
+
+  @override
+  String get authAnonymous => 'Anonymous';
+
+  @override
+  String get authAnonymousSubtitle =>
+      'Your data is stored locally. Link an account to sync.';
+
+  @override
+  String get authLinkedWithGoogle => 'Linked with Google';
+
+  @override
+  String get authContinueWithGoogle => 'Continue with Google';
+
+  @override
+  String get authDisconnectGoogle => 'Disconnect Google';
+
+  @override
+  String get authLinkSuccess => 'Account linked successfully!';
+
+  @override
+  String get authUnavailable => 'Cloud auth unavailable';
+
+  @override
+  String get darkMode => 'Dark Mode';
 }

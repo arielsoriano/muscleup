@@ -383,5 +383,23 @@
   "noSetsDefined": "No sets defined",
   "@noSetsDefined": {
     "description": "Message when an exercise has no sets"
-  }
+  },
+  "authAccount": "Account",
+  "@authAccount": { "description": "Account section header in settings" },
+  "authAnonymous": "Anonymous",
+  "@authAnonymous": { "description": "Label for anonymous auth state" },
+  "authAnonymousSubtitle": "Your data is stored locally. Link an account to sync.",
+  "@authAnonymousSubtitle": { "description": "Subtitle shown under anonymous state" },
+  "authLinkedWithGoogle": "Linked with Google",
+  "@authLinkedWithGoogle": { "description": "Label when account is linked with Google" },
+  "authContinueWithGoogle": "Continue with Google",
+  "@authContinueWithGoogle": { "description": "Button to link Google account" },
+  "authDisconnectGoogle": "Disconnect Google",
+  "@authDisconnectGoogle": { "description": "Button to unlink Google account" },
+  "authLinkSuccess": "Account linked successfully!",
+  "@authLinkSuccess": { "description": "Success message after linking Google account" },
+  "authUnavailable": "Cloud auth unavailable",
+  "@authUnavailable": { "description": "Message when Firebase is not configured" },
+  "darkMode": "Dark Mode",
+  "@darkMode": { "description": "Dark mode toggle label" }
 }

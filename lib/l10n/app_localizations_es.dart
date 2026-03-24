@@ -290,4 +290,32 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get noSetsDefined => 'No hay series definidas';
+
+  @override
+  String get authAccount => 'Cuenta';
+
+  @override
+  String get authAnonymous => 'Anónimo';
+
+  @override
+  String get authAnonymousSubtitle =>
+      'Tus datos se guardan localmente. Vincula una cuenta para sincronizar.';
+
+  @override
+  String get authLinkedWithGoogle => 'Vinculado con Google';
+
+  @override
+  String get authContinueWithGoogle => 'Continuar con Google';
+
+  @override
+  String get authDisconnectGoogle => 'Desconectar Google';
+
+  @override
+  String get authLinkSuccess => '¡Cuenta vinculada exitosamente!';
+
+  @override
+  String get authUnavailable => 'Auth en la nube no disponible';
+
+  @override
+  String get darkMode => 'Modo Oscuro';
 }

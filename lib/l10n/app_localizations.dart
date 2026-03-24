@@ -637,6 +637,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No sets defined'**
   String get noSetsDefined;
+
+  /// Account section header in settings
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get authAccount;
+
+  /// Label for anonymous auth state
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous'**
+  String get authAnonymous;
+
+  /// Subtitle shown under anonymous state
+  ///
+  /// In en, this message translates to:
+  /// **'Your data is stored locally. Link an account to sync.'**
+  String get authAnonymousSubtitle;
+
+  /// Label when account is linked with Google
+  ///
+  /// In en, this message translates to:
+  /// **'Linked with Google'**
+  String get authLinkedWithGoogle;
+
+  /// Button to link Google account
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Google'**
+  String get authContinueWithGoogle;
+
+  /// Button to unlink Google account
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect Google'**
+  String get authDisconnectGoogle;
+
+  /// Success message after linking Google account
+  ///
+  /// In en, this message translates to:
+  /// **'Account linked successfully!'**
+  String get authLinkSuccess;
+
+  /// Message when Firebase is not configured
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud auth unavailable'**
+  String get authUnavailable;
+
+  /// Dark mode toggle label
+  ///
+  /// In en, this message translates to:
+  /// **'Dark Mode'**
+  String get darkMode;
 }
 
 class _AppLocalizationsDelegate
