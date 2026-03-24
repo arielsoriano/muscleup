@@ -179,7 +179,8 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (isResting) _buildRestTimerOverlay(context, state),
+                if (isResting && !isViewingHistory)
+                  _buildRestTimerOverlay(context, state),
                 if (!isSaving && !isLoading && !isViewingHistory)
                   _buildFinishButton(context),
               ],

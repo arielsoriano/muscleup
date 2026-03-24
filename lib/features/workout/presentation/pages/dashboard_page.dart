@@ -675,9 +675,22 @@ class _HistoryTab extends StatelessWidget {
           style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
         subtitle: Text(DateFormat.yMMMd(locale).add_jm().format(session.createdAt)),
-        trailing: Icon(
-          Icons.chevron_right_rounded,
-          color: colorScheme.onSurfaceVariant,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              onPressed: () => _confirmDeleteSession(context, session.id),
+              icon: Icon(
+                Icons.delete_outline_rounded,
+                color: colorScheme.error,
+              ),
+              tooltip: context.l10n.delete,
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ],
         ),
         onTap: () {
           context.push(
@@ -689,6 +702,42 @@ class _HistoryTab extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+
+  Future<void> _confirmDeleteSession(BuildContext context, String sessionId) async {
+    final accepted = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(context.l10n.delete),
+          content: Text(context.l10n.deleteSessionConfirm),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(context.l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(context.l10n.delete),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (accepted != true || !context.mounted) {
+      return;
+    }
+
+    await context.read<DashboardCubit>().deleteSession(sessionId);
+    if (!context.mounted) {
+      return;
+    }
+
+    context.showAppSnackBar(
+      message: context.l10n.sessionDeleted,
+      type: SnackBarType.success,
     );
   }
 
