@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 enum AppSkin {
@@ -12,33 +11,11 @@ enum AppSkin {
 
 extension AppSkinExtension on AppSkin {
   Color get primaryColor {
-    switch (this) {
-      case AppSkin.volt:
-        return const Color(0xFFCCFF00);
-      case AppSkin.cyan:
-        return const Color(0xFF00E5FF);
-      case AppSkin.crimson:
-        return const Color(0xFFFF1744);
-      case AppSkin.royalGold:
-        return const Color(0xFFFFD700);
-      case AppSkin.monochrome:
-        return const Color(0xFFFFFFFF);
-    }
+    return const Color(0xFFCCFF00);
   }
 
   Color get primaryContainer {
-    switch (this) {
-      case AppSkin.volt:
-        return const Color(0xFFB8E600);
-      case AppSkin.cyan:
-        return const Color(0xFF00B8D4);
-      case AppSkin.crimson:
-        return const Color(0xFFD50000);
-      case AppSkin.royalGold:
-        return const Color(0xFFFFB300);
-      case AppSkin.monochrome:
-        return const Color(0xFFE0E0E0);
-    }
+    return const Color(0xFFB8E600);
   }
 
   String get name {
@@ -79,17 +56,11 @@ class AppTheme {
   static const double iconSizeMedium = 24.0;
   static const double iconSizeLarge = 32.0;
 
-  static const Color darkModeMidnightBase = Color(0xFF000000);
-  static const Color darkModeDeepBlueBackground = Color(0xFF0A0A0A);
-  static const Color darkModeSurfaceElevated = Color(0xFF161616);
-  static const Color darkModeVoltGreenAccent = Color(0xFFDFFF00);
-  static const Color darkModeVoltGreenAccentVariant = Color(0xFFC8E600);
-
-  static const Color lightModeSoftWhiteBase = Color(0xFFFAFAFA);
-  static const Color lightModeCleanGreyBackground = Color(0xFFF5F5F5);
-  static const Color lightModeSurfaceElevated = Color(0xFFFFFFFF);
-  static const Color lightModeDeepCharcoalAccent = Color(0xFF2C3E50);
-  static const Color lightModeCharcoalVariant = Color(0xFF34495E);
+  static const Color voltAccent = Color(0xFFCCFF00);
+  static const Color globalBackground = Color(0xFF121212);
+  static const Color pureBlack = Color(0xFF000000);
+  static const Color pureWhite = Color(0xFFFFFFFF);
+  static const Color cardBackground = Color(0xFF1E1E1E);
 
   static const double cardElevationLow = 2.0;
   static const double cardElevationMedium = 4.0;
@@ -102,72 +73,126 @@ class AppTheme {
     required AppSkin skin,
     required bool isDarkMode,
   }) {
-    if (isDarkMode) {
-      return _getDarkTheme(skin);
-    } else {
-      return _getLightTheme(skin);
-    }
+    return _getPerformanceTheme();
   }
 
-  static ThemeData _getLightTheme(AppSkin skin) {
-    return FlexThemeData.light(
-      colors: FlexSchemeColor(
-        primary: skin == AppSkin.monochrome
-            ? lightModeDeepCharcoalAccent
-            : skin.primaryColor,
-        primaryContainer: skin == AppSkin.monochrome
-            ? lightModeCharcoalVariant
-            : skin.primaryContainer,
-        secondary: lightModeDeepCharcoalAccent,
-        secondaryContainer: const Color(0xFF5D6D7E),
-        tertiary: const Color(0xFF3498DB),
-        tertiaryContainer: const Color(0xFF5DADE2),
-        appBarColor: skin == AppSkin.monochrome
-            ? lightModeCharcoalVariant
-            : skin.primaryContainer,
-        error: const Color(0xFFE74C3C),
+  static ThemeData _getPerformanceTheme() {
+    final baseTextTheme = GoogleFonts.orbitronTextTheme(ThemeData.dark().textTheme);
+
+    final textTheme = baseTextTheme.copyWith(
+      bodyLarge: baseTextTheme.bodyLarge?.copyWith(
+        color: pureWhite,
+        fontWeight: FontWeight.w700,
       ),
-      surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
-      blendLevel: 3,
-      subThemesData: const FlexSubThemesData(
-        blendOnLevel: 8,
-        blendOnColors: false,
-        useMaterial3Typography: true,
-        useM2StyleDividerInM3: true,
-        defaultRadius: radiusMedium,
-        elevatedButtonRadius: buttonBorderRadiusRounded,
-        filledButtonRadius: buttonBorderRadiusRounded,
-        outlinedButtonRadius: buttonBorderRadiusRounded,
-        textButtonRadius: buttonBorderRadiusRounded,
-        inputDecoratorRadius: inputBorderRadiusRounded,
-        inputDecoratorBorderWidth: 2.0,
-        inputDecoratorFocusedBorderWidth: 2.5,
-        inputDecoratorUnfocusedBorderIsColored: false,
-        cardElevation: cardElevationMedium,
-        cardRadius: radiusLarge,
-        elevatedButtonElevation: 1.0,
-        elevatedButtonSchemeColor: SchemeColor.primary,
-        filledButtonSchemeColor: SchemeColor.primary,
-        chipRadius: radiusMedium,
-        chipBlendColors: true,
-        bottomNavigationBarElevation: 4.0,
-        navigationBarElevation: 2.0,
-        navigationBarHeight: 72.0,
-        navigationBarLabelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        appBarCenterTitle: true,
-        appBarScrolledUnderElevation: 2.0,
+      bodyMedium: baseTextTheme.bodyMedium?.copyWith(
+        color: pureWhite,
+        fontWeight: FontWeight.w700,
       ),
-      keyColors: const FlexKeyColors(
-        useKeyColors: false,
-        useSecondary: true,
-        useTertiary: true,
+      bodySmall: baseTextTheme.bodySmall?.copyWith(
+        color: pureWhite,
+        fontWeight: FontWeight.w600,
       ),
-      visualDensity: FlexColorScheme.comfortablePlatformDensity,
+      titleLarge: baseTextTheme.titleLarge?.copyWith(
+        color: pureWhite,
+        fontWeight: FontWeight.w800,
+      ),
+      titleMedium: baseTextTheme.titleMedium?.copyWith(
+        color: pureWhite,
+        fontWeight: FontWeight.w800,
+      ),
+      headlineSmall: baseTextTheme.headlineSmall?.copyWith(
+        color: pureWhite,
+        fontWeight: FontWeight.w900,
+      ),
+    );
+
+    return ThemeData(
       useMaterial3: true,
-      fontFamily: GoogleFonts.inter().fontFamily,
-    ).copyWith(
+      brightness: Brightness.dark,
+      colorScheme: const ColorScheme.dark(
+        primary: voltAccent,
+        onPrimary: pureBlack,
+        primaryContainer: voltAccent,
+        onPrimaryContainer: pureBlack,
+        secondary: voltAccent,
+        onSecondary: pureBlack,
+        secondaryContainer: cardBackground,
+        onSecondaryContainer: pureWhite,
+        surface: cardBackground,
+        onSurface: pureWhite,
+        error: Color(0xFFFF5A5A),
+        onError: pureBlack,
+      ),
+      scaffoldBackgroundColor: globalBackground,
+      canvasColor: globalBackground,
+      cardColor: cardBackground,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: globalBackground,
+        foregroundColor: pureWhite,
+        centerTitle: true,
+        elevation: 0,
+      ),
+      textTheme: textTheme,
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: voltAccent,
+          foregroundColor: pureBlack,
+          textStyle: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(buttonBorderRadiusRounded),
+          ),
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: voltAccent,
+          foregroundColor: pureBlack,
+          textStyle: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(buttonBorderRadiusRounded),
+          ),
+        ),
+      ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: voltAccent,
+        foregroundColor: pureBlack,
+      ),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: voltAccent,
+        linearTrackColor: Color(0xFF2A2A2A),
+      ),
+      cardTheme: CardThemeData(
+        color: cardBackground,
+        elevation: cardElevationLow,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusLarge),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: cardBackground,
+        labelStyle: const TextStyle(color: pureWhite, fontWeight: FontWeight.w700),
+        hintStyle: const TextStyle(color: Color(0xFFBDBDBD), fontWeight: FontWeight.w600),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(inputBorderRadiusRounded),
+          borderSide: const BorderSide(color: Color(0xFF333333), width: 1.5),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(inputBorderRadiusRounded),
+          borderSide: const BorderSide(color: Color(0xFF333333), width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(inputBorderRadiusRounded),
+          borderSide: const BorderSide(color: voltAccent, width: 2),
+        ),
+      ),
       snackBarTheme: const SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
+        backgroundColor: voltAccent,
+        contentTextStyle: TextStyle(
+          color: pureBlack,
+          fontWeight: FontWeight.w800,
+        ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(12)),
         ),
@@ -175,69 +200,7 @@ class AppTheme {
     );
   }
 
-  static ThemeData _getDarkTheme(AppSkin skin) {
-    return FlexThemeData.dark(
-      colors: FlexSchemeColor(
-        primary: skin.primaryColor,
-        primaryContainer: skin.primaryContainer,
-        secondary: const Color(0xFF00D9FF),
-        secondaryContainer: const Color(0xFF00B8D4),
-        tertiary: const Color(0xFFBB86FC),
-        tertiaryContainer: const Color(0xFF985EFF),
-        appBarColor: skin.primaryContainer,
-        error: const Color(0xFFCF6679),
-      ),
-      surfaceMode: FlexSurfaceMode.level,
-      blendLevel: 0,
-      darkIsTrueBlack: true,
-      subThemesData: const FlexSubThemesData(
-        blendOnLevel: 0,
-        blendOnColors: false,
-        useMaterial3Typography: true,
-        useM2StyleDividerInM3: true,
-        defaultRadius: radiusMedium,
-        elevatedButtonRadius: 12.0,
-        filledButtonRadius: 12.0,
-        outlinedButtonRadius: 12.0,
-        textButtonRadius: 12.0,
-        inputDecoratorRadius: inputBorderRadiusRounded,
-        inputDecoratorBorderWidth: 2.0,
-        inputDecoratorFocusedBorderWidth: 2.5,
-        inputDecoratorUnfocusedBorderIsColored: false,
-        cardElevation: cardElevationMedium,
-        cardRadius: 16.0,
-        elevatedButtonElevation: 2.0,
-        elevatedButtonSchemeColor: SchemeColor.primary,
-        filledButtonSchemeColor: SchemeColor.primary,
-        chipRadius: radiusMedium,
-        chipBlendColors: false,
-        bottomNavigationBarElevation: 0.0,
-        navigationBarElevation: 0.0,
-        navigationBarHeight: 72.0,
-        navigationBarLabelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        appBarCenterTitle: true,
-        appBarScrolledUnderElevation: 0.0,
-      ),
-      keyColors: const FlexKeyColors(
-        useKeyColors: false,
-        useSecondary: true,
-        useTertiary: true,
-      ),
-      visualDensity: FlexColorScheme.comfortablePlatformDensity,
-      useMaterial3: true,
-      fontFamily: GoogleFonts.inter().fontFamily,
-    ).copyWith(
-      scaffoldBackgroundColor: darkModeMidnightBase,
-      snackBarTheme: const SnackBarThemeData(
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
-        ),
-      ),
-    );
-  }
+  static ThemeData lightThemeData = _getPerformanceTheme();
 
-  static ThemeData lightThemeData = _getLightTheme(AppSkin.volt);
-
-  static ThemeData darkThemeData = _getDarkTheme(AppSkin.volt);
+  static ThemeData darkThemeData = _getPerformanceTheme();
 }
