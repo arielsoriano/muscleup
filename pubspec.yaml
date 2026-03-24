@@ -46,3 +46,4 @@ flutter:
   generate: true
   assets:
     - assets/muscleup.svg
+    - assets/muscleup_splash.svg

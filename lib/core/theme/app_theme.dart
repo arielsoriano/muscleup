@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 enum AppSkin {
   volt,
@@ -77,7 +76,9 @@ class AppTheme {
   }
 
   static ThemeData _getPerformanceTheme() {
-    final baseTextTheme = GoogleFonts.orbitronTextTheme(ThemeData.dark().textTheme);
+    final baseTextTheme = ThemeData.dark().textTheme.apply(
+      fontFamily: 'monospace',
+    );
 
     final textTheme = baseTextTheme.copyWith(
       bodyLarge: baseTextTheme.bodyLarge?.copyWith(
