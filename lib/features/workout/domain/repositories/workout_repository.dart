@@ -47,6 +47,7 @@ class LibraryExerciseEntity {
     required this.nameEn,
     required this.nameEs,
     required this.isCustom,
+    this.syncMetadata,
   });
 
   final String id;
@@ -54,6 +55,7 @@ class LibraryExerciseEntity {
   final String nameEn;
   final String nameEs;
   final bool isCustom;
+  final SyncMetadata? syncMetadata;
 
   String getLocalizedName(String languageCode) {
     return languageCode == 'es' ? nameEs : nameEn;

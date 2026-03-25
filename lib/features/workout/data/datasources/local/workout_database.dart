@@ -10,12 +10,23 @@ import '../../../domain/entities/workout_entities.dart';
 
 part 'workout_database.g.dart';
 
+enum SyncStatus {
+  pending,
+  synced,
+  failed,
+}
+
 @DataClassName('RoutineData')
 class Routines extends Table {
   TextColumn get id => text()();
   TextColumn get name => text()();
   IntColumn get sortOrder => integer()();
   BoolColumn get isDeleted => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+  IntColumn get syncStatus =>
+      intEnum<SyncStatus>().withDefault(Constant(SyncStatus.synced.index))();
+  IntColumn get remoteVersion => integer().withDefault(const Constant(0))();
 
   @override
   Set<Column<Object>> get primaryKey => {id};
@@ -30,6 +41,11 @@ class Exercises extends Table {
   TextColumn get notes => text().nullable()();
   IntColumn get restTimeSeconds => integer()();
   IntColumn get sortOrder => integer()();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+  IntColumn get syncStatus =>
+      intEnum<SyncStatus>().withDefault(Constant(SyncStatus.synced.index))();
+  IntColumn get remoteVersion => integer().withDefault(const Constant(0))();
 
   @override
   Set<Column<Object>> get primaryKey => {id};
@@ -45,6 +61,11 @@ class Sets extends Table {
   IntColumn get unit1 => intEnum<WorkoutUnit>().nullable()();
   IntColumn get unit2 => intEnum<WorkoutUnit>().nullable()();
   IntColumn get sortOrder => integer()();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+  IntColumn get syncStatus =>
+      intEnum<SyncStatus>().withDefault(Constant(SyncStatus.synced.index))();
+  IntColumn get remoteVersion => integer().withDefault(const Constant(0))();
 
   @override
   Set<Column<Object>> get primaryKey => {id};
@@ -58,6 +79,11 @@ class Sessions extends Table {
   DateTimeColumn get createdAt => dateTime()();
   TextColumn get notes => text().nullable()();
   BoolColumn get isCompleted => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+  IntColumn get syncStatus =>
+      intEnum<SyncStatus>().withDefault(Constant(SyncStatus.synced.index))();
+  IntColumn get remoteVersion => integer().withDefault(const Constant(0))();
 
   @override
   Set<Column<Object>> get primaryKey => {id};
@@ -76,6 +102,11 @@ class SetLogs extends Table {
   IntColumn get unit2 => intEnum<WorkoutUnit>().nullable()();
   BoolColumn get isCompleted => boolean()();
   DateTimeColumn get timestamp => dateTime()();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+  IntColumn get syncStatus =>
+      intEnum<SyncStatus>().withDefault(Constant(SyncStatus.synced.index))();
+  IntColumn get remoteVersion => integer().withDefault(const Constant(0))();
 
   @override
   Set<Column<Object>> get primaryKey => {id};
@@ -89,6 +120,26 @@ class LibraryExercises extends Table {
   TextColumn get nameEs => text()();
   BoolColumn get isCustom => boolean()();
   IntColumn get category => intEnum<ExerciseCategory>().nullable()();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+  IntColumn get syncStatus =>
+      intEnum<SyncStatus>().withDefault(Constant(SyncStatus.synced.index))();
+  IntColumn get remoteVersion => integer().withDefault(const Constant(0))();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+@DataClassName('OutboxChangeData')
+class OutboxChanges extends Table {
+  TextColumn get id => text()();
+  TextColumn get entityType => text()();
+  TextColumn get entityId => text()();
+  TextColumn get operation => text()();
+  TextColumn get payloadJson => text()();
+  DateTimeColumn get createdAt => dateTime()();
+  IntColumn get retryCount => integer().withDefault(const Constant(0))();
+  TextColumn get lastError => text().nullable()();
 
   @override
   Set<Column<Object>> get primaryKey => {id};
@@ -112,9 +163,14 @@ enum ExerciseCategory {
   Sessions,
   SetLogs,
   LibraryExercises,
+  OutboxChanges,
 ],)
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openConnection());
+  AppDatabase() : this._(_openConnection());
+
+  AppDatabase.forExecutor(QueryExecutor executor) : this._(executor);
+
+  AppDatabase._(super.executor);
 
   @override
   int get schemaVersion => AppConstants.databaseVersion;
@@ -124,8 +180,80 @@ class AppDatabase extends _$AppDatabase {
     return MigrationStrategy(
       onCreate: (Migrator m) async {
         await m.createAll();
+        await _createSyncIndexes();
         await _seedLibraryExercises();
       },
+      onUpgrade: (Migrator m, int from, int to) async {
+        if (from < 2) {
+          await _migrateV1ToV2(m);
+        }
+      },
+    );
+  }
+
+  Future<void> _migrateV1ToV2(Migrator m) async {
+    await _addSyncColumns('routines');
+    await _addSyncColumns('exercises');
+    await _addSyncColumns('sets');
+    await _addSyncColumns('sessions');
+    await _addSyncColumns('set_logs');
+    await _addSyncColumns('library_exercises');
+
+    await m.createTable(outboxChanges);
+    await _createSyncIndexes();
+
+    final nowEpochSeconds = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    final synced = SyncStatus.synced.index;
+
+    await customStatement(
+      'UPDATE routines SET updated_at = ?, deleted_at = NULL, sync_status = ?, remote_version = 0',
+      [nowEpochSeconds, synced],
+    );
+    await customStatement(
+      'UPDATE exercises SET updated_at = ?, deleted_at = NULL, sync_status = ?, remote_version = 0',
+      [nowEpochSeconds, synced],
+    );
+    await customStatement(
+      'UPDATE sets SET updated_at = ?, deleted_at = NULL, sync_status = ?, remote_version = 0',
+      [nowEpochSeconds, synced],
+    );
+    await customStatement(
+      'UPDATE sessions SET updated_at = ?, deleted_at = NULL, sync_status = ?, remote_version = 0',
+      [nowEpochSeconds, synced],
+    );
+    await customStatement(
+      'UPDATE set_logs SET updated_at = ?, deleted_at = NULL, sync_status = ?, remote_version = 0',
+      [nowEpochSeconds, synced],
+    );
+    await customStatement(
+      'UPDATE library_exercises SET updated_at = ?, deleted_at = NULL, sync_status = ?, remote_version = 0',
+      [nowEpochSeconds, synced],
+    );
+  }
+
+  Future<void> _addSyncColumns(String tableName) async {
+    await customStatement('ALTER TABLE $tableName ADD COLUMN updated_at INTEGER');
+    await customStatement('ALTER TABLE $tableName ADD COLUMN deleted_at INTEGER');
+    await customStatement(
+      'ALTER TABLE $tableName ADD COLUMN sync_status INTEGER NOT NULL DEFAULT 0',
+    );
+    await customStatement(
+      'ALTER TABLE $tableName ADD COLUMN remote_version INTEGER NOT NULL DEFAULT 0',
+    );
+  }
+
+  Future<void> _createSyncIndexes() async {
+    await customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_library_exercises_deleted_at ON library_exercises(deleted_at)',
+    );
+    await customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_outbox_created_at ON outbox_changes(created_at)',
+    );
+    await customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_outbox_entity_type_entity_id ON outbox_changes(entity_type, entity_id)',
+    );
+    await customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_outbox_retry_count ON outbox_changes(retry_count)',
     );
   }
 
@@ -202,6 +330,9 @@ class AppDatabase extends _$AppDatabase {
           nameEs: exercise.$2,
           isCustom: false,
           category: Value(exercise.$3),
+          updatedAt: Value(DateTime.now()),
+          syncStatus: const Value(SyncStatus.synced),
+          remoteVersion: const Value(0),
         ),
         mode: InsertMode.insertOrIgnore,
       );

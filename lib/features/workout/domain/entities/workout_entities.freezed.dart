@@ -15,11 +15,209 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
+mixin _$SyncMetadata {
+  DateTime get updatedAt => throw _privateConstructorUsedError;
+  DateTime? get deletedAt => throw _privateConstructorUsedError;
+  String get syncStatus => throw _privateConstructorUsedError;
+  int get remoteVersion => throw _privateConstructorUsedError;
+
+  /// Create a copy of SyncMetadata
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $SyncMetadataCopyWith<SyncMetadata> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $SyncMetadataCopyWith<$Res> {
+  factory $SyncMetadataCopyWith(
+          SyncMetadata value, $Res Function(SyncMetadata) then) =
+      _$SyncMetadataCopyWithImpl<$Res, SyncMetadata>;
+  @useResult
+  $Res call(
+      {DateTime updatedAt,
+      DateTime? deletedAt,
+      String syncStatus,
+      int remoteVersion});
+}
+
+/// @nodoc
+class _$SyncMetadataCopyWithImpl<$Res, $Val extends SyncMetadata>
+    implements $SyncMetadataCopyWith<$Res> {
+  _$SyncMetadataCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of SyncMetadata
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? updatedAt = null,
+    Object? deletedAt = freezed,
+    Object? syncStatus = null,
+    Object? remoteVersion = null,
+  }) {
+    return _then(_value.copyWith(
+      updatedAt: null == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      deletedAt: freezed == deletedAt
+          ? _value.deletedAt
+          : deletedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      syncStatus: null == syncStatus
+          ? _value.syncStatus
+          : syncStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      remoteVersion: null == remoteVersion
+          ? _value.remoteVersion
+          : remoteVersion // ignore: cast_nullable_to_non_nullable
+              as int,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$SyncMetadataImplCopyWith<$Res>
+    implements $SyncMetadataCopyWith<$Res> {
+  factory _$$SyncMetadataImplCopyWith(
+          _$SyncMetadataImpl value, $Res Function(_$SyncMetadataImpl) then) =
+      __$$SyncMetadataImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {DateTime updatedAt,
+      DateTime? deletedAt,
+      String syncStatus,
+      int remoteVersion});
+}
+
+/// @nodoc
+class __$$SyncMetadataImplCopyWithImpl<$Res>
+    extends _$SyncMetadataCopyWithImpl<$Res, _$SyncMetadataImpl>
+    implements _$$SyncMetadataImplCopyWith<$Res> {
+  __$$SyncMetadataImplCopyWithImpl(
+      _$SyncMetadataImpl _value, $Res Function(_$SyncMetadataImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of SyncMetadata
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? updatedAt = null,
+    Object? deletedAt = freezed,
+    Object? syncStatus = null,
+    Object? remoteVersion = null,
+  }) {
+    return _then(_$SyncMetadataImpl(
+      updatedAt: null == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      deletedAt: freezed == deletedAt
+          ? _value.deletedAt
+          : deletedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      syncStatus: null == syncStatus
+          ? _value.syncStatus
+          : syncStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      remoteVersion: null == remoteVersion
+          ? _value.remoteVersion
+          : remoteVersion // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$SyncMetadataImpl implements _SyncMetadata {
+  const _$SyncMetadataImpl(
+      {required this.updatedAt,
+      this.deletedAt,
+      required this.syncStatus,
+      required this.remoteVersion});
+
+  @override
+  final DateTime updatedAt;
+  @override
+  final DateTime? deletedAt;
+  @override
+  final String syncStatus;
+  @override
+  final int remoteVersion;
+
+  @override
+  String toString() {
+    return 'SyncMetadata(updatedAt: $updatedAt, deletedAt: $deletedAt, syncStatus: $syncStatus, remoteVersion: $remoteVersion)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$SyncMetadataImpl &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt) &&
+            (identical(other.deletedAt, deletedAt) ||
+                other.deletedAt == deletedAt) &&
+            (identical(other.syncStatus, syncStatus) ||
+                other.syncStatus == syncStatus) &&
+            (identical(other.remoteVersion, remoteVersion) ||
+                other.remoteVersion == remoteVersion));
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, updatedAt, deletedAt, syncStatus, remoteVersion);
+
+  /// Create a copy of SyncMetadata
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$SyncMetadataImplCopyWith<_$SyncMetadataImpl> get copyWith =>
+      __$$SyncMetadataImplCopyWithImpl<_$SyncMetadataImpl>(this, _$identity);
+}
+
+abstract class _SyncMetadata implements SyncMetadata {
+  const factory _SyncMetadata(
+      {required final DateTime updatedAt,
+      final DateTime? deletedAt,
+      required final String syncStatus,
+      required final int remoteVersion}) = _$SyncMetadataImpl;
+
+  @override
+  DateTime get updatedAt;
+  @override
+  DateTime? get deletedAt;
+  @override
+  String get syncStatus;
+  @override
+  int get remoteVersion;
+
+  /// Create a copy of SyncMetadata
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$SyncMetadataImplCopyWith<_$SyncMetadataImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
 mixin _$WorkoutRoutine {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   int get sortOrder => throw _privateConstructorUsedError;
   List<WorkoutExercise> get exercises => throw _privateConstructorUsedError;
+  SyncMetadata? get syncMetadata => throw _privateConstructorUsedError;
 
   /// Create a copy of WorkoutRoutine
   /// with the given fields replaced by the non-null parameter values.
@@ -35,7 +233,13 @@ abstract class $WorkoutRoutineCopyWith<$Res> {
       _$WorkoutRoutineCopyWithImpl<$Res, WorkoutRoutine>;
   @useResult
   $Res call(
-      {String id, String name, int sortOrder, List<WorkoutExercise> exercises});
+      {String id,
+      String name,
+      int sortOrder,
+      List<WorkoutExercise> exercises,
+      SyncMetadata? syncMetadata});
+
+  $SyncMetadataCopyWith<$Res>? get syncMetadata;
 }
 
 /// @nodoc
@@ -57,6 +261,7 @@ class _$WorkoutRoutineCopyWithImpl<$Res, $Val extends WorkoutRoutine>
     Object? name = null,
     Object? sortOrder = null,
     Object? exercises = null,
+    Object? syncMetadata = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -75,7 +280,25 @@ class _$WorkoutRoutineCopyWithImpl<$Res, $Val extends WorkoutRoutine>
           ? _value.exercises
           : exercises // ignore: cast_nullable_to_non_nullable
               as List<WorkoutExercise>,
+      syncMetadata: freezed == syncMetadata
+          ? _value.syncMetadata
+          : syncMetadata // ignore: cast_nullable_to_non_nullable
+              as SyncMetadata?,
     ) as $Val);
+  }
+
+  /// Create a copy of WorkoutRoutine
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $SyncMetadataCopyWith<$Res>? get syncMetadata {
+    if (_value.syncMetadata == null) {
+      return null;
+    }
+
+    return $SyncMetadataCopyWith<$Res>(_value.syncMetadata!, (value) {
+      return _then(_value.copyWith(syncMetadata: value) as $Val);
+    });
   }
 }
 
@@ -88,7 +311,14 @@ abstract class _$$WorkoutRoutineImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String id, String name, int sortOrder, List<WorkoutExercise> exercises});
+      {String id,
+      String name,
+      int sortOrder,
+      List<WorkoutExercise> exercises,
+      SyncMetadata? syncMetadata});
+
+  @override
+  $SyncMetadataCopyWith<$Res>? get syncMetadata;
 }
 
 /// @nodoc
@@ -108,6 +338,7 @@ class __$$WorkoutRoutineImplCopyWithImpl<$Res>
     Object? name = null,
     Object? sortOrder = null,
     Object? exercises = null,
+    Object? syncMetadata = freezed,
   }) {
     return _then(_$WorkoutRoutineImpl(
       id: null == id
@@ -126,6 +357,10 @@ class __$$WorkoutRoutineImplCopyWithImpl<$Res>
           ? _value._exercises
           : exercises // ignore: cast_nullable_to_non_nullable
               as List<WorkoutExercise>,
+      syncMetadata: freezed == syncMetadata
+          ? _value.syncMetadata
+          : syncMetadata // ignore: cast_nullable_to_non_nullable
+              as SyncMetadata?,
     ));
   }
 }
@@ -137,7 +372,8 @@ class _$WorkoutRoutineImpl implements _WorkoutRoutine {
       {required this.id,
       required this.name,
       required this.sortOrder,
-      required final List<WorkoutExercise> exercises})
+      required final List<WorkoutExercise> exercises,
+      this.syncMetadata})
       : _exercises = exercises;
 
   @override
@@ -155,8 +391,11 @@ class _$WorkoutRoutineImpl implements _WorkoutRoutine {
   }
 
   @override
+  final SyncMetadata? syncMetadata;
+
+  @override
   String toString() {
-    return 'WorkoutRoutine(id: $id, name: $name, sortOrder: $sortOrder, exercises: $exercises)';
+    return 'WorkoutRoutine(id: $id, name: $name, sortOrder: $sortOrder, exercises: $exercises, syncMetadata: $syncMetadata)';
   }
 
   @override
@@ -169,12 +408,14 @@ class _$WorkoutRoutineImpl implements _WorkoutRoutine {
             (identical(other.sortOrder, sortOrder) ||
                 other.sortOrder == sortOrder) &&
             const DeepCollectionEquality()
-                .equals(other._exercises, _exercises));
+                .equals(other._exercises, _exercises) &&
+            (identical(other.syncMetadata, syncMetadata) ||
+                other.syncMetadata == syncMetadata));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, id, name, sortOrder,
-      const DeepCollectionEquality().hash(_exercises));
+      const DeepCollectionEquality().hash(_exercises), syncMetadata);
 
   /// Create a copy of WorkoutRoutine
   /// with the given fields replaced by the non-null parameter values.
@@ -191,7 +432,8 @@ abstract class _WorkoutRoutine implements WorkoutRoutine {
       {required final String id,
       required final String name,
       required final int sortOrder,
-      required final List<WorkoutExercise> exercises}) = _$WorkoutRoutineImpl;
+      required final List<WorkoutExercise> exercises,
+      final SyncMetadata? syncMetadata}) = _$WorkoutRoutineImpl;
 
   @override
   String get id;
@@ -201,6 +443,8 @@ abstract class _WorkoutRoutine implements WorkoutRoutine {
   int get sortOrder;
   @override
   List<WorkoutExercise> get exercises;
+  @override
+  SyncMetadata? get syncMetadata;
 
   /// Create a copy of WorkoutRoutine
   /// with the given fields replaced by the non-null parameter values.
@@ -218,6 +462,7 @@ mixin _$WorkoutExercise {
   String? get notes => throw _privateConstructorUsedError;
   int get restTimeSeconds => throw _privateConstructorUsedError;
   List<WorkoutSet> get templateSets => throw _privateConstructorUsedError;
+  SyncMetadata? get syncMetadata => throw _privateConstructorUsedError;
 
   /// Create a copy of WorkoutExercise
   /// with the given fields replaced by the non-null parameter values.
@@ -238,7 +483,10 @@ abstract class $WorkoutExerciseCopyWith<$Res> {
       int sortOrder,
       String? notes,
       int restTimeSeconds,
-      List<WorkoutSet> templateSets});
+      List<WorkoutSet> templateSets,
+      SyncMetadata? syncMetadata});
+
+  $SyncMetadataCopyWith<$Res>? get syncMetadata;
 }
 
 /// @nodoc
@@ -262,6 +510,7 @@ class _$WorkoutExerciseCopyWithImpl<$Res, $Val extends WorkoutExercise>
     Object? notes = freezed,
     Object? restTimeSeconds = null,
     Object? templateSets = null,
+    Object? syncMetadata = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -288,7 +537,25 @@ class _$WorkoutExerciseCopyWithImpl<$Res, $Val extends WorkoutExercise>
           ? _value.templateSets
           : templateSets // ignore: cast_nullable_to_non_nullable
               as List<WorkoutSet>,
+      syncMetadata: freezed == syncMetadata
+          ? _value.syncMetadata
+          : syncMetadata // ignore: cast_nullable_to_non_nullable
+              as SyncMetadata?,
     ) as $Val);
+  }
+
+  /// Create a copy of WorkoutExercise
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $SyncMetadataCopyWith<$Res>? get syncMetadata {
+    if (_value.syncMetadata == null) {
+      return null;
+    }
+
+    return $SyncMetadataCopyWith<$Res>(_value.syncMetadata!, (value) {
+      return _then(_value.copyWith(syncMetadata: value) as $Val);
+    });
   }
 }
 
@@ -306,7 +573,11 @@ abstract class _$$WorkoutExerciseImplCopyWith<$Res>
       int sortOrder,
       String? notes,
       int restTimeSeconds,
-      List<WorkoutSet> templateSets});
+      List<WorkoutSet> templateSets,
+      SyncMetadata? syncMetadata});
+
+  @override
+  $SyncMetadataCopyWith<$Res>? get syncMetadata;
 }
 
 /// @nodoc
@@ -328,6 +599,7 @@ class __$$WorkoutExerciseImplCopyWithImpl<$Res>
     Object? notes = freezed,
     Object? restTimeSeconds = null,
     Object? templateSets = null,
+    Object? syncMetadata = freezed,
   }) {
     return _then(_$WorkoutExerciseImpl(
       id: null == id
@@ -354,6 +626,10 @@ class __$$WorkoutExerciseImplCopyWithImpl<$Res>
           ? _value._templateSets
           : templateSets // ignore: cast_nullable_to_non_nullable
               as List<WorkoutSet>,
+      syncMetadata: freezed == syncMetadata
+          ? _value.syncMetadata
+          : syncMetadata // ignore: cast_nullable_to_non_nullable
+              as SyncMetadata?,
     ));
   }
 }
@@ -367,7 +643,8 @@ class _$WorkoutExerciseImpl implements _WorkoutExercise {
       required this.sortOrder,
       this.notes,
       required this.restTimeSeconds,
-      required final List<WorkoutSet> templateSets})
+      required final List<WorkoutSet> templateSets,
+      this.syncMetadata})
       : _templateSets = templateSets;
 
   @override
@@ -389,8 +666,11 @@ class _$WorkoutExerciseImpl implements _WorkoutExercise {
   }
 
   @override
+  final SyncMetadata? syncMetadata;
+
+  @override
   String toString() {
-    return 'WorkoutExercise(id: $id, name: $name, sortOrder: $sortOrder, notes: $notes, restTimeSeconds: $restTimeSeconds, templateSets: $templateSets)';
+    return 'WorkoutExercise(id: $id, name: $name, sortOrder: $sortOrder, notes: $notes, restTimeSeconds: $restTimeSeconds, templateSets: $templateSets, syncMetadata: $syncMetadata)';
   }
 
   @override
@@ -406,12 +686,21 @@ class _$WorkoutExerciseImpl implements _WorkoutExercise {
             (identical(other.restTimeSeconds, restTimeSeconds) ||
                 other.restTimeSeconds == restTimeSeconds) &&
             const DeepCollectionEquality()
-                .equals(other._templateSets, _templateSets));
+                .equals(other._templateSets, _templateSets) &&
+            (identical(other.syncMetadata, syncMetadata) ||
+                other.syncMetadata == syncMetadata));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, sortOrder, notes,
-      restTimeSeconds, const DeepCollectionEquality().hash(_templateSets));
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      name,
+      sortOrder,
+      notes,
+      restTimeSeconds,
+      const DeepCollectionEquality().hash(_templateSets),
+      syncMetadata);
 
   /// Create a copy of WorkoutExercise
   /// with the given fields replaced by the non-null parameter values.
@@ -430,7 +719,8 @@ abstract class _WorkoutExercise implements WorkoutExercise {
       required final int sortOrder,
       final String? notes,
       required final int restTimeSeconds,
-      required final List<WorkoutSet> templateSets}) = _$WorkoutExerciseImpl;
+      required final List<WorkoutSet> templateSets,
+      final SyncMetadata? syncMetadata}) = _$WorkoutExerciseImpl;
 
   @override
   String get id;
@@ -444,6 +734,8 @@ abstract class _WorkoutExercise implements WorkoutExercise {
   int get restTimeSeconds;
   @override
   List<WorkoutSet> get templateSets;
+  @override
+  SyncMetadata? get syncMetadata;
 
   /// Create a copy of WorkoutExercise
   /// with the given fields replaced by the non-null parameter values.
@@ -461,6 +753,7 @@ mixin _$WorkoutSet {
   double? get targetValue2 => throw _privateConstructorUsedError;
   WorkoutUnit? get unit1 => throw _privateConstructorUsedError;
   WorkoutUnit? get unit2 => throw _privateConstructorUsedError;
+  SyncMetadata? get syncMetadata => throw _privateConstructorUsedError;
 
   /// Create a copy of WorkoutSet
   /// with the given fields replaced by the non-null parameter values.
@@ -481,7 +774,10 @@ abstract class $WorkoutSetCopyWith<$Res> {
       double? targetValue1,
       double? targetValue2,
       WorkoutUnit? unit1,
-      WorkoutUnit? unit2});
+      WorkoutUnit? unit2,
+      SyncMetadata? syncMetadata});
+
+  $SyncMetadataCopyWith<$Res>? get syncMetadata;
 }
 
 /// @nodoc
@@ -505,6 +801,7 @@ class _$WorkoutSetCopyWithImpl<$Res, $Val extends WorkoutSet>
     Object? targetValue2 = freezed,
     Object? unit1 = freezed,
     Object? unit2 = freezed,
+    Object? syncMetadata = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -531,7 +828,25 @@ class _$WorkoutSetCopyWithImpl<$Res, $Val extends WorkoutSet>
           ? _value.unit2
           : unit2 // ignore: cast_nullable_to_non_nullable
               as WorkoutUnit?,
+      syncMetadata: freezed == syncMetadata
+          ? _value.syncMetadata
+          : syncMetadata // ignore: cast_nullable_to_non_nullable
+              as SyncMetadata?,
     ) as $Val);
+  }
+
+  /// Create a copy of WorkoutSet
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $SyncMetadataCopyWith<$Res>? get syncMetadata {
+    if (_value.syncMetadata == null) {
+      return null;
+    }
+
+    return $SyncMetadataCopyWith<$Res>(_value.syncMetadata!, (value) {
+      return _then(_value.copyWith(syncMetadata: value) as $Val);
+    });
   }
 }
 
@@ -549,7 +864,11 @@ abstract class _$$WorkoutSetImplCopyWith<$Res>
       double? targetValue1,
       double? targetValue2,
       WorkoutUnit? unit1,
-      WorkoutUnit? unit2});
+      WorkoutUnit? unit2,
+      SyncMetadata? syncMetadata});
+
+  @override
+  $SyncMetadataCopyWith<$Res>? get syncMetadata;
 }
 
 /// @nodoc
@@ -571,6 +890,7 @@ class __$$WorkoutSetImplCopyWithImpl<$Res>
     Object? targetValue2 = freezed,
     Object? unit1 = freezed,
     Object? unit2 = freezed,
+    Object? syncMetadata = freezed,
   }) {
     return _then(_$WorkoutSetImpl(
       id: null == id
@@ -597,6 +917,10 @@ class __$$WorkoutSetImplCopyWithImpl<$Res>
           ? _value.unit2
           : unit2 // ignore: cast_nullable_to_non_nullable
               as WorkoutUnit?,
+      syncMetadata: freezed == syncMetadata
+          ? _value.syncMetadata
+          : syncMetadata // ignore: cast_nullable_to_non_nullable
+              as SyncMetadata?,
     ));
   }
 }
@@ -610,7 +934,8 @@ class _$WorkoutSetImpl implements _WorkoutSet {
       this.targetValue1,
       this.targetValue2,
       this.unit1,
-      this.unit2});
+      this.unit2,
+      this.syncMetadata});
 
   @override
   final String id;
@@ -624,10 +949,12 @@ class _$WorkoutSetImpl implements _WorkoutSet {
   final WorkoutUnit? unit1;
   @override
   final WorkoutUnit? unit2;
+  @override
+  final SyncMetadata? syncMetadata;
 
   @override
   String toString() {
-    return 'WorkoutSet(id: $id, sortOrder: $sortOrder, targetValue1: $targetValue1, targetValue2: $targetValue2, unit1: $unit1, unit2: $unit2)';
+    return 'WorkoutSet(id: $id, sortOrder: $sortOrder, targetValue1: $targetValue1, targetValue2: $targetValue2, unit1: $unit1, unit2: $unit2, syncMetadata: $syncMetadata)';
   }
 
   @override
@@ -643,12 +970,14 @@ class _$WorkoutSetImpl implements _WorkoutSet {
             (identical(other.targetValue2, targetValue2) ||
                 other.targetValue2 == targetValue2) &&
             (identical(other.unit1, unit1) || other.unit1 == unit1) &&
-            (identical(other.unit2, unit2) || other.unit2 == unit2));
+            (identical(other.unit2, unit2) || other.unit2 == unit2) &&
+            (identical(other.syncMetadata, syncMetadata) ||
+                other.syncMetadata == syncMetadata));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, sortOrder, targetValue1, targetValue2, unit1, unit2);
+  int get hashCode => Object.hash(runtimeType, id, sortOrder, targetValue1,
+      targetValue2, unit1, unit2, syncMetadata);
 
   /// Create a copy of WorkoutSet
   /// with the given fields replaced by the non-null parameter values.
@@ -666,7 +995,8 @@ abstract class _WorkoutSet implements WorkoutSet {
       final double? targetValue1,
       final double? targetValue2,
       final WorkoutUnit? unit1,
-      final WorkoutUnit? unit2}) = _$WorkoutSetImpl;
+      final WorkoutUnit? unit2,
+      final SyncMetadata? syncMetadata}) = _$WorkoutSetImpl;
 
   @override
   String get id;
@@ -680,6 +1010,8 @@ abstract class _WorkoutSet implements WorkoutSet {
   WorkoutUnit? get unit1;
   @override
   WorkoutUnit? get unit2;
+  @override
+  SyncMetadata? get syncMetadata;
 
   /// Create a copy of WorkoutSet
   /// with the given fields replaced by the non-null parameter values.
@@ -697,6 +1029,7 @@ mixin _$WorkoutSession {
   DateTime get createdAt => throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
   bool get isCompleted => throw _privateConstructorUsedError;
+  SyncMetadata? get syncMetadata => throw _privateConstructorUsedError;
 
   /// Create a copy of WorkoutSession
   /// with the given fields replaced by the non-null parameter values.
@@ -717,7 +1050,10 @@ abstract class $WorkoutSessionCopyWith<$Res> {
       String routineName,
       DateTime createdAt,
       String? notes,
-      bool isCompleted});
+      bool isCompleted,
+      SyncMetadata? syncMetadata});
+
+  $SyncMetadataCopyWith<$Res>? get syncMetadata;
 }
 
 /// @nodoc
@@ -741,6 +1077,7 @@ class _$WorkoutSessionCopyWithImpl<$Res, $Val extends WorkoutSession>
     Object? createdAt = null,
     Object? notes = freezed,
     Object? isCompleted = null,
+    Object? syncMetadata = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -767,7 +1104,25 @@ class _$WorkoutSessionCopyWithImpl<$Res, $Val extends WorkoutSession>
           ? _value.isCompleted
           : isCompleted // ignore: cast_nullable_to_non_nullable
               as bool,
+      syncMetadata: freezed == syncMetadata
+          ? _value.syncMetadata
+          : syncMetadata // ignore: cast_nullable_to_non_nullable
+              as SyncMetadata?,
     ) as $Val);
+  }
+
+  /// Create a copy of WorkoutSession
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $SyncMetadataCopyWith<$Res>? get syncMetadata {
+    if (_value.syncMetadata == null) {
+      return null;
+    }
+
+    return $SyncMetadataCopyWith<$Res>(_value.syncMetadata!, (value) {
+      return _then(_value.copyWith(syncMetadata: value) as $Val);
+    });
   }
 }
 
@@ -785,7 +1140,11 @@ abstract class _$$WorkoutSessionImplCopyWith<$Res>
       String routineName,
       DateTime createdAt,
       String? notes,
-      bool isCompleted});
+      bool isCompleted,
+      SyncMetadata? syncMetadata});
+
+  @override
+  $SyncMetadataCopyWith<$Res>? get syncMetadata;
 }
 
 /// @nodoc
@@ -807,6 +1166,7 @@ class __$$WorkoutSessionImplCopyWithImpl<$Res>
     Object? createdAt = null,
     Object? notes = freezed,
     Object? isCompleted = null,
+    Object? syncMetadata = freezed,
   }) {
     return _then(_$WorkoutSessionImpl(
       id: null == id
@@ -833,6 +1193,10 @@ class __$$WorkoutSessionImplCopyWithImpl<$Res>
           ? _value.isCompleted
           : isCompleted // ignore: cast_nullable_to_non_nullable
               as bool,
+      syncMetadata: freezed == syncMetadata
+          ? _value.syncMetadata
+          : syncMetadata // ignore: cast_nullable_to_non_nullable
+              as SyncMetadata?,
     ));
   }
 }
@@ -846,7 +1210,8 @@ class _$WorkoutSessionImpl implements _WorkoutSession {
       required this.routineName,
       required this.createdAt,
       this.notes,
-      required this.isCompleted});
+      required this.isCompleted,
+      this.syncMetadata});
 
   @override
   final String id;
@@ -860,10 +1225,12 @@ class _$WorkoutSessionImpl implements _WorkoutSession {
   final String? notes;
   @override
   final bool isCompleted;
+  @override
+  final SyncMetadata? syncMetadata;
 
   @override
   String toString() {
-    return 'WorkoutSession(id: $id, routineId: $routineId, routineName: $routineName, createdAt: $createdAt, notes: $notes, isCompleted: $isCompleted)';
+    return 'WorkoutSession(id: $id, routineId: $routineId, routineName: $routineName, createdAt: $createdAt, notes: $notes, isCompleted: $isCompleted, syncMetadata: $syncMetadata)';
   }
 
   @override
@@ -880,12 +1247,14 @@ class _$WorkoutSessionImpl implements _WorkoutSession {
                 other.createdAt == createdAt) &&
             (identical(other.notes, notes) || other.notes == notes) &&
             (identical(other.isCompleted, isCompleted) ||
-                other.isCompleted == isCompleted));
+                other.isCompleted == isCompleted) &&
+            (identical(other.syncMetadata, syncMetadata) ||
+                other.syncMetadata == syncMetadata));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, routineId, routineName, createdAt, notes, isCompleted);
+  int get hashCode => Object.hash(runtimeType, id, routineId, routineName,
+      createdAt, notes, isCompleted, syncMetadata);
 
   /// Create a copy of WorkoutSession
   /// with the given fields replaced by the non-null parameter values.
@@ -904,7 +1273,8 @@ abstract class _WorkoutSession implements WorkoutSession {
       required final String routineName,
       required final DateTime createdAt,
       final String? notes,
-      required final bool isCompleted}) = _$WorkoutSessionImpl;
+      required final bool isCompleted,
+      final SyncMetadata? syncMetadata}) = _$WorkoutSessionImpl;
 
   @override
   String get id;
@@ -918,6 +1288,8 @@ abstract class _WorkoutSession implements WorkoutSession {
   String? get notes;
   @override
   bool get isCompleted;
+  @override
+  SyncMetadata? get syncMetadata;
 
   /// Create a copy of WorkoutSession
   /// with the given fields replaced by the non-null parameter values.
@@ -939,6 +1311,7 @@ mixin _$SetLog {
   WorkoutUnit? get unit2 => throw _privateConstructorUsedError;
   bool get isCompleted => throw _privateConstructorUsedError;
   DateTime get timestamp => throw _privateConstructorUsedError;
+  SyncMetadata? get syncMetadata => throw _privateConstructorUsedError;
 
   /// Create a copy of SetLog
   /// with the given fields replaced by the non-null parameter values.
@@ -961,7 +1334,10 @@ abstract class $SetLogCopyWith<$Res> {
       WorkoutUnit? unit1,
       WorkoutUnit? unit2,
       bool isCompleted,
-      DateTime timestamp});
+      DateTime timestamp,
+      SyncMetadata? syncMetadata});
+
+  $SyncMetadataCopyWith<$Res>? get syncMetadata;
 }
 
 /// @nodoc
@@ -989,6 +1365,7 @@ class _$SetLogCopyWithImpl<$Res, $Val extends SetLog>
     Object? unit2 = freezed,
     Object? isCompleted = null,
     Object? timestamp = null,
+    Object? syncMetadata = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -1031,7 +1408,25 @@ class _$SetLogCopyWithImpl<$Res, $Val extends SetLog>
           ? _value.timestamp
           : timestamp // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      syncMetadata: freezed == syncMetadata
+          ? _value.syncMetadata
+          : syncMetadata // ignore: cast_nullable_to_non_nullable
+              as SyncMetadata?,
     ) as $Val);
+  }
+
+  /// Create a copy of SetLog
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $SyncMetadataCopyWith<$Res>? get syncMetadata {
+    if (_value.syncMetadata == null) {
+      return null;
+    }
+
+    return $SyncMetadataCopyWith<$Res>(_value.syncMetadata!, (value) {
+      return _then(_value.copyWith(syncMetadata: value) as $Val);
+    });
   }
 }
 
@@ -1052,7 +1447,11 @@ abstract class _$$SetLogImplCopyWith<$Res> implements $SetLogCopyWith<$Res> {
       WorkoutUnit? unit1,
       WorkoutUnit? unit2,
       bool isCompleted,
-      DateTime timestamp});
+      DateTime timestamp,
+      SyncMetadata? syncMetadata});
+
+  @override
+  $SyncMetadataCopyWith<$Res>? get syncMetadata;
 }
 
 /// @nodoc
@@ -1078,6 +1477,7 @@ class __$$SetLogImplCopyWithImpl<$Res>
     Object? unit2 = freezed,
     Object? isCompleted = null,
     Object? timestamp = null,
+    Object? syncMetadata = freezed,
   }) {
     return _then(_$SetLogImpl(
       id: null == id
@@ -1120,6 +1520,10 @@ class __$$SetLogImplCopyWithImpl<$Res>
           ? _value.timestamp
           : timestamp // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      syncMetadata: freezed == syncMetadata
+          ? _value.syncMetadata
+          : syncMetadata // ignore: cast_nullable_to_non_nullable
+              as SyncMetadata?,
     ));
   }
 }
@@ -1137,7 +1541,8 @@ class _$SetLogImpl implements _SetLog {
       this.unit1,
       this.unit2,
       required this.isCompleted,
-      required this.timestamp});
+      required this.timestamp,
+      this.syncMetadata});
 
   @override
   final String id;
@@ -1159,10 +1564,12 @@ class _$SetLogImpl implements _SetLog {
   final bool isCompleted;
   @override
   final DateTime timestamp;
+  @override
+  final SyncMetadata? syncMetadata;
 
   @override
   String toString() {
-    return 'SetLog(id: $id, sessionId: $sessionId, workoutExerciseId: $workoutExerciseId, setNumber: $setNumber, actualValue1: $actualValue1, actualValue2: $actualValue2, unit1: $unit1, unit2: $unit2, isCompleted: $isCompleted, timestamp: $timestamp)';
+    return 'SetLog(id: $id, sessionId: $sessionId, workoutExerciseId: $workoutExerciseId, setNumber: $setNumber, actualValue1: $actualValue1, actualValue2: $actualValue2, unit1: $unit1, unit2: $unit2, isCompleted: $isCompleted, timestamp: $timestamp, syncMetadata: $syncMetadata)';
   }
 
   @override
@@ -1186,7 +1593,9 @@ class _$SetLogImpl implements _SetLog {
             (identical(other.isCompleted, isCompleted) ||
                 other.isCompleted == isCompleted) &&
             (identical(other.timestamp, timestamp) ||
-                other.timestamp == timestamp));
+                other.timestamp == timestamp) &&
+            (identical(other.syncMetadata, syncMetadata) ||
+                other.syncMetadata == syncMetadata));
   }
 
   @override
@@ -1201,7 +1610,8 @@ class _$SetLogImpl implements _SetLog {
       unit1,
       unit2,
       isCompleted,
-      timestamp);
+      timestamp,
+      syncMetadata);
 
   /// Create a copy of SetLog
   /// with the given fields replaced by the non-null parameter values.
@@ -1223,7 +1633,8 @@ abstract class _SetLog implements SetLog {
       final WorkoutUnit? unit1,
       final WorkoutUnit? unit2,
       required final bool isCompleted,
-      required final DateTime timestamp}) = _$SetLogImpl;
+      required final DateTime timestamp,
+      final SyncMetadata? syncMetadata}) = _$SetLogImpl;
 
   @override
   String get id;
@@ -1245,6 +1656,8 @@ abstract class _SetLog implements SetLog {
   bool get isCompleted;
   @override
   DateTime get timestamp;
+  @override
+  SyncMetadata? get syncMetadata;
 
   /// Create a copy of SetLog
   /// with the given fields replaced by the non-null parameter values.

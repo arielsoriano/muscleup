@@ -14,12 +14,23 @@ enum WorkoutUnit {
 }
 
 @freezed
+class SyncMetadata with _$SyncMetadata {
+  const factory SyncMetadata({
+    required DateTime updatedAt,
+    DateTime? deletedAt,
+    required String syncStatus,
+    required int remoteVersion,
+  }) = _SyncMetadata;
+}
+
+@freezed
 class WorkoutRoutine with _$WorkoutRoutine {
   const factory WorkoutRoutine({
     required String id,
     required String name,
     required int sortOrder,
     required List<WorkoutExercise> exercises,
+    SyncMetadata? syncMetadata,
   }) = _WorkoutRoutine;
 }
 
@@ -32,6 +43,7 @@ class WorkoutExercise with _$WorkoutExercise {
     String? notes,
     required int restTimeSeconds,
     required List<WorkoutSet> templateSets,
+    SyncMetadata? syncMetadata,
   }) = _WorkoutExercise;
 }
 
@@ -44,6 +56,7 @@ class WorkoutSet with _$WorkoutSet {
     double? targetValue2,
     WorkoutUnit? unit1,
     WorkoutUnit? unit2,
+    SyncMetadata? syncMetadata,
   }) = _WorkoutSet;
 }
 
@@ -56,6 +69,7 @@ class WorkoutSession with _$WorkoutSession {
     required DateTime createdAt,
     String? notes,
     required bool isCompleted,
+    SyncMetadata? syncMetadata,
   }) = _WorkoutSession;
 }
 
@@ -72,5 +86,6 @@ class SetLog with _$SetLog {
     WorkoutUnit? unit2,
     required bool isCompleted,
     required DateTime timestamp,
+    SyncMetadata? syncMetadata,
   }) = _SetLog;
 }
