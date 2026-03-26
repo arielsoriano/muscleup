@@ -149,5 +149,41 @@ void main() {
       final deletedOutboxRows = await database.select(database.outboxChanges).get();
       expect(deletedOutboxRows.any((row) => row.entityType == 'routine' && row.operation == 'delete'), isTrue);
     });
+
+    test('current schema can be reopened without sync metadata loss', () async {
+      final tempDirectory = await Directory.systemTemp.createTemp('muscleup_db_v2_');
+      final databaseFile = File('${tempDirectory.path}/muscleup_v2_reopen.db');
+
+      final firstOpen = AppDatabase.forExecutor(NativeDatabase(databaseFile));
+      final initialTimestamp = DateTime(2025, 1, 1, 8, 30);
+
+      await firstOpen.into(firstOpen.routines).insert(
+            RoutinesCompanion.insert(
+              id: 'routine_reopen',
+              name: 'Reopen Routine',
+              sortOrder: 0,
+              isDeleted: const Value(false),
+              updatedAt: Value(initialTimestamp),
+              deletedAt: const Value(null),
+              syncStatus: const Value(SyncStatus.pending),
+              remoteVersion: const Value(2),
+            ),
+          );
+
+      await firstOpen.close();
+
+      final secondOpen = AppDatabase.forExecutor(NativeDatabase(databaseFile));
+      final reopenedRoutine = await (secondOpen.select(secondOpen.routines)
+            ..where((row) => row.id.equals('routine_reopen')))
+          .getSingle();
+
+      expect(reopenedRoutine.updatedAt, initialTimestamp);
+      expect(reopenedRoutine.deletedAt, isNull);
+      expect(reopenedRoutine.syncStatus, SyncStatus.pending);
+      expect(reopenedRoutine.remoteVersion, 2);
+
+      await secondOpen.close();
+      await tempDirectory.delete(recursive: true);
+    });
   });
 }

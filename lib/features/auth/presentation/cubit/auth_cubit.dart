@@ -29,6 +29,7 @@ class AuthCubit extends Cubit<AuthState> {
   final SignOutCloudUseCase _signOutCloud;
 
   StreamSubscription<CloudUser?>? _authSubscription;
+  static const Duration _authOperationTimeout = Duration(seconds: 15);
 
   void _bootstrap() {
     try {
@@ -59,7 +60,7 @@ class AuthCubit extends Cubit<AuthState> {
 
     try {
       emit(const AuthLoading());
-      final user = await _signInAnonymously();
+      final user = await _signInAnonymously().timeout(_authOperationTimeout);
       if (!isClosed) emit(AuthAnonymous(user));
     } catch (_) {
       if (!isClosed) emit(const AuthUnavailable());
@@ -82,11 +83,22 @@ class AuthCubit extends Cubit<AuthState> {
     emit(const AuthLoading());
 
     try {
-      final user = await _linkWithGoogle();
+      final user = await _linkWithGoogle().timeout(_authOperationTimeout);
       if (!isClosed) emit(AuthLinkedWithGoogle(user));
-    } catch (_) {
+    } catch (error) {
+      if (_isGoogleCancellation(error)) {
+        if (!isClosed) emit(AuthAnonymous(previousUser));
+        return;
+      }
       if (!isClosed) emit(AuthAnonymous(previousUser));
     }
+  }
+
+  bool _isGoogleCancellation(Object error) {
+    final normalizedError = error.toString().toLowerCase();
+    return normalizedError.contains('google_sign_in_cancelled') ||
+        normalizedError.contains('canceled') ||
+        normalizedError.contains('cancelled');
   }
 
   Future<void> disconnectGoogle() async {

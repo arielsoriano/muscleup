@@ -1,0 +1,77 @@
+Muscleup Android release and Firebase production checklist
+
+Target applicationId
+- com.arielsoriano.muscleup
+
+1. Prepare release keystore
+- Generate upload keystore:
+  keytool -genkeypair -v -storetype PKCS12 -keystore upload-keystore.jks -alias upload -keyalg RSA -keysize 2048 -validity 10000
+- Save keystore path, alias, and passwords in secure secret storage.
+- Never commit keystore or passwords.
+
+2. Configure Gradle signing
+- Add properties in android/gradle.properties or local secure source:
+  MYAPP_UPLOAD_STORE_FILE=upload-keystore.jks
+  MYAPP_UPLOAD_KEY_ALIAS=upload
+  MYAPP_UPLOAD_STORE_PASSWORD=***
+  MYAPP_UPLOAD_KEY_PASSWORD=***
+- Ensure android/app/build.gradle.kts release signingConfig reads these properties.
+- Build release once to validate signing setup.
+
+3. Enable Play App Signing
+- In Play Console, open app setup and enable Play App Signing.
+- Upload first signed artifact with upload key.
+- Keep upload key backed up; Play signing key is managed by Play.
+
+4. SHA fingerprints required for Firebase Auth (Google Sign-In)
+- Debug key SHA-1/SHA-256:
+  cd android && ./gradlew signingReport
+- Upload key SHA-1/SHA-256:
+  keytool -list -v -keystore upload-keystore.jks -alias upload
+- Play App Signing key SHA-1/SHA-256:
+  Play Console -> App Integrity -> App signing key certificate
+- Register all required SHA values in Firebase Console:
+  Firebase project settings -> Android app com.arielsoriano.muscleup -> Add fingerprint
+
+5. google-services.json
+- Download from Firebase Console after package name and SHA registration are correct.
+- Place file at android/app/google-services.json.
+- Validate package name inside file matches com.arielsoriano.muscleup.
+- If Google login fails, verify:
+  package name
+  all required SHA fingerprints
+  Play App Signing key fingerprints
+  Google Sign-In provider enabled in Firebase Authentication
+
+6. Firestore rules deployment
+- Rules file path: firebase/firestore.rules
+- Firebase Console -> Firestore Database -> Rules -> paste file contents -> Publish
+- Rules guarantee:
+  authenticated access only
+  users/{uid}/... access only when request.auth.uid == uid
+  explicit cross-user access block
+
+7. Pre-release QA gates
+- flutter pub get
+- flutter analyze
+- flutter test
+- flutter build apk --release
+- On release build smoke test:
+  anonymous login available on startup
+  link with Google succeeds
+  manual sync runs and metrics update
+  app usable offline when Firebase unavailable
+
+8. Sync and auth operational checks before beta
+- Ensure outbox is processed in order and retries are bounded.
+- Confirm permanent sync failures stop retry loops and remain diagnosable.
+- Confirm no cross-user sync writes by validating uid-scoped Firestore paths.
+- Confirm timeout handling does not block UI or app startup.
+
+9. Internal beta go/no-go gate
+- Go only if all commands pass and smoke tests pass on signed release build.
+- No-go if:
+  analyze/test/build fails
+  Google link fails in release variant
+  sync fails to recover after transient network outage
+  cross-user data access can be reproduced

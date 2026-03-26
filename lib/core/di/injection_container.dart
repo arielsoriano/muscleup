@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -15,9 +16,14 @@ import '../../features/auth/domain/usecases/sign_out_cloud_usecase.dart';
 import '../../features/auth/domain/usecases/watch_auth_state_usecase.dart';
 import '../../features/auth/presentation/cubit/auth_cubit.dart';
 import '../../features/workout/data/datasources/local/workout_database.dart';
+import '../../features/workout/data/datasources/remote/firestore_workout_remote_data_source.dart';
+import '../../features/workout/data/datasources/remote/workout_remote_data_source.dart';
 import '../../features/workout/data/repositories/workout_repository_impl.dart';
+import '../../features/workout/data/sync/sync_checkpoint_store.dart';
+import '../../features/workout/data/sync/workout_sync_engine.dart';
 import '../../features/workout/domain/entities/workout_entities.dart';
 import '../../features/workout/domain/repositories/workout_repository.dart';
+import '../../features/workout/domain/sync/sync_engine.dart';
 import '../../features/workout/domain/usecases/delete_routine_usecase.dart';
 import '../../features/workout/domain/usecases/delete_session_usecase.dart';
 import '../../features/workout/domain/usecases/get_logs_for_session_usecase.dart';
@@ -26,10 +32,12 @@ import '../../features/workout/domain/usecases/get_session_by_id_usecase.dart';
 import '../../features/workout/domain/usecases/save_routine_usecase.dart';
 import '../../features/workout/domain/usecases/save_session_usecase.dart';
 import '../../features/workout/domain/usecases/save_set_log_usecase.dart';
+import '../../features/workout/domain/usecases/trigger_manual_sync_usecase.dart';
 import '../../features/workout/domain/usecases/update_routine_order_usecase.dart';
 import '../../features/workout/domain/usecases/watch_routines_usecase.dart';
 import '../../features/workout/domain/usecases/watch_sessions_usecase.dart';
 import '../../features/settings/presentation/cubit/settings_cubit.dart';
+import '../../features/settings/presentation/cubit/sync_status_cubit.dart';
 import '../../features/workout/presentation/cubit/active_workout_cubit.dart';
 import '../../features/workout/presentation/cubit/dashboard_cubit.dart';
 import '../../features/workout/presentation/cubit/routine_form_cubit.dart';
@@ -44,6 +52,7 @@ Future<void> initialize() async {
   await _initializeAuth();
   await _initializeDomain();
   await _initializePresentation();
+  await serviceLocator<SyncEngine>().startAutoSync();
 }
 
 Future<void> _initializeCore() async {
@@ -55,6 +64,10 @@ Future<void> _initializeCore() async {
   );
 
   serviceLocator.registerLazySingleton<AppDatabase>(() => AppDatabase());
+
+  serviceLocator.registerLazySingleton<SyncCheckpointStore>(
+    () => SyncCheckpointStore(serviceLocator()),
+  );
 
   serviceLocator.registerSingleton<GoRouter>(createAppRouter());
 }
@@ -80,9 +93,17 @@ Future<void> _initializeAuth() async {
     serviceLocator.registerLazySingleton<CloudAuthRepository>(
       () => CloudAuthRepositoryImpl(serviceLocator()),
     );
+
+    serviceLocator.registerLazySingleton<WorkoutRemoteDataSource>(
+      () => FirestoreWorkoutRemoteDataSource(FirebaseFirestore.instance),
+    );
   } else {
     serviceLocator.registerLazySingleton<CloudAuthRepository>(
       () => _NoopCloudAuthRepository(),
+    );
+
+    serviceLocator.registerLazySingleton<WorkoutRemoteDataSource>(
+      () => NoopWorkoutRemoteDataSource(),
     );
   }
 
@@ -160,11 +181,28 @@ Future<void> _initializeDomain() async {
   serviceLocator.registerFactory(
     () => GetLogsForSessionUseCase(serviceLocator()),
   );
+
+  serviceLocator.registerLazySingleton<SyncEngine>(
+    () => WorkoutSyncEngine(
+      database: serviceLocator(),
+      workoutRemoteDataSource: serviceLocator(),
+      cloudAuthRepository: serviceLocator(),
+      syncCheckpointStore: serviceLocator(),
+    ),
+  );
+
+  serviceLocator.registerFactory(
+    () => TriggerManualSyncUseCase(serviceLocator()),
+  );
 }
 
 Future<void> _initializePresentation() async {
   serviceLocator.registerSingleton<SettingsCubit>(
     SettingsCubit(serviceLocator()),
+  );
+
+  serviceLocator.registerSingleton<SyncStatusCubit>(
+    SyncStatusCubit(serviceLocator()),
   );
 
   serviceLocator.registerFactory(

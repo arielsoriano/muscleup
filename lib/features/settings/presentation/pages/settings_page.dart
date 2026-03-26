@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -8,6 +9,7 @@ import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../auth/presentation/cubit/auth_state.dart';
 import '../cubit/settings_cubit.dart';
 import '../cubit/settings_state.dart';
+import '../cubit/sync_status_cubit.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -18,6 +20,7 @@ class SettingsPage extends StatelessWidget {
       providers: [
         BlocProvider.value(value: serviceLocator<AuthCubit>()),
         BlocProvider.value(value: serviceLocator<SettingsCubit>()),
+        BlocProvider.value(value: serviceLocator<SyncStatusCubit>()),
       ],
       child: const _SettingsView(),
     );
@@ -37,6 +40,8 @@ class _SettingsView extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingMedium),
         children: const [
           _AccountSection(),
+          _DividerSection(),
+          _SyncSection(),
           _DividerSection(),
           _AppearanceSection(),
           _DividerSection(),
@@ -242,6 +247,75 @@ class _AuthUnavailableTile extends StatelessWidget {
         color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
       title: Text(context.l10n.authUnavailable),
+    );
+  }
+}
+
+class _SyncSection extends StatelessWidget {
+  const _SyncSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<SyncStatusCubit, SyncStatusState>(
+      builder: (context, syncStatusState) {
+        final lastRunMetrics = syncStatusState.lastRunMetrics;
+        final lastSyncLabel = lastRunMetrics == null
+            ? 'Never synced'
+            : DateFormat('yyyy-MM-dd HH:mm:ss').format(lastRunMetrics.endedAt);
+
+        final syncSummary = lastRunMetrics == null
+            ? 'No sync metrics available yet'
+            : 'Pushed ${lastRunMetrics.pushedCount} | Pulled ${lastRunMetrics.pulledCount} | Conflicts ${lastRunMetrics.conflictsResolvedCount} | Failed ${lastRunMetrics.failedCount}';
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const _SectionHeader('CLOUD SYNC'),
+            ListTile(
+              leading: Icon(
+                syncStatusState.isSyncing
+                    ? Icons.sync_rounded
+                    : Icons.cloud_done_rounded,
+              ),
+              title: Text(syncStatusState.isSyncing ? 'Syncing...' : 'Sync status'),
+              subtitle: Text('Last sync: $lastSyncLabel\n$syncSummary'),
+            ),
+            if (syncStatusState.lastErrorMessage != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppTheme.spacingMedium,
+                  0,
+                  AppTheme.spacingMedium,
+                  AppTheme.spacingSmall,
+                ),
+                child: Text(
+                  syncStatusState.lastErrorMessage!,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                ),
+              ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppTheme.spacingMedium,
+                0,
+                AppTheme.spacingMedium,
+                AppTheme.spacingMedium,
+              ),
+              child: SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: syncStatusState.isSyncing
+                      ? null
+                      : context.read<SyncStatusCubit>().syncNow,
+                  icon: const Icon(Icons.sync),
+                  label: const Text('Sync now'),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

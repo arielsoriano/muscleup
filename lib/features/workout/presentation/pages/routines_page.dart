@@ -284,7 +284,9 @@ class _RoutinesPageContent extends StatelessWidget {
             icon: const Icon(Icons.more_vert_rounded),
             onSelected: (value) {
               final currentLocale = Localizations.localeOf(context);
-              if (value == 'language') {
+              if (value == 'settings') {
+                context.push(AppRoutes.settings);
+              } else if (value == 'language') {
                 final newLanguageCode =
                     currentLocale.languageCode == 'en' ? 'es' : 'en';
                 context.read<SettingsCubit>().changeLanguage(newLanguageCode);
@@ -293,6 +295,16 @@ class _RoutinesPageContent extends StatelessWidget {
               }
             },
             itemBuilder: (_) => [
+              PopupMenuItem<String>(
+                value: 'settings',
+                child: Row(
+                  children: [
+                    const Icon(Icons.settings_rounded),
+                    const SizedBox(width: 12),
+                    Text(context.l10n.settings),
+                  ],
+                ),
+              ),
               PopupMenuItem<String>(
                 value: 'appSkin',
                 child: Row(
