@@ -125,6 +125,17 @@ class _AccountSection extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.authLinkSuccess)),
       );
+      return;
+    }
+
+    if (state is AuthError) {
+      final rawMessage = state.message;
+      final message = rawMessage.startsWith('Exception: ')
+          ? rawMessage.substring('Exception: '.length)
+          : rawMessage;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
     }
   }
 }
@@ -256,64 +267,80 @@ class _SyncSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SyncStatusCubit, SyncStatusState>(
-      builder: (context, syncStatusState) {
-        final lastRunMetrics = syncStatusState.lastRunMetrics;
-        final lastSyncLabel = lastRunMetrics == null
-            ? 'Never synced'
-            : DateFormat('yyyy-MM-dd HH:mm:ss').format(lastRunMetrics.endedAt);
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, authState) {
+        final cloudSyncEnabled = authState is AuthLinkedWithGoogle;
 
-        final syncSummary = lastRunMetrics == null
-            ? 'No sync metrics available yet'
-            : 'Pushed ${lastRunMetrics.pushedCount} | Pulled ${lastRunMetrics.pulledCount} | Conflicts ${lastRunMetrics.conflictsResolvedCount} | Failed ${lastRunMetrics.failedCount}';
+        return BlocBuilder<SyncStatusCubit, SyncStatusState>(
+          builder: (context, syncStatusState) {
+            final lastRunMetrics = syncStatusState.lastRunMetrics;
+            final lastSyncLabel = lastRunMetrics == null
+                ? 'Never synced'
+                : DateFormat('yyyy-MM-dd HH:mm:ss').format(lastRunMetrics.endedAt);
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const _SectionHeader('CLOUD SYNC'),
-            ListTile(
-              leading: Icon(
-                syncStatusState.isSyncing
-                    ? Icons.sync_rounded
-                    : Icons.cloud_done_rounded,
-              ),
-              title: Text(syncStatusState.isSyncing ? 'Syncing...' : 'Sync status'),
-              subtitle: Text('Last sync: $lastSyncLabel\n$syncSummary'),
-            ),
-            if (syncStatusState.lastErrorMessage != null)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppTheme.spacingMedium,
-                  0,
-                  AppTheme.spacingMedium,
-                  AppTheme.spacingSmall,
+            final syncSummary = lastRunMetrics == null
+                ? 'No sync metrics available yet'
+                : 'Pushed ${lastRunMetrics.pushedCount} | Pulled ${lastRunMetrics.pulledCount} | Conflicts ${lastRunMetrics.conflictsResolvedCount} | Failed ${lastRunMetrics.failedCount}';
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const _SectionHeader('CLOUD SYNC'),
+                ListTile(
+                  leading: Icon(
+                    syncStatusState.isSyncing
+                        ? Icons.sync_rounded
+                        : (cloudSyncEnabled
+                            ? Icons.cloud_done_rounded
+                            : Icons.cloud_off_rounded),
+                  ),
+                  title: Text(
+                    syncStatusState.isSyncing
+                        ? 'Syncing...'
+                        : (cloudSyncEnabled ? 'Sync status' : 'Cloud sync locked'),
+                  ),
+                  subtitle: Text(
+                    cloudSyncEnabled
+                        ? 'Last sync: $lastSyncLabel\n$syncSummary'
+                        : 'Link your Google account to enable cloud sync',
+                  ),
                 ),
-                child: Text(
-                  syncStatusState.lastErrorMessage!,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
+                if (syncStatusState.lastErrorMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppTheme.spacingMedium,
+                      0,
+                      AppTheme.spacingMedium,
+                      AppTheme.spacingSmall,
+                    ),
+                    child: Text(
+                      syncStatusState.lastErrorMessage!,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                    ),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppTheme.spacingMedium,
+                    0,
+                    AppTheme.spacingMedium,
+                    AppTheme.spacingMedium,
+                  ),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: (!cloudSyncEnabled || syncStatusState.isSyncing)
+                          ? null
+                          : context.read<SyncStatusCubit>().syncNow,
+                      icon: const Icon(Icons.sync),
+                      label: const Text('Sync now'),
+                    ),
+                  ),
                 ),
-              ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppTheme.spacingMedium,
-                0,
-                AppTheme.spacingMedium,
-                AppTheme.spacingMedium,
-              ),
-              child: SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: syncStatusState.isSyncing
-                      ? null
-                      : context.read<SyncStatusCubit>().syncNow,
-                  icon: const Icon(Icons.sync),
-                  label: const Text('Sync now'),
-                ),
-              ),
-            ),
-          ],
+              ],
+            );
+          },
         );
       },
     );

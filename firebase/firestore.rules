@@ -1,43 +1,13 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
     function isOwner(uid) {
-      return isSignedIn() && request.auth.uid == uid;
+      return request.auth != null && request.auth.uid == uid;
     }
 
     match /users/{uid} {
-      allow read, write: if false;
-
-      match /routines/{documentId} {
-        allow read, write: if isOwner(uid);
-      }
-
-      match /exercises/{documentId} {
-        allow read, write: if isOwner(uid);
-      }
-
-      match /sets/{documentId} {
-        allow read, write: if isOwner(uid);
-      }
-
-      match /sessions/{documentId} {
-        allow read, write: if isOwner(uid);
-      }
-
-      match /setLogs/{documentId} {
-        allow read, write: if isOwner(uid);
-      }
-
-      match /libraryExercises/{documentId} {
-        allow read, write: if isOwner(uid);
-      }
-
       match /{document=**} {
-        allow read, write: if false;
+        allow read, write: if isOwner(uid);
       }
     }
 

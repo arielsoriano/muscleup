@@ -77,7 +77,7 @@ class WorkoutSyncEngine implements SyncEngine {
     }
 
     _authSubscription = _cloudAuthRepository.watchAuthState().listen((CloudUser? user) {
-      if (user == null) {
+      if (user == null || user.isAnonymous) {
         _activeUid = null;
         return;
       }
@@ -98,7 +98,7 @@ class WorkoutSyncEngine implements SyncEngine {
     if (uid == null || uid.isEmpty) {
       return const SyncRunResult(
         success: false,
-        message: 'No authenticated uid available for sync',
+        message: 'Cloud sync requires a linked Google account',
       );
     }
 

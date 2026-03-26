@@ -38,9 +38,28 @@ class FirebaseAuthDataSource {
       idToken: googleAuth.idToken,
     );
 
-    final result =
-        await _firebaseAuth.currentUser!.linkWithCredential(credential);
-    return _mapFirebaseUser(result.user)!;
+    final currentUser = _firebaseAuth.currentUser;
+    if (currentUser == null) {
+      final result = await _firebaseAuth.signInWithCredential(credential);
+      return _mapFirebaseUser(result.user)!;
+    }
+
+    try {
+      final result = await currentUser.linkWithCredential(credential);
+      return _mapFirebaseUser(result.user)!;
+    } on FirebaseAuthException catch (error) {
+      if (error.code == 'provider-already-linked') {
+        return _mapFirebaseUser(_firebaseAuth.currentUser)!;
+      }
+
+      if (error.code == 'credential-already-in-use' ||
+          error.code == 'account-exists-with-different-credential') {
+        final result = await _firebaseAuth.signInWithCredential(credential);
+        return _mapFirebaseUser(result.user)!;
+      }
+
+      throw Exception('google_link_failed:${error.code}:${error.message ?? ''}');
+    }
   }
 
   Future<void> signOut() async {

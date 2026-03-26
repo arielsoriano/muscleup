@@ -91,6 +91,13 @@ void main() {
     });
 
     testWidgets('shows last sync metrics and error message', (tester) async {
+      fakeCloudAuthRepository.authStreamController.add(
+        const CloudUser(
+          uid: 'google-uid',
+          isAnonymous: false,
+          email: 'test@example.com',
+        ),
+      );
       await tester.pumpWidget(_testApp(const SettingsPage()));
       await tester.pumpAndSettle();
 

@@ -90,7 +90,14 @@ class AuthCubit extends Cubit<AuthState> {
         if (!isClosed) emit(AuthAnonymous(previousUser));
         return;
       }
-      if (!isClosed) emit(AuthAnonymous(previousUser));
+      if (!isClosed) {
+        emit(
+          AuthError(
+            message: error.toString(),
+            fallbackUser: previousUser,
+          ),
+        );
+      }
     }
   }
 
