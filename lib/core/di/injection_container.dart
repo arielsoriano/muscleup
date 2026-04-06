@@ -134,8 +134,20 @@ Future<void> _initializeAuth() async {
 }
 
 Future<void> _initializeDomain() async {
+  serviceLocator.registerLazySingleton<SyncEngine>(
+    () => WorkoutSyncEngine(
+      database: serviceLocator(),
+      workoutRemoteDataSource: serviceLocator(),
+      cloudAuthRepository: serviceLocator(),
+      syncCheckpointStore: serviceLocator(),
+    ),
+  );
+
   serviceLocator.registerLazySingleton<WorkoutRepository>(
-    () => WorkoutRepositoryImpl(serviceLocator()),
+    () => WorkoutRepositoryImpl(
+      serviceLocator(),
+      syncEngine: serviceLocator(),
+    ),
   );
 
   serviceLocator.registerFactory(
@@ -180,15 +192,6 @@ Future<void> _initializeDomain() async {
 
   serviceLocator.registerFactory(
     () => GetLogsForSessionUseCase(serviceLocator()),
-  );
-
-  serviceLocator.registerLazySingleton<SyncEngine>(
-    () => WorkoutSyncEngine(
-      database: serviceLocator(),
-      workoutRemoteDataSource: serviceLocator(),
-      cloudAuthRepository: serviceLocator(),
-      syncCheckpointStore: serviceLocator(),
-    ),
   );
 
   serviceLocator.registerFactory(

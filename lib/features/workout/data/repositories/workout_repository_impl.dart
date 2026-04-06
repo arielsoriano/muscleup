@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:drift/drift.dart';
@@ -7,13 +8,19 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../domain/entities/workout_entities.dart';
 import '../../domain/repositories/workout_repository.dart';
+import '../../domain/sync/sync_engine.dart';
 import '../datasources/local/workout_database.dart';
 
 class WorkoutRepositoryImpl implements WorkoutRepository {
-  const WorkoutRepositoryImpl(this.database);
+  WorkoutRepositoryImpl(
+    this.database, {
+    SyncEngine? syncEngine,
+  }) : _syncEngine = syncEngine;
 
   final AppDatabase database;
+  final SyncEngine? _syncEngine;
   final Uuid _uuid = const Uuid();
+  Timer? _syncDebounceTimer;
 
   @override
   Stream<Either<Failure, List<WorkoutRoutine>>> watchRoutines() {
@@ -279,6 +286,8 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
         }
       });
 
+      _scheduleAutoSync();
+
       return const Either<Failure, void>.right(null);
     } catch (e) {
       return Either<Failure, void>.left(DatabaseFailure(e.toString()));
@@ -308,6 +317,9 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
         payload: {'id': id},
         createdAt: now,
       );
+
+      _scheduleAutoSync();
+
       return const Either<Failure, void>.right(null);
     } catch (e) {
       return Either<Failure, void>.left(DatabaseFailure(e.toString()));
@@ -347,6 +359,9 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
           );
         }
       });
+
+      _scheduleAutoSync();
+
       return const Either<Failure, void>.right(null);
     } catch (e) {
       return Either<Failure, void>.left(DatabaseFailure(e.toString()));
@@ -477,6 +492,8 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                         createdAt: now,
                       );
 
+                      _scheduleAutoSync();
+
                       return const Either<Failure, void>.right(null);
                     } catch (e) {
                       return Either<Failure, void>.left(DatabaseFailure(e.toString()));
@@ -505,6 +522,8 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                         payload: {'id': sessionId},
                         createdAt: now,
                       );
+
+                      _scheduleAutoSync();
 
                       return const Either<Failure, void>.right(null);
                     } catch (e) {
@@ -550,6 +569,10 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                           },
                           createdAt: now,
                         );
+                      }
+
+                      if (staleSessionRows.isNotEmpty) {
+                        _scheduleAutoSync();
                       }
 
                       return const Either<Failure, void>.right(null);
@@ -603,6 +626,8 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                         },
                         createdAt: now,
                       );
+
+                      _scheduleAutoSync();
 
                       return const Either<Failure, void>.right(null);
                     } catch (e) {
@@ -821,6 +846,8 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                         createdAt: now,
                       );
 
+                      _scheduleAutoSync();
+
                       return const Either<Failure, void>.right(null);
                     } catch (e) {
                       return Either<Failure, void>.left(DatabaseFailure(e.toString()));
@@ -886,6 +913,21 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                             createdAt: createdAt,
                           ),
                         );
+                  }
+
+                  void _scheduleAutoSync() {
+                    final syncEngine = _syncEngine;
+                    if (syncEngine == null) {
+                      return;
+                    }
+
+                    _syncDebounceTimer?.cancel();
+                    _syncDebounceTimer = Timer(
+                      const Duration(milliseconds: 700),
+                      () {
+                        unawaited(syncEngine.triggerManualSync());
+                      },
+                    );
                   }
 
                   SyncMetadata _mapSyncMetadata({
