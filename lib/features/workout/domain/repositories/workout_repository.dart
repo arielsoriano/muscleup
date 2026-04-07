@@ -37,6 +37,15 @@ abstract class WorkoutRepository {
 
   Future<Either<Failure, void>> saveLibraryExercise(String name, {String? nameEn, String? nameEs});
 
+  Future<Either<Failure, void>> updateLibraryExercise(
+    String id,
+    String name, {
+    String? nameEn,
+    String? nameEs,
+  });
+
+  Future<Either<Failure, void>> deleteLibraryExercise(String id);
+
   Future<Either<Failure, List<LibraryExerciseEntity>>> searchLibraryExercises(String query, String languageCode);
 }
 

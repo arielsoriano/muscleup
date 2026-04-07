@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/l10n_extension.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
@@ -48,6 +50,8 @@ class _SettingsView extends StatelessWidget {
           _AppearanceSection(),
           _DividerSection(),
           _TrainingDefaultsSection(),
+          _DividerSection(),
+          _ExerciseLibrarySection(),
           _DividerSection(),
           _LanguageSection(),
         ],
@@ -842,5 +846,34 @@ class _TrainingDefaultsSection extends StatelessWidget {
     if (result != null) {
       onSave(result);
     }
+  }
+}
+
+class _ExerciseLibrarySection extends StatelessWidget {
+  const _ExerciseLibrarySection();
+
+  @override
+  Widget build(BuildContext context) {
+    final isSpanish = Localizations.localeOf(context).languageCode == 'es';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionHeader(isSpanish ? 'GESTION GLOBAL' : 'GLOBAL MANAGEMENT'),
+        ListTile(
+          leading: const Icon(Icons.fitness_center_rounded),
+          title: Text(
+            isSpanish ? 'Gestionar ejercicios' : 'Manage exercises',
+          ),
+          subtitle: Text(
+            isSpanish
+                ? 'Editar, eliminar y crear ejercicios desde un solo lugar'
+                : 'Edit, delete, and create exercises from one place',
+          ),
+          trailing: const Icon(Icons.chevron_right_rounded),
+          onTap: () => context.push(AppRoutes.exerciseLibrary),
+        ),
+      ],
+    );
   }
 }

@@ -855,6 +855,85 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                   }
 
                   @override
+                  Future<Either<Failure, void>> updateLibraryExercise(
+                    String id,
+                    String name, {
+                    String? nameEn,
+                    String? nameEs,
+                  }) async {
+                    try {
+                      final now = DateTime.now();
+                      final localizedNameEn = nameEn ?? name;
+                      final localizedNameEs = nameEs ?? name;
+
+                      await (database.update(database.libraryExercises)
+                            ..where((exercise) => exercise.id.equals(id)))
+                          .write(
+                        LibraryExercisesCompanion(
+                          name: Value(name),
+                          nameEn: Value(localizedNameEn),
+                          nameEs: Value(localizedNameEs),
+                          updatedAt: Value(now),
+                          deletedAt: const Value(null),
+                          syncStatus: const Value(SyncStatus.pending),
+                          remoteVersion: const Value(0),
+                        ),
+                      );
+
+                      await _enqueueOutboxChange(
+                        entityType: 'libraryExercise',
+                        entityId: id,
+                        operation: 'update',
+                        payload: {
+                          'id': id,
+                          'name': name,
+                          'nameEn': localizedNameEn,
+                          'nameEs': localizedNameEs,
+                        },
+                        createdAt: now,
+                      );
+
+                      _scheduleAutoSync();
+
+                      return const Either<Failure, void>.right(null);
+                    } catch (e) {
+                      return Either<Failure, void>.left(DatabaseFailure(e.toString()));
+                    }
+                  }
+
+                  @override
+                  Future<Either<Failure, void>> deleteLibraryExercise(String id) async {
+                    try {
+                      final now = DateTime.now();
+
+                      await (database.update(database.libraryExercises)
+                            ..where((exercise) => exercise.id.equals(id)))
+                          .write(
+                        LibraryExercisesCompanion(
+                          updatedAt: Value(now),
+                          deletedAt: Value(now),
+                          syncStatus: const Value(SyncStatus.pending),
+                          remoteVersion: const Value(0),
+                        ),
+                      );
+
+                      await _enqueueOutboxChange(
+                        entityType: 'libraryExercise',
+                        entityId: id,
+                        operation: 'delete',
+                        payload: {'id': id},
+                        createdAt: now,
+                      );
+
+                      _scheduleAutoSync();
+
+                      return const Either<Failure, void>.right(null);
+                    } catch (e) {
+                      return Either<Failure, void>.left(DatabaseFailure(e.toString()));
+                    }
+                  }
+
+                  @override
                   Future<Either<Failure, List<LibraryExerciseEntity>>> searchLibraryExercises(
                     String query,
                     String languageCode,
