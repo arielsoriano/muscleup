@@ -10,11 +10,33 @@ enum AppSkin {
 
 extension AppSkinExtension on AppSkin {
   Color get primaryColor {
-    return const Color(0xFFCCFF00);
+    switch (this) {
+      case AppSkin.volt:
+        return const Color(0xFFCCFF00);
+      case AppSkin.cyan:
+        return const Color(0xFF00D8FF);
+      case AppSkin.crimson:
+        return const Color(0xFFFF3B5C);
+      case AppSkin.royalGold:
+        return const Color(0xFFF2C94C);
+      case AppSkin.monochrome:
+        return const Color(0xFF9EA7B8);
+    }
   }
 
   Color get primaryContainer {
-    return const Color(0xFFB8E600);
+    switch (this) {
+      case AppSkin.volt:
+        return const Color(0xFFB8E600);
+      case AppSkin.cyan:
+        return const Color(0xFF6DEBFF);
+      case AppSkin.crimson:
+        return const Color(0xFFFF8AA0);
+      case AppSkin.royalGold:
+        return const Color(0xFFF8DB86);
+      case AppSkin.monochrome:
+        return const Color(0xFFC5CBD6);
+    }
   }
 
   String get name {
@@ -59,7 +81,10 @@ class AppTheme {
   static const Color globalBackground = Color(0xFF121212);
   static const Color pureBlack = Color(0xFF000000);
   static const Color pureWhite = Color(0xFFFFFFFF);
-  static const Color cardBackground = Color(0xFF1E1E1E);
+  static const Color darkBackground = Color(0xFF121212);
+  static const Color darkCardBackground = Color(0xFF1E1E1E);
+  static const Color lightBackground = Color(0xFFF5F7FA);
+  static const Color lightCardBackground = Color(0xFFFFFFFF);
 
   static const double cardElevationLow = 2.0;
   static const double cardElevationMedium = 4.0;
@@ -72,72 +97,93 @@ class AppTheme {
     required AppSkin skin,
     required bool isDarkMode,
   }) {
-    return _getPerformanceTheme();
+    return _buildTheme(skin: skin, isDarkMode: isDarkMode);
   }
 
-  static ThemeData _getPerformanceTheme() {
-    final baseTextTheme = ThemeData.dark().textTheme.apply(
+  static ThemeData _buildTheme({
+    required AppSkin skin,
+    required bool isDarkMode,
+  }) {
+    final accent = skin.primaryColor;
+    final accentContainer = skin.primaryContainer;
+    final isAccentLight = accent.computeLuminance() > 0.45;
+    final onAccent = isAccentLight ? pureBlack : pureWhite;
+    final onAccentContainer = accentContainer.computeLuminance() > 0.45
+        ? pureBlack
+        : pureWhite;
+    final brightness = isDarkMode ? Brightness.dark : Brightness.light;
+    final surface = isDarkMode ? darkCardBackground : lightCardBackground;
+    final scaffold = isDarkMode ? darkBackground : lightBackground;
+    final onSurface = isDarkMode ? pureWhite : const Color(0xFF101418);
+    final borderColor = isDarkMode
+        ? const Color(0xFF333333)
+        : const Color(0xFFD0D6E0);
+
+    final baseTextTheme = ThemeData(brightness: brightness).textTheme.apply(
       fontFamily: 'monospace',
     );
 
     final textTheme = baseTextTheme.copyWith(
       bodyLarge: baseTextTheme.bodyLarge?.copyWith(
-        color: pureWhite,
+        color: onSurface,
         fontWeight: FontWeight.w700,
       ),
       bodyMedium: baseTextTheme.bodyMedium?.copyWith(
-        color: pureWhite,
+        color: onSurface,
         fontWeight: FontWeight.w700,
       ),
       bodySmall: baseTextTheme.bodySmall?.copyWith(
-        color: pureWhite,
+        color: onSurface,
         fontWeight: FontWeight.w600,
       ),
       titleLarge: baseTextTheme.titleLarge?.copyWith(
-        color: pureWhite,
+        color: onSurface,
         fontWeight: FontWeight.w800,
       ),
       titleMedium: baseTextTheme.titleMedium?.copyWith(
-        color: pureWhite,
+        color: onSurface,
         fontWeight: FontWeight.w800,
       ),
       headlineSmall: baseTextTheme.headlineSmall?.copyWith(
-        color: pureWhite,
+        color: onSurface,
         fontWeight: FontWeight.w900,
       ),
     );
 
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: accent,
+      brightness: brightness,
+    ).copyWith(
+      primary: accent,
+      onPrimary: onAccent,
+      primaryContainer: accentContainer,
+      onPrimaryContainer: onAccentContainer,
+      secondary: accent,
+      onSecondary: onAccent,
+      surface: surface,
+      onSurface: onSurface,
+      error: const Color(0xFFFF5A5A),
+      onError: pureBlack,
+    );
+
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
-      colorScheme: const ColorScheme.dark(
-        primary: voltAccent,
-        onPrimary: pureBlack,
-        primaryContainer: voltAccent,
-        onPrimaryContainer: pureBlack,
-        secondary: voltAccent,
-        onSecondary: pureBlack,
-        secondaryContainer: cardBackground,
-        onSecondaryContainer: pureWhite,
-        surface: cardBackground,
-        onSurface: pureWhite,
-        error: Color(0xFFFF5A5A),
-        onError: pureBlack,
-      ),
-      scaffoldBackgroundColor: globalBackground,
-      canvasColor: globalBackground,
-      cardColor: cardBackground,
-      appBarTheme: const AppBarTheme(
-        backgroundColor: globalBackground,
-        foregroundColor: pureWhite,
+      brightness: brightness,
+      colorScheme: colorScheme,
+      scaffoldBackgroundColor: scaffold,
+      canvasColor: scaffold,
+      cardColor: surface,
+      appBarTheme: AppBarTheme(
+        backgroundColor: scaffold,
+        foregroundColor: onSurface,
         centerTitle: true,
         elevation: 0,
       ),
       textTheme: textTheme,
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: voltAccent,
-          foregroundColor: pureBlack,
+          backgroundColor: accent,
+          foregroundColor: onAccent,
           textStyle: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(buttonBorderRadiusRounded),
@@ -146,24 +192,24 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: voltAccent,
-          foregroundColor: pureBlack,
+          backgroundColor: accent,
+          foregroundColor: onAccent,
           textStyle: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(buttonBorderRadiusRounded),
           ),
         ),
       ),
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: voltAccent,
-        foregroundColor: pureBlack,
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: accent,
+        foregroundColor: onAccent,
       ),
-      progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: voltAccent,
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        color: accent,
         linearTrackColor: Color(0xFF2A2A2A),
       ),
       cardTheme: CardThemeData(
-        color: cardBackground,
+        color: surface,
         elevation: cardElevationLow,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(radiusLarge),
@@ -171,37 +217,46 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: cardBackground,
-        labelStyle: const TextStyle(color: pureWhite, fontWeight: FontWeight.w700),
-        hintStyle: const TextStyle(color: Color(0xFFBDBDBD), fontWeight: FontWeight.w600),
+        fillColor: surface,
+        labelStyle: TextStyle(color: onSurface, fontWeight: FontWeight.w700),
+        hintStyle: TextStyle(
+          color: onSurface.withValues(alpha: 0.65),
+          fontWeight: FontWeight.w600,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(inputBorderRadiusRounded),
-          borderSide: const BorderSide(color: Color(0xFF333333), width: 1.5),
+          borderSide: BorderSide(color: borderColor, width: 1.5),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(inputBorderRadiusRounded),
-          borderSide: const BorderSide(color: Color(0xFF333333), width: 1.5),
+          borderSide: BorderSide(color: borderColor, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(inputBorderRadiusRounded),
-          borderSide: const BorderSide(color: voltAccent, width: 2),
+          borderSide: BorderSide(color: accent, width: 2),
         ),
       ),
-      snackBarTheme: const SnackBarThemeData(
+      snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: voltAccent,
+        backgroundColor: accent,
         contentTextStyle: TextStyle(
-          color: pureBlack,
+          color: onAccent,
           fontWeight: FontWeight.w800,
         ),
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(12)),
         ),
       ),
     );
   }
 
-  static ThemeData lightThemeData = _getPerformanceTheme();
+  static ThemeData lightThemeData = _buildTheme(
+    skin: AppSkin.volt,
+    isDarkMode: false,
+  );
 
-  static ThemeData darkThemeData = _getPerformanceTheme();
+  static ThemeData darkThemeData = _buildTheme(
+    skin: AppSkin.volt,
+    isDarkMode: true,
+  );
 }
