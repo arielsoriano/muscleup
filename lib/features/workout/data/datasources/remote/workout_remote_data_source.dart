@@ -28,4 +28,14 @@ abstract class WorkoutRemoteDataSource {
   Future<List<SessionRemoteDto>> fetchSessionsUpdatedSince(String uid, DateTime? updatedSince, {int limit = 500});
   Future<List<SetLogRemoteDto>> fetchSetLogsUpdatedSince(String uid, DateTime? updatedSince, {int limit = 500});
   Future<List<LibraryExerciseRemoteDto>> fetchLibraryExercisesUpdatedSince(String uid, DateTime? updatedSince, {int limit = 500});
+
+  Future<void> upsertTrainingDefaults(
+    String uid, {
+    required int defaultRestSeconds,
+    required int defaultRepetitions,
+    required double defaultWeight,
+    required DateTime updatedAt,
+  });
+
+  Future<Map<String, dynamic>?> fetchTrainingDefaults(String uid);
 }

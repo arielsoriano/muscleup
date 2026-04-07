@@ -10,6 +10,7 @@ import '../../../auth/presentation/cubit/auth_state.dart';
 import '../cubit/settings_cubit.dart';
 import '../cubit/settings_state.dart';
 import '../cubit/sync_status_cubit.dart';
+import '../cubit/training_defaults_cubit.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -21,6 +22,7 @@ class SettingsPage extends StatelessWidget {
         BlocProvider.value(value: serviceLocator<AuthCubit>()),
         BlocProvider.value(value: serviceLocator<SettingsCubit>()),
         BlocProvider.value(value: serviceLocator<SyncStatusCubit>()),
+        BlocProvider.value(value: serviceLocator<TrainingDefaultsCubit>()),
       ],
       child: const _SettingsView(),
     );
@@ -44,6 +46,8 @@ class _SettingsView extends StatelessWidget {
           _SyncSection(),
           _DividerSection(),
           _AppearanceSection(),
+          _DividerSection(),
+          _TrainingDefaultsSection(),
           _DividerSection(),
           _LanguageSection(),
         ],
@@ -645,5 +649,198 @@ class _LanguageSection extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+class _TrainingDefaultsSection extends StatelessWidget {
+  const _TrainingDefaultsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final isSpanish = Localizations.localeOf(context).languageCode == 'es';
+
+    return BlocBuilder<TrainingDefaultsCubit, TrainingDefaultsState>(
+      builder: (context, state) {
+        if (state.isLoading) {
+          return const Padding(
+            padding: EdgeInsets.all(AppTheme.spacingMedium),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        final defaults = state.defaults;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _SectionHeader(
+              isSpanish ? 'VALORES PREDETERMINADOS' : 'DEFAULT TRAINING VALUES',
+            ),
+            ListTile(
+              leading: const Icon(Icons.timer_outlined),
+              title: Text(isSpanish ? 'Descanso predeterminado' : 'Default rest'),
+              subtitle: Text('${defaults.defaultRestSeconds} s'),
+              trailing: const Icon(Icons.edit_rounded),
+              onTap: () => _editIntValue(
+                context,
+                title: isSpanish ? 'Descanso (segundos)' : 'Rest (seconds)',
+                initialValue: defaults.defaultRestSeconds,
+                min: 15,
+                max: 300,
+                onSave: (value) =>
+                    context.read<TrainingDefaultsCubit>().updateDefaults(
+                          defaultRestSeconds: value,
+                        ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.repeat_rounded),
+              title: Text(isSpanish ? 'Repeticiones predeterminadas' : 'Default reps'),
+              subtitle: Text('${defaults.defaultRepetitions}'),
+              trailing: const Icon(Icons.edit_rounded),
+              onTap: () => _editIntValue(
+                context,
+                title: isSpanish ? 'Repeticiones' : 'Repetitions',
+                initialValue: defaults.defaultRepetitions,
+                min: 1,
+                max: 50,
+                onSave: (value) =>
+                    context.read<TrainingDefaultsCubit>().updateDefaults(
+                          defaultRepetitions: value,
+                        ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.fitness_center_outlined),
+              title: Text(isSpanish ? 'Peso predeterminado' : 'Default weight'),
+              subtitle: Text('${defaults.defaultWeight.toStringAsFixed(1)} kg'),
+              trailing: const Icon(Icons.edit_rounded),
+              onTap: () => _editDoubleValue(
+                context,
+                title: isSpanish ? 'Peso (kg)' : 'Weight (kg)',
+                initialValue: defaults.defaultWeight,
+                min: 0,
+                max: 500,
+                onSave: (value) =>
+                    context.read<TrainingDefaultsCubit>().updateDefaults(
+                          defaultWeight: value,
+                        ),
+              ),
+            ),
+            if (state.errorMessage != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppTheme.spacingMedium,
+                  0,
+                  AppTheme.spacingMedium,
+                  AppTheme.spacingSmall,
+                ),
+                child: Text(
+                  state.errorMessage!,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _editIntValue(
+    BuildContext context, {
+    required String title,
+    required int initialValue,
+    required int min,
+    required int max,
+    required ValueChanged<int> onSave,
+  }) async {
+    final controller = TextEditingController(text: initialValue.toString());
+    final isSpanish = Localizations.localeOf(context).languageCode == 'es';
+
+    final result = await showDialog<int>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(title),
+          content: TextField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            autofocus: true,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(isSpanish ? 'Cancelar' : 'Cancel'),
+            ),
+            FilledButton(
+              onPressed: () {
+                final parsed = int.tryParse(controller.text);
+                if (parsed == null) {
+                  return;
+                }
+                Navigator.of(dialogContext).pop(parsed.clamp(min, max));
+              },
+              child: Text(isSpanish ? 'Guardar' : 'Save'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (result != null) {
+      onSave(result);
+    }
+  }
+
+  Future<void> _editDoubleValue(
+    BuildContext context, {
+    required String title,
+    required double initialValue,
+    required double min,
+    required double max,
+    required ValueChanged<double> onSave,
+  }) async {
+    final controller = TextEditingController(
+      text: initialValue.toStringAsFixed(1),
+    );
+    final isSpanish = Localizations.localeOf(context).languageCode == 'es';
+
+    final result = await showDialog<double>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(title),
+          content: TextField(
+            controller: controller,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            autofocus: true,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(isSpanish ? 'Cancelar' : 'Cancel'),
+            ),
+            FilledButton(
+              onPressed: () {
+                final raw = controller.text.replaceAll(',', '.');
+                final parsed = double.tryParse(raw);
+                if (parsed == null) {
+                  return;
+                }
+                final clamped = parsed.clamp(min, max).toDouble();
+                Navigator.of(dialogContext).pop(clamped);
+              },
+              child: Text(isSpanish ? 'Guardar' : 'Save'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (result != null) {
+      onSave(result);
+    }
   }
 }

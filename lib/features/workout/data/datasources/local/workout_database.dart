@@ -181,14 +181,24 @@ class AppDatabase extends _$AppDatabase {
       onCreate: (Migrator m) async {
         await m.createAll();
         await _createSyncIndexes();
+        await _createTrainingDefaultsTable();
+        await _seedTrainingDefaults();
         await _seedLibraryExercises();
       },
       onUpgrade: (Migrator m, int from, int to) async {
         if (from < 2) {
           await _migrateV1ToV2(m);
         }
+        if (from < 3) {
+          await _migrateV2ToV3();
+        }
       },
     );
+  }
+
+  Future<void> _migrateV2ToV3() async {
+    await _createTrainingDefaultsTable();
+    await _seedTrainingDefaults();
   }
 
   Future<void> _migrateV1ToV2(Migrator m) async {
@@ -254,6 +264,36 @@ class AppDatabase extends _$AppDatabase {
     );
     await customStatement(
       'CREATE INDEX IF NOT EXISTS idx_outbox_retry_count ON outbox_changes(retry_count)',
+    );
+  }
+
+  Future<void> _createTrainingDefaultsTable() async {
+    await customStatement(
+      '''
+      CREATE TABLE IF NOT EXISTS training_defaults (
+        id INTEGER PRIMARY KEY CHECK(id = 1),
+        default_rest_seconds INTEGER NOT NULL,
+        default_repetitions INTEGER NOT NULL,
+        default_weight REAL NOT NULL,
+        updated_at INTEGER NOT NULL
+      )
+      ''',
+    );
+  }
+
+  Future<void> _seedTrainingDefaults() async {
+    final nowEpoch = DateTime.now().millisecondsSinceEpoch;
+    await customStatement(
+      '''
+      INSERT OR IGNORE INTO training_defaults (
+        id,
+        default_rest_seconds,
+        default_repetitions,
+        default_weight,
+        updated_at
+      ) VALUES (1, 60, 10, 20.0, ?)
+      ''',
+      [nowEpoch],
     );
   }
 

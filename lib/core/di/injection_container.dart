@@ -36,8 +36,10 @@ import '../../features/workout/domain/usecases/trigger_manual_sync_usecase.dart'
 import '../../features/workout/domain/usecases/update_routine_order_usecase.dart';
 import '../../features/workout/domain/usecases/watch_routines_usecase.dart';
 import '../../features/workout/domain/usecases/watch_sessions_usecase.dart';
+import '../../features/settings/data/training_defaults_repository.dart';
 import '../../features/settings/presentation/cubit/settings_cubit.dart';
 import '../../features/settings/presentation/cubit/sync_status_cubit.dart';
+import '../../features/settings/presentation/cubit/training_defaults_cubit.dart';
 import '../../features/workout/presentation/cubit/active_workout_cubit.dart';
 import '../../features/workout/presentation/cubit/dashboard_cubit.dart';
 import '../../features/workout/presentation/cubit/routine_form_cubit.dart';
@@ -150,6 +152,13 @@ Future<void> _initializeDomain() async {
     ),
   );
 
+  serviceLocator.registerLazySingleton<TrainingDefaultsRepository>(
+    () => TrainingDefaultsRepository(
+      database: serviceLocator(),
+      workoutRemoteDataSource: serviceLocator(),
+    ),
+  );
+
   serviceLocator.registerFactory(
     () => WatchRoutinesUseCase(serviceLocator()),
   );
@@ -208,6 +217,13 @@ Future<void> _initializePresentation() async {
     SyncStatusCubit(serviceLocator()),
   );
 
+  serviceLocator.registerSingleton<TrainingDefaultsCubit>(
+    TrainingDefaultsCubit(
+      serviceLocator(),
+      serviceLocator(),
+    ),
+  );
+
   serviceLocator.registerFactory(
     () => WorkoutCubit(
       watchRoutinesUseCase: serviceLocator(),
@@ -242,6 +258,7 @@ Future<void> _initializePresentation() async {
       routine: routine,
       saveRoutineUseCase: serviceLocator(),
       repository: serviceLocator(),
+      trainingDefaultsRepository: serviceLocator(),
     ),
   );
 }

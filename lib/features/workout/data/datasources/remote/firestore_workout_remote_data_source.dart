@@ -166,6 +166,86 @@ class FirestoreWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
         .toList(growable: false);
   }
 
+  @override
+  Future<void> upsertTrainingDefaults(
+    String uid, {
+    required int defaultRestSeconds,
+    required int defaultRepetitions,
+    required double defaultWeight,
+    required DateTime updatedAt,
+  }) async {
+    final data = <String, dynamic>{
+      'defaultRestSeconds': defaultRestSeconds,
+      'defaultRepetitions': defaultRepetitions,
+      'defaultWeight': defaultWeight,
+      'updatedAt': Timestamp.fromDate(updatedAt),
+    };
+
+    try {
+      await _collection(uid, 'appSettings')
+          .doc('trainingDefaults')
+          .set(data, SetOptions(merge: true))
+          .timeout(_operationTimeout);
+    } on FirebaseException catch (error) {
+      _logFirebaseError('upsertTrainingDefaults', 'appSettings', error, id: 'trainingDefaults');
+      throw DatabaseException(_firebaseErrorMessage(error, 'appSettings/trainingDefaults'));
+    } on TimeoutException {
+      throw DatabaseException('Firestore timeout on appSettings during upsertTrainingDefaults');
+    } catch (error) {
+      if (kDebugMode) {
+        developer.log(
+          'Unexpected Firestore upsertTrainingDefaults error: $error',
+          name: 'workout.remote',
+        );
+      }
+      throw DatabaseException('Unexpected Firestore error while upserting training defaults');
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>?> fetchTrainingDefaults(String uid) async {
+    try {
+      final doc = await _collection(uid, 'appSettings')
+          .doc('trainingDefaults')
+          .get()
+          .timeout(_operationTimeout);
+
+      if (!doc.exists) {
+        return null;
+      }
+
+      final data = doc.data();
+      if (data == null) {
+        return null;
+      }
+
+      final updatedAtRaw = data['updatedAt'];
+      final updatedAt = updatedAtRaw is Timestamp
+          ? updatedAtRaw.toDate()
+          : DateTime.now();
+
+      return <String, dynamic>{
+        'defaultRestSeconds': data['defaultRestSeconds'] as int?,
+        'defaultRepetitions': data['defaultRepetitions'] as int?,
+        'defaultWeight': (data['defaultWeight'] as num?)?.toDouble(),
+        'updatedAt': updatedAt,
+      };
+    } on FirebaseException catch (error) {
+      _logFirebaseError('fetchTrainingDefaults', 'appSettings', error, id: 'trainingDefaults');
+      throw DatabaseException(_firebaseErrorMessage(error, 'appSettings/trainingDefaults'));
+    } on TimeoutException {
+      throw DatabaseException('Firestore timeout on appSettings during fetchTrainingDefaults');
+    } catch (error) {
+      if (kDebugMode) {
+        developer.log(
+          'Unexpected Firestore fetchTrainingDefaults error: $error',
+          name: 'workout.remote',
+        );
+      }
+      throw DatabaseException('Unexpected Firestore error while fetching training defaults');
+    }
+  }
+
   Future<void> _upsert(
     String uid,
     String collection,
@@ -367,6 +447,22 @@ class NoopWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
     DateTime? updatedSince, {
     int limit = 500,
   }) {
+    return _notConfigured();
+  }
+
+  @override
+  Future<void> upsertTrainingDefaults(
+    String uid, {
+    required int defaultRestSeconds,
+    required int defaultRepetitions,
+    required double defaultWeight,
+    required DateTime updatedAt,
+  }) {
+    return _notConfigured();
+  }
+
+  @override
+  Future<Map<String, dynamic>?> fetchTrainingDefaults(String uid) {
     return _notConfigured();
   }
 

@@ -3,6 +3,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
+import '../../../settings/data/training_defaults_repository.dart';
 import '../../domain/entities/workout_entities.dart';
 import '../../domain/repositories/workout_repository.dart';
 import '../../domain/usecases/save_routine_usecase.dart';
@@ -13,8 +14,10 @@ class RoutineFormCubit extends Cubit<RoutineFormState> {
     WorkoutRoutine? routine,
     required SaveRoutineUseCase saveRoutineUseCase,
     required WorkoutRepository repository,
+    required TrainingDefaultsRepository trainingDefaultsRepository,
   })  : _saveRoutineUseCase = saveRoutineUseCase,
         _repository = repository,
+        _trainingDefaultsRepository = trainingDefaultsRepository,
         super(
           RoutineFormState.editing(
             routine: routine ??
@@ -27,6 +30,8 @@ class RoutineFormCubit extends Cubit<RoutineFormState> {
             isNew: routine == null,
           ),
         );
+
+  final TrainingDefaultsRepository _trainingDefaultsRepository;
 
   final SaveRoutineUseCase _saveRoutineUseCase;
   final WorkoutRepository _repository;
@@ -42,19 +47,20 @@ class RoutineFormCubit extends Cubit<RoutineFormState> {
     );
   }
 
-  void addExercise(String exerciseName) {
+  Future<void> addExercise(String exerciseName) async {
+    final defaults = await _trainingDefaultsRepository.getLocalDefaults();
     final newExercise = WorkoutExercise(
       id: _uuid.v4(),
       name: exerciseName,
       sortOrder: state.routine.exercises.length,
       notes: null,
-      restTimeSeconds: 60,
+      restTimeSeconds: defaults.defaultRestSeconds,
       templateSets: [
         WorkoutSet(
           id: _uuid.v4(),
           sortOrder: 0,
-          targetValue1: 0,
-          targetValue2: 0,
+          targetValue1: defaults.defaultWeight,
+          targetValue2: defaults.defaultRepetitions.toDouble(),
           unit1: WorkoutUnit.kilograms,
           unit2: WorkoutUnit.repetitions,
         ),
@@ -116,15 +122,16 @@ class RoutineFormCubit extends Cubit<RoutineFormState> {
     );
   }
 
-  void addSet(String exerciseId) {
+  Future<void> addSet(String exerciseId) async {
+    final defaults = await _trainingDefaultsRepository.getLocalDefaults();
     final currentRoutine = state.routine;
     final updatedExercises = currentRoutine.exercises.map((exercise) {
       if (exercise.id == exerciseId) {
         final newSet = WorkoutSet(
           id: _uuid.v4(),
           sortOrder: exercise.templateSets.length,
-          targetValue1: 0,
-          targetValue2: 0,
+          targetValue1: defaults.defaultWeight,
+          targetValue2: defaults.defaultRepetitions.toDouble(),
           unit1: WorkoutUnit.kilograms,
           unit2: WorkoutUnit.repetitions,
         );
