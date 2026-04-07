@@ -8,6 +8,12 @@ enum SnackBarType {
 }
 
 extension BuildContextSnackBarExtension on BuildContext {
+  static const EdgeInsets _defaultSnackBarMargin = EdgeInsets.only(
+    bottom: 24,
+    left: 20,
+    right: 20,
+  );
+
   /// Unified snackbar method that respects the app theme and selected skin
   /// 
   /// Uses the actual theme colors (primary, error) instead of hardcoded values,
@@ -46,7 +52,7 @@ extension BuildContextSnackBarExtension on BuildContext {
         ),
         backgroundColor: backgroundColor,
         behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.only(bottom: 80, left: 20, right: 20),
+        margin: _defaultSnackBarMargin,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),

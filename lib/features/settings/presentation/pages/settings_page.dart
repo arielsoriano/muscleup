@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/utils/ui_helpers.dart';
 import '../../../../core/utils/l10n_extension.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../auth/presentation/cubit/auth_state.dart';
@@ -130,8 +131,8 @@ class _AccountSection extends StatelessWidget {
 
   void _handleAuthStateChange(BuildContext context, AuthState state) {
     if (state is AuthLinkedWithGoogle) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.authLinkSuccess)),
+      context.showAppSnackBar(
+        message: context.l10n.authLinkSuccess,
       );
       return;
     }
@@ -141,8 +142,9 @@ class _AccountSection extends StatelessWidget {
       final message = rawMessage.startsWith('Exception: ')
           ? rawMessage.substring('Exception: '.length)
           : rawMessage;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
+      context.showAppSnackBar(
+        message: message,
+        type: SnackBarType.error,
       );
     }
   }
@@ -278,43 +280,38 @@ class _SyncSection extends StatelessWidget {
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, authState) {
         final cloudSyncEnabled = authState is AuthLinkedWithGoogle;
-        final isSpanish = Localizations.localeOf(context).languageCode == 'es';
+        final locale = Localizations.localeOf(context).languageCode;
 
         return BlocBuilder<SyncStatusCubit, SyncStatusState>(
           builder: (context, syncStatusState) {
             final lastRunMetrics = syncStatusState.lastRunMetrics;
-          final now = DateTime.now();
-          final isStaleSync = lastRunMetrics == null
-            ? true
-            : now.difference(lastRunMetrics.endedAt) >
-              const Duration(minutes: 15);
+            final now = DateTime.now();
+            final isStaleSync = lastRunMetrics == null
+                ? true
+                : now.difference(lastRunMetrics.endedAt) >
+                    const Duration(minutes: 15);
+            
             final lastSyncLabel = lastRunMetrics == null
-                ? (isSpanish ? 'Nunca sincronizado' : 'Never synced')
+                ? context.l10n.neverSynced
                 : DateFormat(
                     'yyyy-MM-dd HH:mm:ss',
-                    isSpanish ? 'es' : 'en',
+                    locale,
                   ).format(lastRunMetrics.endedAt);
 
             final title = syncStatusState.isSyncing
-                ? (isSpanish ? 'Sincronizando...' : 'Syncing...')
+                ? context.l10n.syncing
                 : cloudSyncEnabled
-              ? (isSpanish
-                ? (isStaleSync ? 'Sincronización pendiente' : 'Sincronizado')
-                : (isStaleSync ? 'Sync pending' : 'Synced'))
-                    : (isSpanish ? 'Sincronización bloqueada' : 'Cloud sync locked');
+                    ? (isStaleSync ? context.l10n.syncPending : context.l10n.synced)
+                    : context.l10n.syncLocked;
 
             final subtitle = cloudSyncEnabled
-                ? (isSpanish
-                    ? 'Última sincronización: $lastSyncLabel'
-                    : 'Last sync: $lastSyncLabel')
-                : (isSpanish
-                    ? 'Vincula tu cuenta de Google para habilitar la sincronización en la nube'
-                    : 'Link your Google account to enable cloud sync');
+                ? context.l10n.lastSync(lastSyncLabel)
+                : context.l10n.linkGoogleForSync;
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _SectionHeader(isSpanish ? 'SINCRONIZACION NUBE' : 'CLOUD SYNC'),
+                _SectionHeader(context.l10n.syncCloudSection),
                 ListTile(
                   leading: Icon(
                     syncStatusState.isSyncing
@@ -361,7 +358,7 @@ class _SyncSection extends StatelessWidget {
                             ? null
                             : context.read<SyncStatusCubit>().syncNow,
                         icon: const Icon(Icons.refresh_rounded),
-                        label: Text(isSpanish ? 'Actualizar ahora' : 'Refresh now'),
+                        label: Text(context.l10n.refreshNow),
                       ),
                     ),
                   ),
@@ -661,8 +658,6 @@ class _TrainingDefaultsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isSpanish = Localizations.localeOf(context).languageCode == 'es';
-
     return BlocBuilder<TrainingDefaultsCubit, TrainingDefaultsState>(
       builder: (context, state) {
         if (state.isLoading) {
@@ -677,17 +672,15 @@ class _TrainingDefaultsSection extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _SectionHeader(
-              isSpanish ? 'VALORES PREDETERMINADOS' : 'DEFAULT TRAINING VALUES',
-            ),
+            _SectionHeader(context.l10n.trainingDefaultsSection),
             ListTile(
               leading: const Icon(Icons.timer_outlined),
-              title: Text(isSpanish ? 'Descanso predeterminado' : 'Default rest'),
+              title: Text(context.l10n.defaultRest),
               subtitle: Text('${defaults.defaultRestSeconds} s'),
               trailing: const Icon(Icons.edit_rounded),
               onTap: () => _editIntValue(
                 context,
-                title: isSpanish ? 'Descanso (segundos)' : 'Rest (seconds)',
+                title: context.l10n.restSecondsDialogTitle,
                 initialValue: defaults.defaultRestSeconds,
                 min: 15,
                 max: 300,
@@ -699,12 +692,12 @@ class _TrainingDefaultsSection extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.repeat_rounded),
-              title: Text(isSpanish ? 'Repeticiones predeterminadas' : 'Default reps'),
+              title: Text(context.l10n.defaultRepetitions),
               subtitle: Text('${defaults.defaultRepetitions}'),
               trailing: const Icon(Icons.edit_rounded),
               onTap: () => _editIntValue(
                 context,
-                title: isSpanish ? 'Repeticiones' : 'Repetitions',
+                title: context.l10n.repetitionsDialogTitle,
                 initialValue: defaults.defaultRepetitions,
                 min: 1,
                 max: 50,
@@ -716,12 +709,12 @@ class _TrainingDefaultsSection extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.fitness_center_outlined),
-              title: Text(isSpanish ? 'Peso predeterminado' : 'Default weight'),
+              title: Text(context.l10n.defaultWeight),
               subtitle: Text('${defaults.defaultWeight.toStringAsFixed(1)} kg'),
               trailing: const Icon(Icons.edit_rounded),
               onTap: () => _editDoubleValue(
                 context,
-                title: isSpanish ? 'Peso (kg)' : 'Weight (kg)',
+                title: context.l10n.weightKgDialogTitle,
                 initialValue: defaults.defaultWeight,
                 min: 0,
                 max: 500,
@@ -761,7 +754,6 @@ class _TrainingDefaultsSection extends StatelessWidget {
     required ValueChanged<int> onSave,
   }) async {
     final controller = TextEditingController(text: initialValue.toString());
-    final isSpanish = Localizations.localeOf(context).languageCode == 'es';
 
     final result = await showDialog<int>(
       context: context,
@@ -776,7 +768,7 @@ class _TrainingDefaultsSection extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(isSpanish ? 'Cancelar' : 'Cancel'),
+              child: Text(context.l10n.cancel),
             ),
             FilledButton(
               onPressed: () {
@@ -786,7 +778,7 @@ class _TrainingDefaultsSection extends StatelessWidget {
                 }
                 Navigator.of(dialogContext).pop(parsed.clamp(min, max));
               },
-              child: Text(isSpanish ? 'Guardar' : 'Save'),
+              child: Text(context.l10n.save),
             ),
           ],
         );
@@ -809,7 +801,6 @@ class _TrainingDefaultsSection extends StatelessWidget {
     final controller = TextEditingController(
       text: initialValue.toStringAsFixed(1),
     );
-    final isSpanish = Localizations.localeOf(context).languageCode == 'es';
 
     final result = await showDialog<double>(
       context: context,
@@ -824,7 +815,7 @@ class _TrainingDefaultsSection extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(isSpanish ? 'Cancelar' : 'Cancel'),
+              child: Text(context.l10n.cancel),
             ),
             FilledButton(
               onPressed: () {
@@ -836,7 +827,7 @@ class _TrainingDefaultsSection extends StatelessWidget {
                 final clamped = parsed.clamp(min, max).toDouble();
                 Navigator.of(dialogContext).pop(clamped);
               },
-              child: Text(isSpanish ? 'Guardar' : 'Save'),
+              child: Text(context.l10n.save),
             ),
           ],
         );
@@ -854,22 +845,14 @@ class _ExerciseLibrarySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isSpanish = Localizations.localeOf(context).languageCode == 'es';
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionHeader(isSpanish ? 'GESTION GLOBAL' : 'GLOBAL MANAGEMENT'),
+        _SectionHeader(context.l10n.globalManagementSection),
         ListTile(
           leading: const Icon(Icons.fitness_center_rounded),
-          title: Text(
-            isSpanish ? 'Gestionar ejercicios' : 'Manage exercises',
-          ),
-          subtitle: Text(
-            isSpanish
-                ? 'Editar, eliminar y crear ejercicios desde un solo lugar'
-                : 'Edit, delete, and create exercises from one place',
-          ),
+          title: Text(context.l10n.manageExercises),
+          subtitle: Text(context.l10n.manageExercisesSubtitle),
           trailing: const Icon(Icons.chevron_right_rounded),
           onTap: () => context.push(AppRoutes.exerciseLibrary),
         ),

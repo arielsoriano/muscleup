@@ -401,5 +401,49 @@
   "authUnavailable": "Cloud auth unavailable",
   "@authUnavailable": { "description": "Message when Firebase is not configured" },
   "darkMode": "Dark Mode",
-  "@darkMode": { "description": "Dark mode toggle label" }
+  "@darkMode": { "description": "Dark mode toggle label" },
+  "trainingDefaultsSection": "DEFAULT TRAINING VALUES",
+  "defaultRest": "Default rest",
+  "defaultRepetitions": "Default reps",
+  "defaultWeight": "Default weight",
+  "restSecondsDialogTitle": "Rest (seconds)",
+  "repetitionsDialogTitle": "Repetitions",
+  "weightKgDialogTitle": "Weight (kg)",
+  "globalManagementSection": "GLOBAL MANAGEMENT",
+  "manageExercises": "Manage exercises",
+  "manageExercisesSubtitle": "Edit, delete, and create exercises from one place",
+  "exerciseLibraryTitle": "Exercise library",
+  "newLabel": "New",
+  "newExerciseTitle": "New exercise",
+  "editExerciseTitle": "Edit exercise",
+  "deleteExerciseTitle": "Delete exercise",
+  "deleteExerciseConfirm": "Are you sure you want to delete {name}?",
+  "@deleteExerciseConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "changesSaved": "Changes saved",
+  "exerciseNameHint": "Exercise name",
+  "noExercisesToShow": "No exercises to show",
+  "customLabel": "Custom",
+  "libraryLabel": "Library",
+  "syncCloudSection": "CLOUD SYNC",
+  "neverSynced": "Never synced",
+  "syncing": "Syncing...",
+  "syncPending": "Sync pending",
+  "synced": "Synced",
+  "syncLocked": "Cloud sync locked",
+  "lastSync": "Last sync: {date}",
+  "@lastSync": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "linkGoogleForSync": "Link your Google account to enable cloud sync",
+  "refreshNow": "Refresh now"
 }

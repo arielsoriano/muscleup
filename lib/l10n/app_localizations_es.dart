@@ -318,4 +318,100 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get darkMode => 'Modo Oscuro';
+
+  @override
+  String get trainingDefaultsSection => 'VALORES PREDETERMINADOS';
+
+  @override
+  String get defaultRest => 'Descanso predeterminado';
+
+  @override
+  String get defaultRepetitions => 'Repeticiones predeterminadas';
+
+  @override
+  String get defaultWeight => 'Peso predeterminado';
+
+  @override
+  String get restSecondsDialogTitle => 'Descanso (segundos)';
+
+  @override
+  String get repetitionsDialogTitle => 'Repeticiones';
+
+  @override
+  String get weightKgDialogTitle => 'Peso (kg)';
+
+  @override
+  String get globalManagementSection => 'GESTION GLOBAL';
+
+  @override
+  String get manageExercises => 'Gestionar ejercicios';
+
+  @override
+  String get manageExercisesSubtitle =>
+      'Editar, eliminar y crear ejercicios desde un solo lugar';
+
+  @override
+  String get exerciseLibraryTitle => 'Gestion de ejercicios';
+
+  @override
+  String get newLabel => 'Nuevo';
+
+  @override
+  String get newExerciseTitle => 'Nuevo ejercicio';
+
+  @override
+  String get editExerciseTitle => 'Editar ejercicio';
+
+  @override
+  String get deleteExerciseTitle => 'Eliminar ejercicio';
+
+  @override
+  String deleteExerciseConfirm(String name) {
+    return '¿Seguro que quieres eliminar $name?';
+  }
+
+  @override
+  String get changesSaved => 'Cambios guardados';
+
+  @override
+  String get exerciseNameHint => 'Nombre del ejercicio';
+
+  @override
+  String get noExercisesToShow => 'No hay ejercicios para mostrar';
+
+  @override
+  String get customLabel => 'Personalizado';
+
+  @override
+  String get libraryLabel => 'Biblioteca';
+
+  @override
+  String get syncCloudSection => 'SINCRONIZACION NUBE';
+
+  @override
+  String get neverSynced => 'Nunca sincronizado';
+
+  @override
+  String get syncing => 'Sincronizando...';
+
+  @override
+  String get syncPending => 'Sincronización pendiente';
+
+  @override
+  String get synced => 'Sincronizado';
+
+  @override
+  String get syncLocked => 'Sincronización bloqueada';
+
+  @override
+  String lastSync(String date) {
+    return 'Última sincronización: $date';
+  }
+
+  @override
+  String get linkGoogleForSync =>
+      'Vincula tu cuenta de Google para habilitar la sincronización en la nube';
+
+  @override
+  String get refreshNow => 'Actualizar ahora';
 }

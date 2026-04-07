@@ -318,4 +318,100 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get darkMode => 'Dark Mode';
+
+  @override
+  String get trainingDefaultsSection => 'DEFAULT TRAINING VALUES';
+
+  @override
+  String get defaultRest => 'Default rest';
+
+  @override
+  String get defaultRepetitions => 'Default reps';
+
+  @override
+  String get defaultWeight => 'Default weight';
+
+  @override
+  String get restSecondsDialogTitle => 'Rest (seconds)';
+
+  @override
+  String get repetitionsDialogTitle => 'Repetitions';
+
+  @override
+  String get weightKgDialogTitle => 'Weight (kg)';
+
+  @override
+  String get globalManagementSection => 'GLOBAL MANAGEMENT';
+
+  @override
+  String get manageExercises => 'Manage exercises';
+
+  @override
+  String get manageExercisesSubtitle =>
+      'Edit, delete, and create exercises from one place';
+
+  @override
+  String get exerciseLibraryTitle => 'Exercise library';
+
+  @override
+  String get newLabel => 'New';
+
+  @override
+  String get newExerciseTitle => 'New exercise';
+
+  @override
+  String get editExerciseTitle => 'Edit exercise';
+
+  @override
+  String get deleteExerciseTitle => 'Delete exercise';
+
+  @override
+  String deleteExerciseConfirm(String name) {
+    return 'Are you sure you want to delete $name?';
+  }
+
+  @override
+  String get changesSaved => 'Changes saved';
+
+  @override
+  String get exerciseNameHint => 'Exercise name';
+
+  @override
+  String get noExercisesToShow => 'No exercises to show';
+
+  @override
+  String get customLabel => 'Custom';
+
+  @override
+  String get libraryLabel => 'Library';
+
+  @override
+  String get syncCloudSection => 'CLOUD SYNC';
+
+  @override
+  String get neverSynced => 'Never synced';
+
+  @override
+  String get syncing => 'Syncing...';
+
+  @override
+  String get syncPending => 'Sync pending';
+
+  @override
+  String get synced => 'Synced';
+
+  @override
+  String get syncLocked => 'Cloud sync locked';
+
+  @override
+  String lastSync(String date) {
+    return 'Last sync: $date';
+  }
+
+  @override
+  String get linkGoogleForSync =>
+      'Link your Google account to enable cloud sync';
+
+  @override
+  String get refreshNow => 'Refresh now';
 }

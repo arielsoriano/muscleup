@@ -691,6 +691,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dark Mode'**
   String get darkMode;
+
+  /// No description provided for @trainingDefaultsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'DEFAULT TRAINING VALUES'**
+  String get trainingDefaultsSection;
+
+  /// No description provided for @defaultRest.
+  ///
+  /// In en, this message translates to:
+  /// **'Default rest'**
+  String get defaultRest;
+
+  /// No description provided for @defaultRepetitions.
+  ///
+  /// In en, this message translates to:
+  /// **'Default reps'**
+  String get defaultRepetitions;
+
+  /// No description provided for @defaultWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Default weight'**
+  String get defaultWeight;
+
+  /// No description provided for @restSecondsDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest (seconds)'**
+  String get restSecondsDialogTitle;
+
+  /// No description provided for @repetitionsDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Repetitions'**
+  String get repetitionsDialogTitle;
+
+  /// No description provided for @weightKgDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight (kg)'**
+  String get weightKgDialogTitle;
+
+  /// No description provided for @globalManagementSection.
+  ///
+  /// In en, this message translates to:
+  /// **'GLOBAL MANAGEMENT'**
+  String get globalManagementSection;
+
+  /// No description provided for @manageExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage exercises'**
+  String get manageExercises;
+
+  /// No description provided for @manageExercisesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit, delete, and create exercises from one place'**
+  String get manageExercisesSubtitle;
+
+  /// No description provided for @exerciseLibraryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise library'**
+  String get exerciseLibraryTitle;
+
+  /// No description provided for @newLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get newLabel;
+
+  /// No description provided for @newExerciseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New exercise'**
+  String get newExerciseTitle;
+
+  /// No description provided for @editExerciseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit exercise'**
+  String get editExerciseTitle;
+
+  /// No description provided for @deleteExerciseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete exercise'**
+  String get deleteExerciseTitle;
+
+  /// No description provided for @deleteExerciseConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete {name}?'**
+  String deleteExerciseConfirm(String name);
+
+  /// No description provided for @changesSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes saved'**
+  String get changesSaved;
+
+  /// No description provided for @exerciseNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise name'**
+  String get exerciseNameHint;
+
+  /// No description provided for @noExercisesToShow.
+  ///
+  /// In en, this message translates to:
+  /// **'No exercises to show'**
+  String get noExercisesToShow;
+
+  /// No description provided for @customLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get customLabel;
+
+  /// No description provided for @libraryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Library'**
+  String get libraryLabel;
+
+  /// No description provided for @syncCloudSection.
+  ///
+  /// In en, this message translates to:
+  /// **'CLOUD SYNC'**
+  String get syncCloudSection;
+
+  /// No description provided for @neverSynced.
+  ///
+  /// In en, this message translates to:
+  /// **'Never synced'**
+  String get neverSynced;
+
+  /// No description provided for @syncing.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing...'**
+  String get syncing;
+
+  /// No description provided for @syncPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync pending'**
+  String get syncPending;
+
+  /// No description provided for @synced.
+  ///
+  /// In en, this message translates to:
+  /// **'Synced'**
+  String get synced;
+
+  /// No description provided for @syncLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud sync locked'**
+  String get syncLocked;
+
+  /// No description provided for @lastSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Last sync: {date}'**
+  String lastSync(String date);
+
+  /// No description provided for @linkGoogleForSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Link your Google account to enable cloud sync'**
+  String get linkGoogleForSync;
+
+  /// No description provided for @refreshNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh now'**
+  String get refreshNow;
 }
 
 class _AppLocalizationsDelegate

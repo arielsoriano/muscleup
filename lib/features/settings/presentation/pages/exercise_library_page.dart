@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
+import '../../../../core/utils/l10n_extension.dart';
 import '../../../../core/utils/ui_helpers.dart';
 import '../../../workout/domain/repositories/workout_repository.dart';
 
@@ -66,9 +67,8 @@ class _ExerciseLibraryPageState extends State<ExerciseLibraryPage> {
   }
 
   Future<void> _createExercise() async {
-    final isSpanish = Localizations.localeOf(context).languageCode == 'es';
     final name = await _showExerciseNameDialog(
-      title: isSpanish ? 'Nuevo ejercicio' : 'New exercise',
+      title: context.l10n.newExerciseTitle,
       initialValue: '',
     );
 
@@ -80,12 +80,10 @@ class _ExerciseLibraryPageState extends State<ExerciseLibraryPage> {
   }
 
   Future<void> _editExercise(LibraryExerciseEntity exercise) async {
-    final isSpanish = Localizations.localeOf(context).languageCode == 'es';
+    final languageCode = Localizations.localeOf(context).languageCode;
     final name = await _showExerciseNameDialog(
-      title: isSpanish ? 'Editar ejercicio' : 'Edit exercise',
-      initialValue: exercise.getLocalizedName(
-        Localizations.localeOf(context).languageCode,
-      ),
+      title: context.l10n.editExerciseTitle,
+      initialValue: exercise.getLocalizedName(languageCode),
     );
 
     if (name == null || name.trim().isEmpty) {
@@ -103,25 +101,25 @@ class _ExerciseLibraryPageState extends State<ExerciseLibraryPage> {
   }
 
   Future<void> _deleteExercise(LibraryExerciseEntity exercise) async {
-    final isSpanish = Localizations.localeOf(context).languageCode == 'es';
+    final languageCode = Localizations.localeOf(context).languageCode;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: Text(isSpanish ? 'Eliminar ejercicio' : 'Delete exercise'),
+          title: Text(context.l10n.deleteExerciseTitle),
           content: Text(
-            isSpanish
-                ? '¿Seguro que quieres eliminar ${exercise.getLocalizedName('es')}?'
-                : 'Are you sure you want to delete ${exercise.getLocalizedName('en')}?',
+            context.l10n.deleteExerciseConfirm(
+              exercise.getLocalizedName(languageCode),
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: Text(isSpanish ? 'Cancelar' : 'Cancel'),
+              child: Text(context.l10n.cancel),
             ),
             FilledButton(
               onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: Text(isSpanish ? 'Eliminar' : 'Delete'),
+              child: Text(context.l10n.delete),
             ),
           ],
         );
@@ -159,9 +157,8 @@ class _ExerciseLibraryPageState extends State<ExerciseLibraryPage> {
         if (!mounted) {
           return;
         }
-        final isSpanish = Localizations.localeOf(context).languageCode == 'es';
         context.showAppSnackBar(
-          message: isSpanish ? 'Cambios guardados' : 'Changes saved',
+          message: context.l10n.changesSaved,
         );
       },
     );
@@ -177,17 +174,15 @@ class _ExerciseLibraryPageState extends State<ExerciseLibraryPage> {
     required String title,
     required String initialValue,
   }) async {
-    final isSpanish = Localizations.localeOf(context).languageCode == 'es';
-
     return showDialog<String>(
       context: context,
       builder: (dialogContext) {
         return _ExerciseNameDialog(
           title: Text(title),
           initialValue: initialValue,
-          hintText: isSpanish ? 'Nombre del ejercicio' : 'Exercise name',
-          cancelLabel: isSpanish ? 'Cancelar' : 'Cancel',
-          saveLabel: isSpanish ? 'Guardar' : 'Save',
+          hintText: context.l10n.exerciseNameHint,
+          cancelLabel: context.l10n.cancel,
+          saveLabel: context.l10n.save,
         );
       },
     );
@@ -203,25 +198,26 @@ class _ExerciseLibraryPageState extends State<ExerciseLibraryPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isSpanish = Localizations.localeOf(context).languageCode == 'es';
     final languageCode = Localizations.localeOf(context).languageCode;
     final filteredExercises = _allExercises.where((exercise) {
       final localizedName = exercise.getLocalizedName(languageCode).toLowerCase();
       return localizedName.contains(_query.toLowerCase());
     }).toList()
-      ..sort((left, right) => left
-          .getLocalizedName(languageCode)
-          .toLowerCase()
-          .compareTo(right.getLocalizedName(languageCode).toLowerCase()),);
+      ..sort(
+        (left, right) => left
+            .getLocalizedName(languageCode)
+            .toLowerCase()
+            .compareTo(right.getLocalizedName(languageCode).toLowerCase()),
+      );
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isSpanish ? 'Gestion de ejercicios' : 'Exercise library'),
+        title: Text(context.l10n.exerciseLibraryTitle),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _isMutating ? null : _createExercise,
         icon: const Icon(Icons.add_rounded),
-        label: Text(isSpanish ? 'Nuevo' : 'New'),
+        label: Text(context.l10n.newLabel),
       ),
       body: Column(
         children: [
@@ -229,7 +225,7 @@ class _ExerciseLibraryPageState extends State<ExerciseLibraryPage> {
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: SearchBar(
               controller: _searchController,
-              hintText: isSpanish ? 'Buscar ejercicios' : 'Search exercises',
+              hintText: context.l10n.searchExercises,
               onChanged: (value) {
                 setState(() {
                   _query = value.trim();
@@ -257,9 +253,7 @@ class _ExerciseLibraryPageState extends State<ExerciseLibraryPage> {
           else if (filteredExercises.isEmpty)
             Expanded(
               child: Center(
-                child: Text(
-                  isSpanish ? 'No hay ejercicios para mostrar' : 'No exercises to show',
-                ),
+                child: Text(context.l10n.noExercisesToShow),
               ),
             )
           else
@@ -282,18 +276,22 @@ class _ExerciseLibraryPageState extends State<ExerciseLibraryPage> {
                         title: Text(exercise.getLocalizedName(languageCode)),
                         subtitle: Text(
                           exercise.isCustom
-                              ? (isSpanish ? 'Personalizado' : 'Custom')
-                              : (isSpanish ? 'Biblioteca' : 'Library'),
+                              ? context.l10n.customLabel
+                              : context.l10n.libraryLabel,
                         ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              onPressed: _isMutating ? null : () => _editExercise(exercise),
+                              onPressed: _isMutating
+                                  ? null
+                                  : () => _editExercise(exercise),
                               icon: const Icon(Icons.edit_rounded),
                             ),
                             IconButton(
-                              onPressed: _isMutating ? null : () => _deleteExercise(exercise),
+                              onPressed: _isMutating
+                                  ? null
+                                  : () => _deleteExercise(exercise),
                               icon: const Icon(Icons.delete_outline_rounded),
                             ),
                           ],
