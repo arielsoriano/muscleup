@@ -456,4 +456,18 @@ class _ProgrammableWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   }) async {
     return <LibraryExerciseRemoteDto>[];
   }
+
+  @override
+  Future<void> upsertTrainingDefaults(
+    String uid, {
+    required int defaultRestSeconds,
+    required int defaultRepetitions,
+    required double defaultWeight,
+    required DateTime updatedAt,
+  }) async {}
+
+  @override
+  Future<Map<String, dynamic>?> fetchTrainingDefaults(String uid) async {
+    return null;
+  }
 }

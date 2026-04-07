@@ -190,7 +190,9 @@ class FirestoreWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
       _logFirebaseError('upsertTrainingDefaults', 'appSettings', error, id: 'trainingDefaults');
       throw DatabaseException(_firebaseErrorMessage(error, 'appSettings/trainingDefaults'));
     } on TimeoutException {
-      throw DatabaseException('Firestore timeout on appSettings during upsertTrainingDefaults');
+      throw const DatabaseException(
+        'Firestore timeout on appSettings during upsertTrainingDefaults',
+      );
     } catch (error) {
       if (kDebugMode) {
         developer.log(
@@ -198,7 +200,9 @@ class FirestoreWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
           name: 'workout.remote',
         );
       }
-      throw DatabaseException('Unexpected Firestore error while upserting training defaults');
+      throw const DatabaseException(
+        'Unexpected Firestore error while upserting training defaults',
+      );
     }
   }
 
@@ -234,7 +238,9 @@ class FirestoreWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
       _logFirebaseError('fetchTrainingDefaults', 'appSettings', error, id: 'trainingDefaults');
       throw DatabaseException(_firebaseErrorMessage(error, 'appSettings/trainingDefaults'));
     } on TimeoutException {
-      throw DatabaseException('Firestore timeout on appSettings during fetchTrainingDefaults');
+      throw const DatabaseException(
+        'Firestore timeout on appSettings during fetchTrainingDefaults',
+      );
     } catch (error) {
       if (kDebugMode) {
         developer.log(
@@ -242,7 +248,9 @@ class FirestoreWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
           name: 'workout.remote',
         );
       }
-      throw DatabaseException('Unexpected Firestore error while fetching training defaults');
+      throw const DatabaseException(
+        'Unexpected Firestore error while fetching training defaults',
+      );
     }
   }
 

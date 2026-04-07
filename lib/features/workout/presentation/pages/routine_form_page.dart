@@ -557,12 +557,12 @@ class _SetFormRowState extends State<_SetFormRow> {
     _value1Controller = TextEditingController(
       text: (widget.set.targetValue1 == null || widget.set.targetValue1 == 0)
           ? ''
-          : widget.set.targetValue1.toString(),
+          : widget.set.targetValue1!.formatClean(),
     );
     _value2Controller = TextEditingController(
       text: (widget.set.targetValue2 == null || widget.set.targetValue2 == 0)
           ? ''
-          : widget.set.targetValue2.toString(),
+          : widget.set.targetValue2!.formatClean(),
     );
   }
 

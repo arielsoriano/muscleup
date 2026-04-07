@@ -6,10 +6,6 @@ class TrainingDefaults {
     required this.updatedAt,
   });
 
-  static const int defaultRestSecondsFallback = 60;
-  static const int defaultRepetitionsFallback = 10;
-  static const double defaultWeightFallback = 20;
-
   factory TrainingDefaults.fallback() {
     return TrainingDefaults(
       defaultRestSeconds: defaultRestSecondsFallback,
@@ -18,6 +14,10 @@ class TrainingDefaults {
       updatedAt: DateTime.now(),
     );
   }
+
+  static const int defaultRestSecondsFallback = 60;
+  static const int defaultRepetitionsFallback = 10;
+  static const double defaultWeightFallback = 20;
 
   final int defaultRestSeconds;
   final int defaultRepetitions;
