@@ -364,12 +364,6 @@ class _AppearanceSection extends StatelessWidget {
               subtitle: Text(_skinLabel(context, state.currentSkin)),
               onTap: () => _showSkinSelector(context),
             ),
-            SwitchListTile(
-              secondary: const Icon(Icons.dark_mode_rounded),
-              title: Text(context.l10n.darkMode),
-              value: state.isDarkMode,
-              onChanged: (_) => context.read<SettingsCubit>().toggleDarkMode(),
-            ),
           ],
         );
       },
@@ -399,44 +393,90 @@ class _AppearanceSection extends StatelessWidget {
         ),
       ),
       builder: (sheetContext) {
-        return BlocProvider.value(
-          value: settingsCubit,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppTheme.spacingSmall,
-              vertical: AppTheme.spacingLarge,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: AppTheme.spacingMedium,
-                    bottom: AppTheme.spacingMedium,
-                  ),
-                  child: Text(
-                    context.l10n.selectSkin,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
+        return Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 8.0,
+            vertical: 24.0,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(
+                  context.l10n.selectSkin,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
-                ...AppSkin.values.map(
-                  (skin) => ListTile(
-                    title: Text(_skinLabel(sheetContext, skin)),
-                    trailing: currentSkin == skin
-                        ? Icon(
-                            Icons.check_circle_rounded,
-                            color: Theme.of(context).colorScheme.primary,
-                          )
-                        : const Icon(Icons.circle_outlined),
-                    onTap: () {
-                      sheetContext.read<SettingsCubit>().changeSkin(skin);
-                      Navigator.of(sheetContext).pop();
-                    },
+              ),
+              const SizedBox(height: 16),
+              ...AppSkin.values.map((skin) {
+                final isSelected = skin == currentSkin;
+                return ListTile(
+                  onTap: () {
+                    settingsCubit.changeSkin(skin);
+                    Navigator.of(sheetContext).pop();
+                  },
+                  leading: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: skin.primaryColor,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Theme.of(sheetContext)
+                            .colorScheme
+                            .outline
+                            .withValues(alpha: 0.2),
+                        width: 1,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: skin.primaryColor.withValues(alpha: 0.4),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
+                  title: Text(
+                    _skinLabel(sheetContext, skin),
+                    style:
+                        Theme.of(sheetContext).textTheme.titleMedium?.copyWith(
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                  ),
+                  trailing: isSelected
+                      ? Icon(
+                          Icons.check_circle_rounded,
+                          color: skin.primaryColor,
+                          size: 28,
+                        )
+                      : Icon(
+                          Icons.circle_outlined,
+                          color: Theme.of(sheetContext)
+                              .colorScheme
+                              .outline
+                              .withValues(alpha: 0.3),
+                          size: 28,
+                        ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  tileColor:
+                      isSelected ? skin.primaryColor.withValues(alpha: 0.1) : null,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
+                );
+              }),
+              const SizedBox(height: 8),
+            ],
           ),
         );
       },
@@ -451,7 +491,7 @@ class _LanguageSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SettingsCubit, SettingsState>(
       builder: (context, state) {
-        final isEnglish = state.locale.languageCode == 'en';
+        final currentCode = state.locale.languageCode;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -460,14 +500,123 @@ class _LanguageSection extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.language_rounded),
               title: Text(context.l10n.language),
-              subtitle: Text(isEnglish ? 'English' : 'Español'),
+              subtitle: Text(_languageLabel(currentCode)),
               trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: () {
-                final newCode = isEnglish ? 'es' : 'en';
-                context.read<SettingsCubit>().changeLanguage(newCode);
-              },
+              onTap: () => _showLanguageSelector(context, currentCode),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  String _languageLabel(String code) {
+    switch (code) {
+      case 'es':
+        return 'Español';
+      case 'en':
+      default:
+        return 'English';
+    }
+  }
+
+  void _showLanguageSelector(BuildContext context, String currentCode) {
+    final settingsCubit = context.read<SettingsCubit>();
+    const options = [
+      ('en', 'English'),
+      ('es', 'Español'),
+    ];
+
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppTheme.radiusLarge),
+        ),
+      ),
+      builder: (sheetContext) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 8.0,
+            vertical: 24.0,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(
+                  context.l10n.language,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              ...options.map((option) {
+                final code = option.$1;
+                final label = option.$2;
+                final isSelected = code == currentCode;
+
+                return ListTile(
+                  onTap: () {
+                    settingsCubit.changeLanguage(code);
+                    Navigator.of(sheetContext).pop();
+                  },
+                  leading: CircleAvatar(
+                    radius: 20,
+                    backgroundColor: Theme.of(sheetContext)
+                        .colorScheme
+                        .primary
+                        .withValues(alpha: 0.12),
+                    child: Text(
+                      code.toUpperCase(),
+                      style: Theme.of(sheetContext).textTheme.labelLarge,
+                    ),
+                  ),
+                  title: Text(
+                    label,
+                    style:
+                        Theme.of(sheetContext).textTheme.titleMedium?.copyWith(
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                  ),
+                  trailing: isSelected
+                      ? Icon(
+                          Icons.check_circle_rounded,
+                          color: Theme.of(sheetContext).colorScheme.primary,
+                          size: 28,
+                        )
+                      : Icon(
+                          Icons.circle_outlined,
+                          color: Theme.of(sheetContext)
+                              .colorScheme
+                              .outline
+                              .withValues(alpha: 0.3),
+                          size: 28,
+                        ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  tileColor: isSelected
+                      ? Theme.of(sheetContext)
+                          .colorScheme
+                          .primary
+                          .withValues(alpha: 0.08)
+                      : null,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
+                );
+              }),
+              const SizedBox(height: 8),
+            ],
+          ),
         );
       },
     );
