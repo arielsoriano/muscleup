@@ -125,10 +125,10 @@ class _ShellContent extends StatelessWidget {
 
     return NavigationBarTheme(
       data: NavigationBarThemeData(
-        indicatorColor: colorScheme.primaryContainer,
+        indicatorColor: colorScheme.primary,
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return IconThemeData(color: colorScheme.onPrimaryContainer);
+            return IconThemeData(color: colorScheme.onPrimary);
           }
           return IconThemeData(color: colorScheme.onSurfaceVariant);
         }),

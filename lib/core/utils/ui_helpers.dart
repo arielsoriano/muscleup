@@ -22,8 +22,8 @@ extension BuildContextSnackBarExtension on BuildContext {
     // Use theme colors that respect the selected app skin
     final (backgroundColor, textColor) = switch (type) {
       SnackBarType.success => (
-        colorScheme.primaryContainer,
-        colorScheme.onPrimaryContainer,
+        colorScheme.primary,
+        colorScheme.onPrimary,
       ),
       SnackBarType.error => (
         colorScheme.errorContainer,

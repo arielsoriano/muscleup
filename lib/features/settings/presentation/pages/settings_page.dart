@@ -275,6 +275,11 @@ class _SyncSection extends StatelessWidget {
         return BlocBuilder<SyncStatusCubit, SyncStatusState>(
           builder: (context, syncStatusState) {
             final lastRunMetrics = syncStatusState.lastRunMetrics;
+          final now = DateTime.now();
+          final isStaleSync = lastRunMetrics == null
+            ? true
+            : now.difference(lastRunMetrics.endedAt) >
+              const Duration(minutes: 15);
             final lastSyncLabel = lastRunMetrics == null
                 ? (isSpanish ? 'Nunca sincronizado' : 'Never synced')
                 : DateFormat(
@@ -285,7 +290,9 @@ class _SyncSection extends StatelessWidget {
             final title = syncStatusState.isSyncing
                 ? (isSpanish ? 'Sincronizando...' : 'Syncing...')
                 : cloudSyncEnabled
-                    ? (isSpanish ? 'Sincronizado' : 'Synced')
+              ? (isSpanish
+                ? (isStaleSync ? 'Sincronización pendiente' : 'Sincronizado')
+                : (isStaleSync ? 'Sync pending' : 'Synced'))
                     : (isSpanish ? 'Sincronización bloqueada' : 'Cloud sync locked');
 
             final subtitle = cloudSyncEnabled
@@ -311,6 +318,11 @@ class _SyncSection extends StatelessWidget {
                   title: Text(title),
                   subtitle: Text(subtitle),
                 ),
+                if (syncStatusState.isSyncing)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingMedium),
+                    child: LinearProgressIndicator(minHeight: 2),
+                  ),
                 if (syncStatusState.lastErrorMessage != null)
                   Padding(
                     padding: const EdgeInsets.fromLTRB(
@@ -326,24 +338,25 @@ class _SyncSection extends StatelessWidget {
                           ),
                     ),
                   ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppTheme.spacingMedium,
-                    0,
-                    AppTheme.spacingMedium,
-                    AppTheme.spacingMedium,
-                  ),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      onPressed: (!cloudSyncEnabled || syncStatusState.isSyncing)
-                          ? null
-                          : context.read<SyncStatusCubit>().syncNow,
-                      icon: const Icon(Icons.sync),
-                        label: Text(isSpanish ? 'Sincronizar ahora' : 'Sync now'),
+                if (cloudSyncEnabled)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppTheme.spacingSmall,
+                      0,
+                      AppTheme.spacingSmall,
+                      AppTheme.spacingSmall,
+                    ),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton.icon(
+                        onPressed: syncStatusState.isSyncing
+                            ? null
+                            : context.read<SyncStatusCubit>().syncNow,
+                        icon: const Icon(Icons.refresh_rounded),
+                        label: Text(isSpanish ? 'Actualizar ahora' : 'Refresh now'),
+                      ),
                     ),
                   ),
-                ),
               ],
             );
           },
