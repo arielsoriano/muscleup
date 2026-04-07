@@ -206,7 +206,7 @@ class AppTheme {
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
         color: accent,
-        linearTrackColor: Color(0xFF2A2A2A),
+        linearTrackColor: const Color(0xFF2A2A2A),
       ),
       cardTheme: CardThemeData(
         color: surface,

@@ -270,22 +270,36 @@ class _SyncSection extends StatelessWidget {
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, authState) {
         final cloudSyncEnabled = authState is AuthLinkedWithGoogle;
+        final isSpanish = Localizations.localeOf(context).languageCode == 'es';
 
         return BlocBuilder<SyncStatusCubit, SyncStatusState>(
           builder: (context, syncStatusState) {
             final lastRunMetrics = syncStatusState.lastRunMetrics;
             final lastSyncLabel = lastRunMetrics == null
-                ? 'Never synced'
-                : DateFormat('yyyy-MM-dd HH:mm:ss').format(lastRunMetrics.endedAt);
+                ? (isSpanish ? 'Nunca sincronizado' : 'Never synced')
+                : DateFormat(
+                    'yyyy-MM-dd HH:mm:ss',
+                    isSpanish ? 'es' : 'en',
+                  ).format(lastRunMetrics.endedAt);
 
-            final syncSummary = lastRunMetrics == null
-                ? 'No sync metrics available yet'
-                : 'Pushed ${lastRunMetrics.pushedCount} | Pulled ${lastRunMetrics.pulledCount} | Conflicts ${lastRunMetrics.conflictsResolvedCount} | Failed ${lastRunMetrics.failedCount}';
+            final title = syncStatusState.isSyncing
+                ? (isSpanish ? 'Sincronizando...' : 'Syncing...')
+                : cloudSyncEnabled
+                    ? (isSpanish ? 'Sincronizado' : 'Synced')
+                    : (isSpanish ? 'Sincronización bloqueada' : 'Cloud sync locked');
+
+            final subtitle = cloudSyncEnabled
+                ? (isSpanish
+                    ? 'Última sincronización: $lastSyncLabel'
+                    : 'Last sync: $lastSyncLabel')
+                : (isSpanish
+                    ? 'Vincula tu cuenta de Google para habilitar la sincronización en la nube'
+                    : 'Link your Google account to enable cloud sync');
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const _SectionHeader('CLOUD SYNC'),
+                _SectionHeader(isSpanish ? 'SINCRONIZACION NUBE' : 'CLOUD SYNC'),
                 ListTile(
                   leading: Icon(
                     syncStatusState.isSyncing
@@ -294,16 +308,8 @@ class _SyncSection extends StatelessWidget {
                             ? Icons.cloud_done_rounded
                             : Icons.cloud_off_rounded),
                   ),
-                  title: Text(
-                    syncStatusState.isSyncing
-                        ? 'Syncing...'
-                        : (cloudSyncEnabled ? 'Sync status' : 'Cloud sync locked'),
-                  ),
-                  subtitle: Text(
-                    cloudSyncEnabled
-                        ? 'Last sync: $lastSyncLabel\n$syncSummary'
-                        : 'Link your Google account to enable cloud sync',
-                  ),
+                  title: Text(title),
+                  subtitle: Text(subtitle),
                 ),
                 if (syncStatusState.lastErrorMessage != null)
                   Padding(
@@ -334,7 +340,7 @@ class _SyncSection extends StatelessWidget {
                           ? null
                           : context.read<SyncStatusCubit>().syncNow,
                       icon: const Icon(Icons.sync),
-                      label: const Text('Sync now'),
+                        label: Text(isSpanish ? 'Sincronizar ahora' : 'Sync now'),
                     ),
                   ),
                 ),
@@ -363,6 +369,12 @@ class _AppearanceSection extends StatelessWidget {
               title: Text(context.l10n.appSkin),
               subtitle: Text(_skinLabel(context, state.currentSkin)),
               onTap: () => _showSkinSelector(context),
+            ),
+            SwitchListTile(
+              secondary: const Icon(Icons.dark_mode_rounded),
+              title: Text(context.l10n.darkMode),
+              value: state.isDarkMode,
+              onChanged: (_) => context.read<SettingsCubit>().toggleDarkMode(),
             ),
           ],
         );
