@@ -104,8 +104,10 @@ class AppTheme {
     required AppSkin skin,
     required bool isDarkMode,
   }) {
-    final accent = skin.primaryColor;
-    final accentContainer = skin.primaryContainer;
+    final accent = isDarkMode ? skin.primaryColor : _lightModeAccentForSkin(skin);
+    final accentContainer = isDarkMode
+        ? skin.primaryContainer
+        : Color.lerp(accent, pureWhite, 0.82)!;
     final isAccentLight = accent.computeLuminance() > 0.45;
     final onAccent = isAccentLight ? pureBlack : pureWhite;
     final onAccentContainer = accentContainer.computeLuminance() > 0.45
@@ -259,4 +261,20 @@ class AppTheme {
     skin: AppSkin.volt,
     isDarkMode: true,
   );
+
+  /// Curated light-mode accents keep each skin identity without becoming unreadable.
+  static Color _lightModeAccentForSkin(AppSkin skin) {
+    switch (skin) {
+      case AppSkin.volt:
+        return const Color(0xFF6F8A00);
+      case AppSkin.cyan:
+        return const Color(0xFF007F9B);
+      case AppSkin.crimson:
+        return const Color(0xFFD1284A);
+      case AppSkin.royalGold:
+        return const Color(0xFF9B7000);
+      case AppSkin.monochrome:
+        return const Color(0xFF5F6978);
+    }
+  }
 }
