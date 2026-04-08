@@ -686,11 +686,35 @@ abstract class AppLocalizations {
   /// **'Google Sign-In is not configured for this release build. Add the release and Play App Signing SHA fingerprints in Firebase.'**
   String get authGoogleSignInConfigurationError;
 
+  /// Error shown when Google Sign-In does not complete within the timeout
+  ///
+  /// In en, this message translates to:
+  /// **'Google Sign-In took too long. Please try again.'**
+  String get authGoogleSignInTimeout;
+
   /// Message when Firebase is not configured
   ///
   /// In en, this message translates to:
   /// **'Cloud auth unavailable'**
   String get authUnavailable;
+
+  /// Section header for app information in settings
+  ///
+  /// In en, this message translates to:
+  /// **'APP'**
+  String get appInfoSection;
+
+  /// Label for the app version value
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get appVersionLabel;
+
+  /// Label for the app build number value
+  ///
+  /// In en, this message translates to:
+  /// **'Build'**
+  String get appBuildLabel;
 
   /// Dark mode toggle label
   ///

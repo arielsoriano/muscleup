@@ -318,7 +318,20 @@ class AppLocalizationsEs extends AppLocalizations {
       'Google Sign-In no está configurado para esta build release. Agrega los SHA de release y de Play App Signing en Firebase.';
 
   @override
+  String get authGoogleSignInTimeout =>
+      'El inicio de sesión con Google tardó demasiado. Inténtalo de nuevo.';
+
+  @override
   String get authUnavailable => 'Auth en la nube no disponible';
+
+  @override
+  String get appInfoSection => 'APP';
+
+  @override
+  String get appVersionLabel => 'Versión';
+
+  @override
+  String get appBuildLabel => 'Build';
 
   @override
   String get darkMode => 'Modo Oscuro';

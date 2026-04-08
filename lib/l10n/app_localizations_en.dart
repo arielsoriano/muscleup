@@ -318,7 +318,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'Google Sign-In is not configured for this release build. Add the release and Play App Signing SHA fingerprints in Firebase.';
 
   @override
+  String get authGoogleSignInTimeout =>
+      'Google Sign-In took too long. Please try again.';
+
+  @override
   String get authUnavailable => 'Cloud auth unavailable';
+
+  @override
+  String get appInfoSection => 'APP';
+
+  @override
+  String get appVersionLabel => 'Version';
+
+  @override
+  String get appBuildLabel => 'Build';
 
   @override
   String get darkMode => 'Dark Mode';

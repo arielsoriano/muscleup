@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/router/app_router.dart';
@@ -55,6 +56,8 @@ class _SettingsView extends StatelessWidget {
           _ExerciseLibrarySection(),
           _DividerSection(),
           _LanguageSection(),
+          _DividerSection(),
+          _AppInfoSection(),
         ],
       ),
     );
@@ -149,6 +152,10 @@ class _AccountSection extends StatelessWidget {
   String _translateAuthErrorMessage(BuildContext context, String rawMessage) {
     if (rawMessage == 'auth_google_sign_in_configuration_error') {
       return context.l10n.authGoogleSignInConfigurationError;
+    }
+
+    if (rawMessage == 'auth_google_sign_in_timeout') {
+      return context.l10n.authGoogleSignInTimeout;
     }
 
     if (rawMessage.startsWith('Exception: ')) {
@@ -864,6 +871,84 @@ class _ExerciseLibrarySection extends StatelessWidget {
           subtitle: Text(context.l10n.manageExercisesSubtitle),
           trailing: const Icon(Icons.chevron_right_rounded),
           onTap: () => context.push(AppRoutes.exerciseLibrary),
+        ),
+      ],
+    );
+  }
+}
+
+class _AppInfoSection extends StatefulWidget {
+  const _AppInfoSection();
+
+  @override
+  State<_AppInfoSection> createState() => _AppInfoSectionState();
+}
+
+class _AppInfoSectionState extends State<_AppInfoSection> {
+  late final Future<PackageInfo> _packageInfoFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _packageInfoFuture = PackageInfo.fromPlatform();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionHeader(context.l10n.appInfoSection),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppTheme.spacingMedium,
+            0,
+            AppTheme.spacingMedium,
+            AppTheme.spacingSmall,
+          ),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+              border: Border.all(
+                color: colorScheme.outline.withValues(alpha: 0.25),
+              ),
+            ),
+            child: FutureBuilder<PackageInfo>(
+              future: _packageInfoFuture,
+              builder: (context, snapshot) {
+                final version = snapshot.hasData
+                    ? snapshot.data!.version
+                    : '...';
+                final build = snapshot.hasData
+                    ? snapshot.data!.buildNumber
+                    : '...';
+
+                return ListTile(
+                  leading: Icon(
+                    Icons.info_outline_rounded,
+                    color: colorScheme.primary,
+                  ),
+                  title: Text(
+                    '${context.l10n.appVersionLabel} $version',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  subtitle: Text(
+                    '${context.l10n.appBuildLabel} $build',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                  ),
+                  trailing: Icon(
+                    Icons.verified_rounded,
+                    color: colorScheme.primary.withValues(alpha: 0.8),
+                  ),
+                );
+              },
+            ),
+          ),
         ),
       ],
     );

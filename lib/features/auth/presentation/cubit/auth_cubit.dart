@@ -29,7 +29,8 @@ class AuthCubit extends Cubit<AuthState> {
   final SignOutCloudUseCase _signOutCloud;
 
   StreamSubscription<CloudUser?>? _authSubscription;
-  static const Duration _authOperationTimeout = Duration(seconds: 15);
+  static const Duration _anonymousAuthTimeout = Duration(seconds: 15);
+  static const Duration _googleLinkTimeout = Duration(seconds: 45);
 
   void _bootstrap() {
     try {
@@ -60,7 +61,7 @@ class AuthCubit extends Cubit<AuthState> {
 
     try {
       emit(const AuthLoading());
-      final user = await _signInAnonymously().timeout(_authOperationTimeout);
+      final user = await _signInAnonymously().timeout(_anonymousAuthTimeout);
       if (!isClosed) emit(AuthAnonymous(user));
     } catch (_) {
       if (!isClosed) emit(const AuthUnavailable());
@@ -77,28 +78,48 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> linkWithGoogle() async {
     final currentState = state;
-    if (currentState is! AuthAnonymous) return;
+    final previousUser = switch (currentState) {
+      AuthAnonymous(user: final user) => user,
+      AuthError(fallbackUser: final user?) => user,
+      _ => null,
+    };
 
-    final previousUser = currentState.user;
+    if (previousUser == null) return;
     emit(const AuthLoading());
 
     try {
-      final user = await _linkWithGoogle().timeout(_authOperationTimeout);
+      final user = await _linkWithGoogle().timeout(_googleLinkTimeout);
       if (!isClosed) emit(AuthLinkedWithGoogle(user));
+    } on TimeoutException {
+      _emitAuthErrorAndRecover(
+        message: 'auth_google_sign_in_timeout',
+        fallbackUser: previousUser,
+      );
     } catch (error) {
       if (_isGoogleCancellation(error)) {
         if (!isClosed) emit(AuthAnonymous(previousUser));
         return;
       }
-      if (!isClosed) {
-        emit(
-          AuthError(
-            message: _normalizeAuthError(error),
-            fallbackUser: previousUser,
-          ),
-        );
-      }
+      _emitAuthErrorAndRecover(
+        message: _normalizeAuthError(error),
+        fallbackUser: previousUser,
+      );
     }
+  }
+
+  void _emitAuthErrorAndRecover({
+    required String message,
+    required CloudUser fallbackUser,
+  }) {
+    if (isClosed) return;
+
+    emit(
+      AuthError(
+        message: message,
+        fallbackUser: fallbackUser,
+      ),
+    );
+    emit(AuthAnonymous(fallbackUser));
   }
 
   String _normalizeAuthError(Object error) {
