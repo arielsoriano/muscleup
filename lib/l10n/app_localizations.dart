@@ -680,6 +680,12 @@ abstract class AppLocalizations {
   /// **'Account linked successfully!'**
   String get authLinkSuccess;
 
+  /// Error shown when Google Sign-In fails because Android release OAuth fingerprints are missing
+  ///
+  /// In en, this message translates to:
+  /// **'Google Sign-In is not configured for this release build. Add the release and Play App Signing SHA fingerprints in Firebase.'**
+  String get authGoogleSignInConfigurationError;
+
   /// Message when Firebase is not configured
   ///
   /// In en, this message translates to:

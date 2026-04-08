@@ -97,6 +97,7 @@
   "authContinueWithGoogle": "Continuar con Google",
   "authDisconnectGoogle": "Desconectar Google",
   "authLinkSuccess": "¡Cuenta vinculada exitosamente!",
+  "authGoogleSignInConfigurationError": "Google Sign-In no está configurado para esta build release. Agrega los SHA de release y de Play App Signing en Firebase.",
   "authUnavailable": "Auth en la nube no disponible",
   "darkMode": "Modo Oscuro",
   "trainingDefaultsSection": "VALORES PREDETERMINADOS",

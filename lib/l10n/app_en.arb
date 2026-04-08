@@ -398,6 +398,8 @@
   "@authDisconnectGoogle": { "description": "Button to unlink Google account" },
   "authLinkSuccess": "Account linked successfully!",
   "@authLinkSuccess": { "description": "Success message after linking Google account" },
+  "authGoogleSignInConfigurationError": "Google Sign-In is not configured for this release build. Add the release and Play App Signing SHA fingerprints in Firebase.",
+  "@authGoogleSignInConfigurationError": { "description": "Error shown when Google Sign-In fails because Android release OAuth fingerprints are missing" },
   "authUnavailable": "Cloud auth unavailable",
   "@authUnavailable": { "description": "Message when Firebase is not configured" },
   "darkMode": "Dark Mode",

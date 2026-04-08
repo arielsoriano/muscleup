@@ -138,15 +138,24 @@ class _AccountSection extends StatelessWidget {
     }
 
     if (state is AuthError) {
-      final rawMessage = state.message;
-      final message = rawMessage.startsWith('Exception: ')
-          ? rawMessage.substring('Exception: '.length)
-          : rawMessage;
+      final message = _translateAuthErrorMessage(context, state.message);
       context.showAppSnackBar(
         message: message,
         type: SnackBarType.error,
       );
     }
+  }
+
+  String _translateAuthErrorMessage(BuildContext context, String rawMessage) {
+    if (rawMessage == 'auth_google_sign_in_configuration_error') {
+      return context.l10n.authGoogleSignInConfigurationError;
+    }
+
+    if (rawMessage.startsWith('Exception: ')) {
+      return rawMessage.substring('Exception: '.length);
+    }
+
+    return rawMessage;
   }
 }
 

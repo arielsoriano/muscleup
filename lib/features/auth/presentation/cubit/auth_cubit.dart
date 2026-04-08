@@ -93,12 +93,25 @@ class AuthCubit extends Cubit<AuthState> {
       if (!isClosed) {
         emit(
           AuthError(
-            message: error.toString(),
+            message: _normalizeAuthError(error),
             fallbackUser: previousUser,
           ),
         );
       }
     }
+  }
+
+  String _normalizeAuthError(Object error) {
+    final rawError = error.toString();
+    final normalizedError = rawError.toLowerCase();
+
+    if (normalizedError.contains('platformexception(sign_infailed') &&
+        (normalizedError.contains(': 10:') ||
+            normalizedError.contains('developer_error'))) {
+      return 'auth_google_sign_in_configuration_error';
+    }
+
+    return rawError;
   }
 
   bool _isGoogleCancellation(Object error) {

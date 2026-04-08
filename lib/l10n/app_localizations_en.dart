@@ -314,6 +314,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authLinkSuccess => 'Account linked successfully!';
 
   @override
+  String get authGoogleSignInConfigurationError =>
+      'Google Sign-In is not configured for this release build. Add the release and Play App Signing SHA fingerprints in Firebase.';
+
+  @override
   String get authUnavailable => 'Cloud auth unavailable';
 
   @override
