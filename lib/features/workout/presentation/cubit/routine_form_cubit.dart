@@ -214,12 +214,6 @@ class RoutineFormCubit extends Cubit<RoutineFormState> {
       return 'validation.noExercises';
     }
 
-    for (final exercise in state.routine.exercises) {
-      if (exercise.templateSets.isEmpty) {
-        return 'validation.emptySets';
-      }
-    }
-
     emit(
       RoutineFormState.saving(
         routine: state.routine,

@@ -662,13 +662,11 @@ class _SetFormRowState extends State<_SetFormRow> {
           const SizedBox(width: 8),
           IconButton(
             icon: const Icon(Icons.close_rounded, size: 20),
-            onPressed: widget.totalSetsCount > 1
-                ? () {
-                    context
-                        .read<RoutineFormCubit>()
-                        .removeSet(widget.exerciseId, widget.set.id);
-                  }
-                : null,
+            onPressed: () {
+              context
+                  .read<RoutineFormCubit>()
+                  .removeSet(widget.exerciseId, widget.set.id);
+            },
             visualDensity: VisualDensity.compact,
           ),
         ],
