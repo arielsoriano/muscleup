@@ -456,6 +456,8 @@
   "defaultRest": "Default rest",
   "defaultRepetitions": "Default reps",
   "defaultWeight": "Default weight",
+  "autoStartRestTimerOnComplete": "Auto-start rest timer on set completion",
+  "autoStartRestTimerOnCompleteSubtitle": "When you mark a set as completed, the timer starts automatically",
   "restSecondsDialogTitle": "Rest (seconds)",
   "repetitionsDialogTitle": "Repetitions",
   "weightKgDialogTitle": "Weight (kg)",

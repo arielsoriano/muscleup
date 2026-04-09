@@ -17,7 +17,12 @@ class TrainingDefaultsRepository {
   Future<TrainingDefaults> getLocalDefaults() async {
     final rows = await _database.customSelect(
       '''
-      SELECT default_rest_seconds, default_repetitions, default_weight, updated_at
+      SELECT
+        default_rest_seconds,
+        default_repetitions,
+        default_weight,
+        auto_start_rest_timer_on_set_completed,
+        updated_at
       FROM training_defaults
       WHERE id = 1
       LIMIT 1
@@ -34,6 +39,8 @@ class TrainingDefaultsRepository {
     final restRaw = row['default_rest_seconds'] as int?;
     final repsRaw = row['default_repetitions'] as int?;
     final weightRaw = (row['default_weight'] as num?)?.toDouble();
+    final autoStartRestTimerRaw =
+      row['auto_start_rest_timer_on_set_completed'] as int?;
 
     return TrainingDefaults(
       defaultRestSeconds: restRaw == null
@@ -45,6 +52,9 @@ class TrainingDefaultsRepository {
       defaultWeight: weightRaw == null
           ? TrainingDefaults.defaultWeightFallback
           : (weightRaw == _emptyDoubleSentinel ? null : weightRaw),
+      autoStartRestTimerOnSetCompleted: autoStartRestTimerRaw == null
+          ? TrainingDefaults.autoStartRestTimerOnSetCompletedFallback
+          : autoStartRestTimerRaw == 1,
       updatedAt: DateTime.fromMillisecondsSinceEpoch(
         (row['updated_at'] as int?) ?? DateTime.now().millisecondsSinceEpoch,
       ),
@@ -61,6 +71,8 @@ class TrainingDefaultsRepository {
       defaultRestSeconds: defaults.defaultRestSeconds,
       defaultRepetitions: defaults.defaultRepetitions,
       defaultWeight: defaults.defaultWeight,
+      autoStartRestTimerOnSetCompleted:
+          defaults.autoStartRestTimerOnSetCompleted,
       updatedAt: defaults.updatedAt,
     );
   }
@@ -82,6 +94,9 @@ class TrainingDefaultsRepository {
       defaultRestSeconds: cloudData['defaultRestSeconds'] as int?,
       defaultRepetitions: cloudData['defaultRepetitions'] as int?,
       defaultWeight: (cloudData['defaultWeight'] as num?)?.toDouble(),
+      autoStartRestTimerOnSetCompleted:
+          cloudData['autoStartRestTimerOnSetCompleted'] as bool? ??
+              TrainingDefaults.autoStartRestTimerOnSetCompletedFallback,
       updatedAt: updatedAt,
     );
   }
@@ -94,18 +109,21 @@ class TrainingDefaultsRepository {
         default_rest_seconds,
         default_repetitions,
         default_weight,
+        auto_start_rest_timer_on_set_completed,
         updated_at
-      ) VALUES (1, ?, ?, ?, ?)
+      ) VALUES (1, ?, ?, ?, ?, ?)
       ON CONFLICT(id) DO UPDATE SET
         default_rest_seconds = excluded.default_rest_seconds,
         default_repetitions = excluded.default_repetitions,
         default_weight = excluded.default_weight,
+        auto_start_rest_timer_on_set_completed = excluded.auto_start_rest_timer_on_set_completed,
         updated_at = excluded.updated_at
       ''',
       [
         defaults.defaultRestSeconds ?? _emptyIntSentinel,
         defaults.defaultRepetitions ?? _emptyIntSentinel,
         defaults.defaultWeight ?? _emptyDoubleSentinel,
+        defaults.autoStartRestTimerOnSetCompleted ? 1 : 0,
         defaults.updatedAt.millisecondsSinceEpoch,
       ],
     );

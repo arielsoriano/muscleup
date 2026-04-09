@@ -7,6 +7,7 @@ import '../../../../core/utils/l10n_extension.dart';
 import '../../../../core/utils/ui_helpers.dart';
 import '../../domain/entities/workout_entities.dart';
 import '../../domain/usecases/get_routine_by_id_usecase.dart';
+import '../../../settings/presentation/cubit/training_defaults_cubit.dart';
 import '../cubit/active_workout_cubit.dart';
 import '../cubit/active_workout_state.dart';
 
@@ -446,6 +447,7 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
                   entry.value,
                   entry.key,
                   isViewingHistory,
+                  restTimeSeconds: exercise.restTimeSeconds,
                   templateSet: templateSet,
                 );
               }),
@@ -460,6 +462,7 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
     SetLog log,
     int index,
     bool isViewingHistory, {
+    required int restTimeSeconds,
     WorkoutSet? templateSet,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -538,8 +541,20 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
           if (!isViewingHistory)
             IconButton(
               onPressed: () {
+                final shouldStartRestTimer =
+                    !log.isCompleted && restTimeSeconds > 0;
                 final updatedLog = log.copyWith(isCompleted: !log.isCompleted);
                 cubit.updateSetLog(updatedLog);
+
+                if (shouldStartRestTimer) {
+                  final autoStartEnabled = serviceLocator<TrainingDefaultsCubit>()
+                      .state
+                      .defaults
+                      .autoStartRestTimerOnSetCompleted;
+                  if (autoStartEnabled) {
+                    cubit.startRestTimer(restTimeSeconds);
+                  }
+                }
               },
               icon: Icon(
                 log.isCompleted

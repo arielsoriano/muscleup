@@ -172,12 +172,14 @@ class FirestoreWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
     required int? defaultRestSeconds,
     required int? defaultRepetitions,
     required double? defaultWeight,
+    required bool autoStartRestTimerOnSetCompleted,
     required DateTime updatedAt,
   }) async {
     final data = <String, dynamic>{
       'defaultRestSeconds': defaultRestSeconds,
       'defaultRepetitions': defaultRepetitions,
       'defaultWeight': defaultWeight,
+      'autoStartRestTimerOnSetCompleted': autoStartRestTimerOnSetCompleted,
       'updatedAt': Timestamp.fromDate(updatedAt),
     };
 
@@ -232,6 +234,8 @@ class FirestoreWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
         'defaultRestSeconds': data['defaultRestSeconds'] as int?,
         'defaultRepetitions': data['defaultRepetitions'] as int?,
         'defaultWeight': (data['defaultWeight'] as num?)?.toDouble(),
+        'autoStartRestTimerOnSetCompleted':
+            data['autoStartRestTimerOnSetCompleted'] as bool? ?? false,
         'updatedAt': updatedAt,
       };
     } on FirebaseException catch (error) {
@@ -464,6 +468,7 @@ class NoopWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
     required int? defaultRestSeconds,
     required int? defaultRepetitions,
     required double? defaultWeight,
+    required bool autoStartRestTimerOnSetCompleted,
     required DateTime updatedAt,
   }) {
     return _notConfigured();

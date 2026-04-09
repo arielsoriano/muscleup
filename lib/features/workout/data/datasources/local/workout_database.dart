@@ -192,7 +192,16 @@ class AppDatabase extends _$AppDatabase {
         if (from < 3) {
           await _migrateV2ToV3();
         }
+        if (from < 4) {
+          await _migrateV3ToV4();
+        }
       },
+    );
+  }
+
+  Future<void> _migrateV3ToV4() async {
+    await customStatement(
+      'ALTER TABLE training_defaults ADD COLUMN auto_start_rest_timer_on_set_completed INTEGER NOT NULL DEFAULT 0',
     );
   }
 
@@ -275,6 +284,7 @@ class AppDatabase extends _$AppDatabase {
         default_rest_seconds INTEGER NOT NULL,
         default_repetitions INTEGER NOT NULL,
         default_weight REAL NOT NULL,
+        auto_start_rest_timer_on_set_completed INTEGER NOT NULL DEFAULT 0,
         updated_at INTEGER NOT NULL
       )
       ''',
@@ -290,8 +300,9 @@ class AppDatabase extends _$AppDatabase {
         default_rest_seconds,
         default_repetitions,
         default_weight,
+        auto_start_rest_timer_on_set_completed,
         updated_at
-      ) VALUES (1, 120, 12, -1.0, ?)
+      ) VALUES (1, 120, 12, -1.0, 0, ?)
       ''',
       [seededEpoch],
     );

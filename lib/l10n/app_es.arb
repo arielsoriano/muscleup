@@ -118,6 +118,8 @@
   "defaultRest": "Descanso predeterminado",
   "defaultRepetitions": "Repeticiones predeterminadas",
   "defaultWeight": "Peso predeterminado",
+  "autoStartRestTimerOnComplete": "Iniciar descanso al completar serie",
+  "autoStartRestTimerOnCompleteSubtitle": "Al marcar una serie como completada, inicia el timer automáticamente",
   "restSecondsDialogTitle": "Descanso (segundos)",
   "repetitionsDialogTitle": "Repeticiones",
   "weightKgDialogTitle": "Peso (kg)",

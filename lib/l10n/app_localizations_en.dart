@@ -380,6 +380,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get defaultWeight => 'Default weight';
 
   @override
+  String get autoStartRestTimerOnComplete =>
+      'Auto-start rest timer on set completion';
+
+  @override
+  String get autoStartRestTimerOnCompleteSubtitle =>
+      'When you mark a set as completed, the timer starts automatically';
+
+  @override
   String get restSecondsDialogTitle => 'Rest (seconds)';
 
   @override

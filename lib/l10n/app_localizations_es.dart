@@ -383,6 +383,14 @@ class AppLocalizationsEs extends AppLocalizations {
   String get defaultWeight => 'Peso predeterminado';
 
   @override
+  String get autoStartRestTimerOnComplete =>
+      'Iniciar descanso al completar serie';
+
+  @override
+  String get autoStartRestTimerOnCompleteSubtitle =>
+      'Al marcar una serie como completada, inicia el timer automáticamente';
+
+  @override
   String get restSecondsDialogTitle => 'Descanso (segundos)';
 
   @override

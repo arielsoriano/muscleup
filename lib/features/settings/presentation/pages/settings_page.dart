@@ -746,6 +746,17 @@ class _TrainingDefaultsSection extends StatelessWidget {
                     context.read<TrainingDefaultsCubit>().setDefaultWeight(value),
               ),
             ),
+            SwitchListTile(
+              secondary: const Icon(Icons.timer_rounded),
+              title: Text(context.l10n.autoStartRestTimerOnComplete),
+              subtitle: Text(
+                context.l10n.autoStartRestTimerOnCompleteSubtitle,
+              ),
+              value: defaults.autoStartRestTimerOnSetCompleted,
+              onChanged: (value) => context
+                  .read<TrainingDefaultsCubit>()
+                  .setAutoStartRestTimerOnSetCompleted(value),
+            ),
             if (state.errorMessage != null)
               Padding(
                 padding: const EdgeInsets.fromLTRB(

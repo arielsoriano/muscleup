@@ -34,6 +34,7 @@ abstract class WorkoutRemoteDataSource {
     required int? defaultRestSeconds,
     required int? defaultRepetitions,
     required double? defaultWeight,
+    required bool autoStartRestTimerOnSetCompleted,
     required DateTime updatedAt,
   });
 

@@ -806,6 +806,18 @@ abstract class AppLocalizations {
   /// **'Default weight'**
   String get defaultWeight;
 
+  /// No description provided for @autoStartRestTimerOnComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-start rest timer on set completion'**
+  String get autoStartRestTimerOnComplete;
+
+  /// No description provided for @autoStartRestTimerOnCompleteSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'When you mark a set as completed, the timer starts automatically'**
+  String get autoStartRestTimerOnCompleteSubtitle;
+
   /// No description provided for @restSecondsDialogTitle.
   ///
   /// In en, this message translates to:

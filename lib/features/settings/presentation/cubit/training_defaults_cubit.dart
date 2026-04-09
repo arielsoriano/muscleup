@@ -100,6 +100,15 @@ class TrainingDefaultsCubit extends Cubit<TrainingDefaultsState> {
     await _persistDefaults(updatedDefaults);
   }
 
+  Future<void> setAutoStartRestTimerOnSetCompleted(bool value) async {
+    final updatedDefaults = state.defaults.copyWith(
+      autoStartRestTimerOnSetCompleted: value,
+      updatedAt: DateTime.now(),
+    );
+
+    await _persistDefaults(updatedDefaults);
+  }
+
   Future<void> _persistDefaults(TrainingDefaults updatedDefaults) async {
 
     emit(state.copyWith(isSaving: true, clearError: true));
@@ -154,7 +163,9 @@ class TrainingDefaultsCubit extends Cubit<TrainingDefaultsState> {
             TrainingDefaults.defaultRestSecondsFallback &&
         defaults.defaultRepetitions ==
             TrainingDefaults.defaultRepetitionsFallback &&
-        defaults.defaultWeight == TrainingDefaults.defaultWeightFallback;
+      defaults.defaultWeight == TrainingDefaults.defaultWeightFallback &&
+      defaults.autoStartRestTimerOnSetCompleted ==
+        TrainingDefaults.autoStartRestTimerOnSetCompletedFallback;
   }
 
   @override
