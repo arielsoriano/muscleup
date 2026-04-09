@@ -126,6 +126,8 @@ class _ActiveWorkoutPageContent extends StatefulWidget {
 
 class _ActiveWorkoutPageContentState extends State<_ActiveWorkoutPageContent> {
   bool _showCompletedExercises = false;
+  static const _sectionAnimationDuration = Duration(milliseconds: 240);
+  static const _exerciseAnimationDuration = Duration(milliseconds: 260);
 
   String _translateErrorMessage(BuildContext context, String messageKey) {
     switch (messageKey) {
@@ -332,7 +334,7 @@ class _ActiveWorkoutPageContentState extends State<_ActiveWorkoutPageContent> {
         padding: const EdgeInsets.all(16),
         children: items
             .map(
-              (item) => _buildExerciseSection(
+              (item) => _buildAnimatedExerciseSection(
                 context,
                 item.exercise,
                 item.logs,
@@ -358,7 +360,7 @@ class _ActiveWorkoutPageContentState extends State<_ActiveWorkoutPageContent> {
       ),
       const SizedBox(height: 8),
       ...pendingItems.map(
-        (item) => _buildExerciseSection(
+        (item) => _buildAnimatedExerciseSection(
           context,
           item.exercise,
           item.logs,
@@ -383,25 +385,83 @@ class _ActiveWorkoutPageContentState extends State<_ActiveWorkoutPageContent> {
         const SizedBox(height: 8),
       ]);
 
-      if (_showCompletedExercises) {
-        widgets.addAll(
-          completedItems.map(
-            (item) => _buildExerciseSection(
-              context,
-              item.exercise,
-              item.logs,
-              isViewingHistory,
-              isExerciseCompleted: true,
-            ),
-          ),
-        );
-      }
+      widgets.add(
+        AnimatedSwitcher(
+          duration: _sectionAnimationDuration,
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          transitionBuilder: (child, animation) {
+            final offsetAnimation = Tween<Offset>(
+              begin: const Offset(0, -0.03),
+              end: Offset.zero,
+            ).animate(animation);
+            return FadeTransition(
+              opacity: animation,
+              child: SlideTransition(
+                position: offsetAnimation,
+                child: child,
+              ),
+            );
+          },
+          child: _showCompletedExercises
+              ? Column(
+                  key: const ValueKey('completed-visible'),
+                  children: completedItems
+                      .map(
+                        (item) => _buildAnimatedExerciseSection(
+                          context,
+                          item.exercise,
+                          item.logs,
+                          isViewingHistory,
+                          isExerciseCompleted: true,
+                        ),
+                      )
+                      .toList(growable: false),
+                )
+              : const SizedBox.shrink(key: ValueKey('completed-hidden')),
+        ),
+      );
     }
 
     return ListView(
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: const EdgeInsets.all(16),
       children: widgets,
+    );
+  }
+
+  Widget _buildAnimatedExerciseSection(
+    BuildContext context,
+    WorkoutExercise exercise,
+    List<SetLog> exerciseLogs,
+    bool isViewingHistory, {
+    required bool isExerciseCompleted,
+  }) {
+    return AnimatedSize(
+      duration: _exerciseAnimationDuration,
+      curve: Curves.easeOutCubic,
+      child: TweenAnimationBuilder<double>(
+        key: ValueKey('${exercise.id}-${isExerciseCompleted ? 'done' : 'pending'}'),
+        tween: Tween<double>(begin: 0, end: 1),
+        duration: _exerciseAnimationDuration,
+        curve: Curves.easeOutCubic,
+        builder: (context, value, child) {
+          return Opacity(
+            opacity: value,
+            child: Transform.translate(
+              offset: Offset(0, (1 - value) * 10),
+              child: child,
+            ),
+          );
+        },
+        child: _buildExerciseSection(
+          context,
+          exercise,
+          exerciseLogs,
+          isViewingHistory,
+          isExerciseCompleted: isExerciseCompleted,
+        ),
+      ),
     );
   }
 
