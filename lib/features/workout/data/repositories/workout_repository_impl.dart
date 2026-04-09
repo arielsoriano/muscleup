@@ -781,21 +781,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                       final data = await (database.select(database.libraryExercises)
                             ..where((exercise) => exercise.deletedAt.isNull()))
                           .get();
-                      final exercises = data.map((exerciseData) {
-                        return LibraryExerciseEntity(
-                          id: exerciseData.id,
-                          name: exerciseData.name,
-                          nameEn: exerciseData.nameEn,
-                          nameEs: exerciseData.nameEs,
-                          isCustom: exerciseData.isCustom,
-                          syncMetadata: _mapSyncMetadata(
-                            updatedAt: exerciseData.updatedAt,
-                            deletedAt: exerciseData.deletedAt,
-                            syncStatus: exerciseData.syncStatus,
-                            remoteVersion: exerciseData.remoteVersion,
-                          ),
-                        );
-                      }).toList();
+                      final exercises = _mapAndDedupeLibraryExercises(data);
                       return Either<Failure, List<LibraryExerciseEntity>>.right(exercises);
                     } catch (e) {
                       return Either<Failure, List<LibraryExerciseEntity>>.left(
@@ -812,9 +798,30 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                   }) async {
                     try {
                       final now = DateTime.now();
-                      final id = _uuid.v4();
                       final localizedNameEn = nameEn ?? name;
                       final localizedNameEs = nameEs ?? name;
+
+                      final existingExercises = await (database.select(
+                        database.libraryExercises,
+                      )
+                            ..where((exercise) => exercise.deletedAt.isNull()))
+                          .get();
+
+                      final normalizedName = _normalizeLibraryExerciseName(name);
+                      final existingExercise = existingExercises.where((exercise) {
+                        return _normalizeLibraryExerciseName(exercise.name) ==
+                                normalizedName ||
+                            _normalizeLibraryExerciseName(exercise.nameEn) ==
+                                normalizedName ||
+                            _normalizeLibraryExerciseName(exercise.nameEs) ==
+                                normalizedName;
+                      }).firstOrNull;
+
+                      if (existingExercise != null) {
+                        return const Either<Failure, void>.right(null);
+                      }
+
+                      final id = _uuid.v4();
 
                       await database.into(database.libraryExercises).insert(
                             LibraryExercisesCompanion.insert(
@@ -951,21 +958,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                         return searchName.contains(lowerQuery);
                       }).toList();
 
-                      final exercises = filtered.map((exerciseData) {
-                        return LibraryExerciseEntity(
-                          id: exerciseData.id,
-                          name: exerciseData.name,
-                          nameEn: exerciseData.nameEn,
-                          nameEs: exerciseData.nameEs,
-                          isCustom: exerciseData.isCustom,
-                          syncMetadata: _mapSyncMetadata(
-                            updatedAt: exerciseData.updatedAt,
-                            deletedAt: exerciseData.deletedAt,
-                            syncStatus: exerciseData.syncStatus,
-                            remoteVersion: exerciseData.remoteVersion,
-                          ),
-                        );
-                      }).toList();
+                      final exercises = _mapAndDedupeLibraryExercises(filtered);
 
                       return Either<Failure, List<LibraryExerciseEntity>>.right(exercises);
                     } catch (e) {
@@ -992,6 +985,48 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                             createdAt: createdAt,
                           ),
                         );
+                  }
+
+                  List<LibraryExerciseEntity> _mapAndDedupeLibraryExercises(
+                    List<LibraryExerciseData> rows,
+                  ) {
+                    final dedupedByName = <String, LibraryExerciseEntity>{};
+
+                    final sortedRows = [...rows]
+                      ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+
+                    for (final exerciseData in sortedRows) {
+                      final entity = LibraryExerciseEntity(
+                        id: exerciseData.id,
+                        name: exerciseData.name,
+                        nameEn: exerciseData.nameEn,
+                        nameEs: exerciseData.nameEs,
+                        isCustom: exerciseData.isCustom,
+                        syncMetadata: _mapSyncMetadata(
+                          updatedAt: exerciseData.updatedAt,
+                          deletedAt: exerciseData.deletedAt,
+                          syncStatus: exerciseData.syncStatus,
+                          remoteVersion: exerciseData.remoteVersion,
+                        ),
+                      );
+
+                      final dedupeKey = [
+                        _normalizeLibraryExerciseName(entity.name),
+                        _normalizeLibraryExerciseName(entity.nameEn),
+                        _normalizeLibraryExerciseName(entity.nameEs),
+                      ].join('|');
+
+                      dedupedByName.putIfAbsent(dedupeKey, () => entity);
+                    }
+
+                    final entities = dedupedByName.values.toList()
+                      ..sort((a, b) => a.nameEs.toLowerCase().compareTo(b.nameEs.toLowerCase()));
+
+                    return entities;
+                  }
+
+                  String _normalizeLibraryExerciseName(String value) {
+                    return value.trim().toLowerCase();
                   }
 
                   void _scheduleAutoSync() {
