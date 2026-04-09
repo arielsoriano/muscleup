@@ -747,6 +747,10 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
         return 'm';
       case WorkoutUnit.none:
         return '';
+      case WorkoutUnit.level:
+        return 'level';
+      case WorkoutUnit.incline:
+        return 'incline';
     }
   }
 

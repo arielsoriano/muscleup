@@ -233,6 +233,14 @@
   "@unitNone": {
     "description": "No unit"
   },
+  "unitLevel": "level",
+  "@unitLevel": {
+    "description": "Machine resistance/difficulty level (e.g. elliptical, bike)"
+  },
+  "unitIncline": "incline",
+  "@unitIncline": {
+    "description": "Treadmill or machine incline"
+  },
   "setsCount": "{count} sets",
   "@setsCount": {
     "description": "Number of sets in exercise",

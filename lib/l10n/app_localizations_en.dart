@@ -182,6 +182,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unitNone => 'none';
 
   @override
+  String get unitLevel => 'level';
+
+  @override
+  String get unitIncline => 'incline';
+
+  @override
   String setsCount(int count) {
     return '$count sets';
   }

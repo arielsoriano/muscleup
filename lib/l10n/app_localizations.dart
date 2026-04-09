@@ -434,6 +434,18 @@ abstract class AppLocalizations {
   /// **'none'**
   String get unitNone;
 
+  /// Machine resistance/difficulty level (e.g. elliptical, bike)
+  ///
+  /// In en, this message translates to:
+  /// **'level'**
+  String get unitLevel;
+
+  /// Treadmill or machine incline
+  ///
+  /// In en, this message translates to:
+  /// **'incline'**
+  String get unitIncline;
+
   /// Number of sets in exercise
   ///
   /// In en, this message translates to:

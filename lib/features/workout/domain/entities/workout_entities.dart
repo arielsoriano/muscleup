@@ -11,6 +11,8 @@ enum WorkoutUnit {
   kilometers,
   meters,
   none,
+  level,
+  incline,
 }
 
 @freezed

@@ -722,7 +722,7 @@ class _SetFormRowState extends State<_SetFormRow> {
               borderRadius: BorderRadius.circular(6),
             ),
           ),
-          items: WorkoutUnit.values.map((unit) {
+          items: _orderedWorkoutUnits.map((unit) {
             return DropdownMenuItem(
               value: unit,
               child: Text(
@@ -740,6 +740,13 @@ class _SetFormRowState extends State<_SetFormRow> {
         ),
       ],
     );
+  }
+
+  List<WorkoutUnit> get _orderedWorkoutUnits {
+    return [
+      ...WorkoutUnit.values.where((unit) => unit != WorkoutUnit.none),
+      WorkoutUnit.none,
+    ];
   }
 
   String _formatUnit(WorkoutUnit unit) {
@@ -760,6 +767,10 @@ class _SetFormRowState extends State<_SetFormRow> {
         return context.l10n.unitMeters;
       case WorkoutUnit.none:
         return context.l10n.unitNone;
+      case WorkoutUnit.level:
+        return context.l10n.unitLevel;
+      case WorkoutUnit.incline:
+        return context.l10n.unitIncline;
     }
   }
 }

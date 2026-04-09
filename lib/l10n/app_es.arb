@@ -56,6 +56,8 @@
   "unitKm": "km",
   "unitMeters": "m",
   "unitNone": "ninguno",
+  "unitLevel": "nivel",
+  "unitIncline": "inclinación",
   "setsCount": "{count} series",
   "language": "Idioma",
   "appSkin": "Tema de la App",
