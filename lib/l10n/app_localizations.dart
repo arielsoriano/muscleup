@@ -608,6 +608,30 @@ abstract class AppLocalizations {
   /// **'Completed'**
   String get completed;
 
+  /// No description provided for @pendingExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pendingExercises;
+
+  /// No description provided for @completedExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completedExercises;
+
+  /// No description provided for @showCompletedExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Show'**
+  String get showCompletedExercises;
+
+  /// No description provided for @hideCompletedExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide'**
+  String get hideCompletedExercises;
+
   /// Header label indicating a workout session is already finished
   ///
   /// In en, this message translates to:

@@ -277,6 +277,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get completed => 'Completado';
 
   @override
+  String get pendingExercises => 'Pendientes';
+
+  @override
+  String get completedExercises => 'Completados';
+
+  @override
+  String get showCompletedExercises => 'Mostrar';
+
+  @override
+  String get hideCompletedExercises => 'Ocultar';
+
+  @override
   String get completedSession => 'Sesión Completada';
 
   @override

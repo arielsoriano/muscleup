@@ -277,6 +277,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get completed => 'Completed';
 
   @override
+  String get pendingExercises => 'Pending';
+
+  @override
+  String get completedExercises => 'Completed';
+
+  @override
+  String get showCompletedExercises => 'Show';
+
+  @override
+  String get hideCompletedExercises => 'Hide';
+
+  @override
   String get completedSession => 'Completed Session';
 
   @override

@@ -364,6 +364,10 @@
   "@completed": {
     "description": "Status label for a finished session"
   },
+  "pendingExercises": "Pending",
+  "completedExercises": "Completed",
+  "showCompletedExercises": "Show",
+  "hideCompletedExercises": "Hide",
   "completedSession": "Completed Session",
   "@completedSession": {
     "description": "Header label indicating a workout session is already finished"

@@ -21,6 +21,18 @@ class _SetEditorResult {
   final bool saveAsTarget;
 }
 
+class _ExerciseListItem {
+  const _ExerciseListItem({
+    required this.exercise,
+    required this.logs,
+    required this.isCompleted,
+  });
+
+  final WorkoutExercise exercise;
+  final List<SetLog> logs;
+  final bool isCompleted;
+}
+
 class ActiveWorkoutPage extends StatelessWidget {
   const ActiveWorkoutPage({
     this.routine,
@@ -104,8 +116,16 @@ class ActiveWorkoutPage extends StatelessWidget {
   }
 }
 
-class _ActiveWorkoutPageContent extends StatelessWidget {
+class _ActiveWorkoutPageContent extends StatefulWidget {
   const _ActiveWorkoutPageContent();
+
+  @override
+  State<_ActiveWorkoutPageContent> createState() =>
+      _ActiveWorkoutPageContentState();
+}
+
+class _ActiveWorkoutPageContentState extends State<_ActiveWorkoutPageContent> {
+  bool _showCompletedExercises = false;
 
   String _translateErrorMessage(BuildContext context, String messageKey) {
     switch (messageKey) {
@@ -291,19 +311,181 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
     List<SetLog> setLogs,
     bool isViewingHistory,
   ) {
-    return ListView.builder(
+    final items = routine.exercises.map((exercise) {
+      final exerciseLogs = setLogs
+          .where((log) => log.workoutExerciseId == exercise.id)
+          .toList();
+
+      final isCompleted = exerciseLogs.isNotEmpty &&
+          exerciseLogs.every((log) => log.isCompleted);
+
+      return _ExerciseListItem(
+        exercise: exercise,
+        logs: exerciseLogs,
+        isCompleted: isCompleted,
+      );
+    }).toList(growable: false);
+
+    if (isViewingHistory) {
+      return ListView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: const EdgeInsets.all(16),
+        children: items
+            .map(
+              (item) => _buildExerciseSection(
+                context,
+                item.exercise,
+                item.logs,
+                isViewingHistory,
+                isExerciseCompleted: item.isCompleted,
+              ),
+            )
+            .toList(growable: false),
+      );
+    }
+
+    final pendingItems =
+        items.where((item) => !item.isCompleted).toList(growable: false);
+    final completedItems =
+        items.where((item) => item.isCompleted).toList(growable: false);
+
+    final widgets = <Widget>[
+      _buildSectionHeader(
+        context,
+        icon: Icons.pending_actions_rounded,
+        label: context.l10n.pendingExercises,
+        count: pendingItems.length,
+      ),
+      const SizedBox(height: 8),
+      ...pendingItems.map(
+        (item) => _buildExerciseSection(
+          context,
+          item.exercise,
+          item.logs,
+          isViewingHistory,
+          isExerciseCompleted: false,
+        ),
+      ),
+    ];
+
+    if (completedItems.isNotEmpty) {
+      widgets.addAll([
+        const SizedBox(height: 4),
+        _buildCompletedSectionHeader(
+          context,
+          count: completedItems.length,
+          onToggle: () {
+            setState(() {
+              _showCompletedExercises = !_showCompletedExercises;
+            });
+          },
+        ),
+        const SizedBox(height: 8),
+      ]);
+
+      if (_showCompletedExercises) {
+        widgets.addAll(
+          completedItems.map(
+            (item) => _buildExerciseSection(
+              context,
+              item.exercise,
+              item.logs,
+              isViewingHistory,
+              isExerciseCompleted: true,
+            ),
+          ),
+        );
+      }
+    }
+
+    return ListView(
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: const EdgeInsets.all(16),
-      itemCount: routine.exercises.length,
-      itemBuilder: (context, index) {
-        final exercise = routine.exercises[index];
-        final exerciseLogs = setLogs
-            .where((log) => log.workoutExerciseId == exercise.id)
-            .toList();
+      children: widgets,
+    );
+  }
 
-        return _buildExerciseSection(
-            context, exercise, exerciseLogs, isViewingHistory,);
-      },
+  Widget _buildSectionHeader(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required int count,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: colorScheme.onSurfaceVariant),
+        const SizedBox(width: 8),
+        Text(
+          '$label ($count)',
+          style: textTheme.titleSmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCompletedSectionHeader(
+    BuildContext context, {
+    required int count,
+    required VoidCallback onToggle,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: colorScheme.outlineVariant,
+        ),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onToggle,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: Row(
+            children: [
+              Icon(
+                Icons.check_circle_outline_rounded,
+                size: 18,
+                color: colorScheme.primary,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  '${context.l10n.completedExercises} ($count)',
+                  style: textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              Text(
+                _showCompletedExercises
+                    ? context.l10n.hideCompletedExercises
+                    : context.l10n.showCompletedExercises,
+                style: textTheme.labelLarge?.copyWith(
+                  color: colorScheme.primary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                _showCompletedExercises
+                    ? Icons.expand_less_rounded
+                    : Icons.expand_more_rounded,
+                color: colorScheme.primary,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -312,6 +494,9 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
     WorkoutExercise exercise,
     List<SetLog> exerciseLogs,
     bool isViewingHistory,
+    {
+    required bool isExerciseCompleted,
+    }
   ) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
@@ -319,7 +504,9 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 0,
-      color: colorScheme.surfaceContainerLow,
+      color: isExerciseCompleted
+          ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.35)
+          : colorScheme.surfaceContainerLow,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
@@ -339,6 +526,12 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
                     exercise.name,
                     style: textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
+                      decoration: isExerciseCompleted
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none,
+                      color: isExerciseCompleted
+                          ? colorScheme.onSurfaceVariant
+                          : colorScheme.onSurface,
                     ),
                   ),
                 ),
