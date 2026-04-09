@@ -282,7 +282,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<void> _seedTrainingDefaults() async {
-    final nowEpoch = DateTime.now().millisecondsSinceEpoch;
+    const seededEpoch = 0;
     await customStatement(
       '''
       INSERT OR IGNORE INTO training_defaults (
@@ -293,7 +293,7 @@ class AppDatabase extends _$AppDatabase {
         updated_at
       ) VALUES (1, 60, 10, 20.0, ?)
       ''',
-      [nowEpoch],
+      [seededEpoch],
     );
   }
 

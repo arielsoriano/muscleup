@@ -107,6 +107,14 @@ class TrainingDefaultsCubit extends Cubit<TrainingDefaultsState> {
         return;
       }
 
+      // After reinstall, local defaults may still be untouched seed values.
+      // In that case, prefer cloud values even if local timestamp is newer.
+      if (_isFallbackDefaults(localDefaults)) {
+        await _repository.saveLocalDefaults(remoteDefaults);
+        emit(state.copyWith(defaults: remoteDefaults, clearError: true));
+        return;
+      }
+
       if (remoteDefaults.updatedAt.isAfter(localDefaults.updatedAt)) {
         await _repository.saveLocalDefaults(remoteDefaults);
         emit(state.copyWith(defaults: remoteDefaults, clearError: true));
@@ -119,6 +127,14 @@ class TrainingDefaultsCubit extends Cubit<TrainingDefaultsState> {
     } catch (_) {
       // Keep local defaults available even if cloud sync fails.
     }
+  }
+
+  bool _isFallbackDefaults(TrainingDefaults defaults) {
+    return defaults.defaultRestSeconds ==
+            TrainingDefaults.defaultRestSecondsFallback &&
+        defaults.defaultRepetitions ==
+            TrainingDefaults.defaultRepetitionsFallback &&
+        defaults.defaultWeight == TrainingDefaults.defaultWeightFallback;
   }
 
   @override

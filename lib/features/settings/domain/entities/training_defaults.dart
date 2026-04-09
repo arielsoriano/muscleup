@@ -11,7 +11,7 @@ class TrainingDefaults {
       defaultRestSeconds: defaultRestSecondsFallback,
       defaultRepetitions: defaultRepetitionsFallback,
       defaultWeight: defaultWeightFallback,
-      updatedAt: DateTime.now(),
+      updatedAt: DateTime.fromMillisecondsSinceEpoch(0),
     );
   }
 
