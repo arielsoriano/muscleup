@@ -451,9 +451,4 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
   void add30Seconds() {
     _restTimerService.addSeconds(30);
   }
-
-  @override
-  Future<void> close() {
-    return super.close();
-  }
 }

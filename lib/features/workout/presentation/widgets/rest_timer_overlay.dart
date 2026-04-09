@@ -158,7 +158,7 @@ class _FloatingRestTimerOverlayState extends State<FloatingRestTimerOverlay>
     final dt = dtMicroseconds / 1000000.0;
     final friction = math.pow(0.90, dt * 60).toDouble();
 
-    final minX = 0.0;
+    const minX = 0.0;
     final maxX = (_lastScreenSize.width - _chipWidth).clamp(0.0, double.infinity);
     final minY = _lastSafePadding.top + 8;
     final maxY = (_lastScreenSize.height - _lastSafePadding.bottom - _chipHeight)
