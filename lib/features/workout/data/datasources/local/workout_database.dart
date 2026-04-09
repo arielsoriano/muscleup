@@ -291,7 +291,7 @@ class AppDatabase extends _$AppDatabase {
         default_repetitions,
         default_weight,
         updated_at
-      ) VALUES (1, 60, 10, 20.0, ?)
+      ) VALUES (1, 120, 12, -1.0, ?)
       ''',
       [seededEpoch],
     );

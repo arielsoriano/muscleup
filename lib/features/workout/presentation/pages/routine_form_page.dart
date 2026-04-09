@@ -289,7 +289,9 @@ class _ExerciseFormItemState extends State<_ExerciseFormItem> {
   void initState() {
     super.initState();
     _restTimeController = TextEditingController(
-      text: widget.exercise.restTimeSeconds.toString(),
+      text: widget.exercise.restTimeSeconds == 0
+          ? ''
+          : widget.exercise.restTimeSeconds.toString(),
     );
   }
 
@@ -428,6 +430,15 @@ class _ExerciseFormItemState extends State<_ExerciseFormItem> {
               ),
             ),
             onChanged: (value) {
+              final trimmedValue = value.trim();
+              if (trimmedValue.isEmpty) {
+                context.read<RoutineFormCubit>().updateExercise(
+                      widget.exercise.id,
+                      restTimeSeconds: 0,
+                    );
+                return;
+              }
+
               final seconds = int.tryParse(value);
               if (seconds != null) {
                 context.read<RoutineFormCubit>().updateExercise(

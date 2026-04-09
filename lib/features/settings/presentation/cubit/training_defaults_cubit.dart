@@ -70,17 +70,37 @@ class TrainingDefaultsCubit extends Cubit<TrainingDefaultsState> {
     });
   }
 
-  Future<void> updateDefaults({
-    int? defaultRestSeconds,
-    int? defaultRepetitions,
-    double? defaultWeight,
-  }) async {
+  Future<void> setDefaultRestSeconds(int? value) async {
     final updatedDefaults = state.defaults.copyWith(
-      defaultRestSeconds: defaultRestSeconds,
-      defaultRepetitions: defaultRepetitions,
-      defaultWeight: defaultWeight,
+      defaultRestSeconds: value,
+      clearDefaultRestSeconds: value == null,
       updatedAt: DateTime.now(),
     );
+
+    await _persistDefaults(updatedDefaults);
+  }
+
+  Future<void> setDefaultRepetitions(int? value) async {
+    final updatedDefaults = state.defaults.copyWith(
+      defaultRepetitions: value,
+      clearDefaultRepetitions: value == null,
+      updatedAt: DateTime.now(),
+    );
+
+    await _persistDefaults(updatedDefaults);
+  }
+
+  Future<void> setDefaultWeight(double? value) async {
+    final updatedDefaults = state.defaults.copyWith(
+      defaultWeight: value,
+      clearDefaultWeight: value == null,
+      updatedAt: DateTime.now(),
+    );
+
+    await _persistDefaults(updatedDefaults);
+  }
+
+  Future<void> _persistDefaults(TrainingDefaults updatedDefaults) async {
 
     emit(state.copyWith(isSaving: true, clearError: true));
 

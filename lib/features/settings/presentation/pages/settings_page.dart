@@ -692,7 +692,11 @@ class _TrainingDefaultsSection extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.timer_outlined),
               title: Text(context.l10n.defaultRest),
-              subtitle: Text('${defaults.defaultRestSeconds} s'),
+              subtitle: Text(
+                defaults.defaultRestSeconds == null
+                    ? '-'
+                    : '${defaults.defaultRestSeconds} s',
+              ),
               trailing: const Icon(Icons.edit_rounded),
               onTap: () => _editIntValue(
                 context,
@@ -701,15 +705,17 @@ class _TrainingDefaultsSection extends StatelessWidget {
                 min: 15,
                 max: 300,
                 onSave: (value) =>
-                    context.read<TrainingDefaultsCubit>().updateDefaults(
-                          defaultRestSeconds: value,
-                        ),
+                    context.read<TrainingDefaultsCubit>().setDefaultRestSeconds(value),
               ),
             ),
             ListTile(
               leading: const Icon(Icons.repeat_rounded),
               title: Text(context.l10n.defaultRepetitions),
-              subtitle: Text('${defaults.defaultRepetitions}'),
+              subtitle: Text(
+                defaults.defaultRepetitions == null
+                    ? '-'
+                    : '${defaults.defaultRepetitions}',
+              ),
               trailing: const Icon(Icons.edit_rounded),
               onTap: () => _editIntValue(
                 context,
@@ -718,15 +724,17 @@ class _TrainingDefaultsSection extends StatelessWidget {
                 min: 1,
                 max: 50,
                 onSave: (value) =>
-                    context.read<TrainingDefaultsCubit>().updateDefaults(
-                          defaultRepetitions: value,
-                        ),
+                    context.read<TrainingDefaultsCubit>().setDefaultRepetitions(value),
               ),
             ),
             ListTile(
               leading: const Icon(Icons.fitness_center_outlined),
               title: Text(context.l10n.defaultWeight),
-              subtitle: Text('${defaults.defaultWeight.toStringAsFixed(1)} kg'),
+              subtitle: Text(
+                defaults.defaultWeight == null
+                    ? '-'
+                  : '${defaults.defaultWeight!.toStringAsFixed(1)} kg',
+              ),
               trailing: const Icon(Icons.edit_rounded),
               onTap: () => _editDoubleValue(
                 context,
@@ -735,9 +743,7 @@ class _TrainingDefaultsSection extends StatelessWidget {
                 min: 0,
                 max: 500,
                 onSave: (value) =>
-                    context.read<TrainingDefaultsCubit>().updateDefaults(
-                          defaultWeight: value,
-                        ),
+                    context.read<TrainingDefaultsCubit>().setDefaultWeight(value),
               ),
             ),
             if (state.errorMessage != null)
@@ -764,14 +770,16 @@ class _TrainingDefaultsSection extends StatelessWidget {
   Future<void> _editIntValue(
     BuildContext context, {
     required String title,
-    required int initialValue,
+    required int? initialValue,
     required int min,
     required int max,
-    required ValueChanged<int> onSave,
+    required ValueChanged<int?> onSave,
   }) async {
-    final controller = TextEditingController(text: initialValue.toString());
+    final controller = TextEditingController(
+      text: initialValue?.toString() ?? '',
+    );
 
-    final result = await showDialog<int>(
+    final result = await showDialog<int?>(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
@@ -788,7 +796,13 @@ class _TrainingDefaultsSection extends StatelessWidget {
             ),
             FilledButton(
               onPressed: () {
-                final parsed = int.tryParse(controller.text);
+                final text = controller.text.trim();
+                if (text.isEmpty) {
+                  Navigator.of(dialogContext).pop(null);
+                  return;
+                }
+
+                final parsed = int.tryParse(text);
                 if (parsed == null) {
                   return;
                 }
@@ -801,24 +815,22 @@ class _TrainingDefaultsSection extends StatelessWidget {
       },
     );
 
-    if (result != null) {
-      onSave(result);
-    }
+    onSave(result);
   }
 
   Future<void> _editDoubleValue(
     BuildContext context, {
     required String title,
-    required double initialValue,
+    required double? initialValue,
     required double min,
     required double max,
-    required ValueChanged<double> onSave,
+    required ValueChanged<double?> onSave,
   }) async {
     final controller = TextEditingController(
-      text: initialValue.toStringAsFixed(1),
+      text: initialValue?.toStringAsFixed(1) ?? '',
     );
 
-    final result = await showDialog<double>(
+    final result = await showDialog<double?>(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
@@ -835,7 +847,13 @@ class _TrainingDefaultsSection extends StatelessWidget {
             ),
             FilledButton(
               onPressed: () {
-                final raw = controller.text.replaceAll(',', '.');
+                final text = controller.text.trim();
+                if (text.isEmpty) {
+                  Navigator.of(dialogContext).pop(null);
+                  return;
+                }
+
+                final raw = text.replaceAll(',', '.');
                 final parsed = double.tryParse(raw);
                 if (parsed == null) {
                   return;
@@ -850,9 +868,7 @@ class _TrainingDefaultsSection extends StatelessWidget {
       },
     );
 
-    if (result != null) {
-      onSave(result);
-    }
+    onSave(result);
   }
 }
 

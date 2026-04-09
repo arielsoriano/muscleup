@@ -11,6 +11,8 @@ class TrainingDefaultsRepository {
 
   final AppDatabase _database;
   final WorkoutRemoteDataSource _workoutRemoteDataSource;
+  static const int _emptyIntSentinel = -1;
+  static const double _emptyDoubleSentinel = -1;
 
   Future<TrainingDefaults> getLocalDefaults() async {
     final rows = await _database.customSelect(
@@ -29,13 +31,20 @@ class TrainingDefaultsRepository {
     }
 
     final row = rows.first.data;
+    final restRaw = row['default_rest_seconds'] as int?;
+    final repsRaw = row['default_repetitions'] as int?;
+    final weightRaw = (row['default_weight'] as num?)?.toDouble();
+
     return TrainingDefaults(
-      defaultRestSeconds: (row['default_rest_seconds'] as int?) ??
-          TrainingDefaults.defaultRestSecondsFallback,
-      defaultRepetitions: (row['default_repetitions'] as int?) ??
-          TrainingDefaults.defaultRepetitionsFallback,
-      defaultWeight: (row['default_weight'] as num?)?.toDouble() ??
-          TrainingDefaults.defaultWeightFallback,
+      defaultRestSeconds: restRaw == null
+          ? TrainingDefaults.defaultRestSecondsFallback
+          : (restRaw == _emptyIntSentinel ? null : restRaw),
+      defaultRepetitions: repsRaw == null
+          ? TrainingDefaults.defaultRepetitionsFallback
+          : (repsRaw == _emptyIntSentinel ? null : repsRaw),
+      defaultWeight: weightRaw == null
+          ? TrainingDefaults.defaultWeightFallback
+          : (weightRaw == _emptyDoubleSentinel ? null : weightRaw),
       updatedAt: DateTime.fromMillisecondsSinceEpoch(
         (row['updated_at'] as int?) ?? DateTime.now().millisecondsSinceEpoch,
       ),
@@ -70,12 +79,9 @@ class TrainingDefaultsRepository {
           );
 
     return TrainingDefaults(
-      defaultRestSeconds: (cloudData['defaultRestSeconds'] as int?) ??
-          TrainingDefaults.defaultRestSecondsFallback,
-      defaultRepetitions: (cloudData['defaultRepetitions'] as int?) ??
-          TrainingDefaults.defaultRepetitionsFallback,
-      defaultWeight: (cloudData['defaultWeight'] as num?)?.toDouble() ??
-          TrainingDefaults.defaultWeightFallback,
+      defaultRestSeconds: cloudData['defaultRestSeconds'] as int?,
+      defaultRepetitions: cloudData['defaultRepetitions'] as int?,
+      defaultWeight: (cloudData['defaultWeight'] as num?)?.toDouble(),
       updatedAt: updatedAt,
     );
   }
@@ -97,9 +103,9 @@ class TrainingDefaultsRepository {
         updated_at = excluded.updated_at
       ''',
       [
-        defaults.defaultRestSeconds,
-        defaults.defaultRepetitions,
-        defaults.defaultWeight,
+        defaults.defaultRestSeconds ?? _emptyIntSentinel,
+        defaults.defaultRepetitions ?? _emptyIntSentinel,
+        defaults.defaultWeight ?? _emptyDoubleSentinel,
         defaults.updatedAt.millisecondsSinceEpoch,
       ],
     );

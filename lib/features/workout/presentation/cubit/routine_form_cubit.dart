@@ -54,13 +54,13 @@ class RoutineFormCubit extends Cubit<RoutineFormState> {
       name: exerciseName,
       sortOrder: state.routine.exercises.length,
       notes: null,
-      restTimeSeconds: defaults.defaultRestSeconds,
+      restTimeSeconds: defaults.defaultRestSeconds ?? 0,
       templateSets: [
         WorkoutSet(
           id: _uuid.v4(),
           sortOrder: 0,
           targetValue1: defaults.defaultWeight,
-          targetValue2: defaults.defaultRepetitions.toDouble(),
+          targetValue2: defaults.defaultRepetitions?.toDouble(),
           unit1: WorkoutUnit.kilograms,
           unit2: WorkoutUnit.repetitions,
         ),
@@ -131,7 +131,7 @@ class RoutineFormCubit extends Cubit<RoutineFormState> {
           id: _uuid.v4(),
           sortOrder: exercise.templateSets.length,
           targetValue1: defaults.defaultWeight,
-          targetValue2: defaults.defaultRepetitions.toDouble(),
+          targetValue2: defaults.defaultRepetitions?.toDouble(),
           unit1: WorkoutUnit.kilograms,
           unit2: WorkoutUnit.repetitions,
         );

@@ -169,9 +169,9 @@ class FirestoreWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   @override
   Future<void> upsertTrainingDefaults(
     String uid, {
-    required int defaultRestSeconds,
-    required int defaultRepetitions,
-    required double defaultWeight,
+    required int? defaultRestSeconds,
+    required int? defaultRepetitions,
+    required double? defaultWeight,
     required DateTime updatedAt,
   }) async {
     final data = <String, dynamic>{
@@ -461,9 +461,9 @@ class NoopWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   @override
   Future<void> upsertTrainingDefaults(
     String uid, {
-    required int defaultRestSeconds,
-    required int defaultRepetitions,
-    required double defaultWeight,
+    required int? defaultRestSeconds,
+    required int? defaultRepetitions,
+    required double? defaultWeight,
     required DateTime updatedAt,
   }) {
     return _notConfigured();

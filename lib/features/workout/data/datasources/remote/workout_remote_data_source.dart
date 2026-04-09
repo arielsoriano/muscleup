@@ -31,9 +31,9 @@ abstract class WorkoutRemoteDataSource {
 
   Future<void> upsertTrainingDefaults(
     String uid, {
-    required int defaultRestSeconds,
-    required int defaultRepetitions,
-    required double defaultWeight,
+    required int? defaultRestSeconds,
+    required int? defaultRepetitions,
+    required double? defaultWeight,
     required DateTime updatedAt,
   });
 
