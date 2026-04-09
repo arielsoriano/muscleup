@@ -127,13 +127,17 @@ class RoutineFormCubit extends Cubit<RoutineFormState> {
     final currentRoutine = state.routine;
     final updatedExercises = currentRoutine.exercises.map((exercise) {
       if (exercise.id == exerciseId) {
+        final previousSet =
+            exercise.templateSets.isNotEmpty ? exercise.templateSets.last : null;
+
         final newSet = WorkoutSet(
           id: _uuid.v4(),
           sortOrder: exercise.templateSets.length,
-          targetValue1: defaults.defaultWeight,
-          targetValue2: defaults.defaultRepetitions?.toDouble(),
-          unit1: WorkoutUnit.kilograms,
-          unit2: WorkoutUnit.repetitions,
+          targetValue1: previousSet?.targetValue1 ?? defaults.defaultWeight,
+          targetValue2:
+              previousSet?.targetValue2 ?? defaults.defaultRepetitions?.toDouble(),
+          unit1: previousSet?.unit1 ?? WorkoutUnit.kilograms,
+          unit2: previousSet?.unit2 ?? WorkoutUnit.repetitions,
         );
         return exercise.copyWith(
           templateSets: [...exercise.templateSets, newSet],
