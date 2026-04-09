@@ -181,6 +181,8 @@ class RoutineFormCubit extends Cubit<RoutineFormState> {
     double? targetValue2,
     WorkoutUnit? unit1,
     WorkoutUnit? unit2,
+    bool clearTargetValue1 = false,
+    bool clearTargetValue2 = false,
   }) {
     final currentRoutine = state.routine;
     final updatedExercises = currentRoutine.exercises.map((exercise) {
@@ -188,8 +190,12 @@ class RoutineFormCubit extends Cubit<RoutineFormState> {
         final updatedSets = exercise.templateSets.map((set) {
           if (set.id == setId) {
             return set.copyWith(
-              targetValue1: targetValue1 ?? set.targetValue1,
-              targetValue2: targetValue2 ?? set.targetValue2,
+              targetValue1: clearTargetValue1
+                  ? null
+                  : (targetValue1 ?? set.targetValue1),
+              targetValue2: clearTargetValue2
+                  ? null
+                  : (targetValue2 ?? set.targetValue2),
               unit1: unit1 ?? set.unit1,
               unit2: unit2 ?? set.unit2,
             );

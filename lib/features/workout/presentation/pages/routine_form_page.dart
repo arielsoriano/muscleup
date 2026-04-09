@@ -566,15 +566,18 @@ class _SetFormRowState extends State<_SetFormRow> {
   void initState() {
     super.initState();
     _value1Controller = TextEditingController(
-      text: (widget.set.targetValue1 == null || widget.set.targetValue1 == 0)
-          ? ''
-          : widget.set.targetValue1!.formatClean(),
+      text: _formatControllerValue(widget.set.targetValue1),
     );
     _value2Controller = TextEditingController(
-      text: (widget.set.targetValue2 == null || widget.set.targetValue2 == 0)
-          ? ''
-          : widget.set.targetValue2!.formatClean(),
+      text: _formatControllerValue(widget.set.targetValue2),
     );
+  }
+
+  @override
+  void didUpdateWidget(covariant _SetFormRow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _syncController(_value1Controller, widget.set.targetValue1, widget.set.unit1);
+    _syncController(_value2Controller, widget.set.targetValue2, widget.set.unit2);
   }
 
   @override
@@ -634,6 +637,13 @@ class _SetFormRowState extends State<_SetFormRow> {
                             targetValue1: value,
                           );
                     },
+                    onValueCleared: () {
+                      context.read<RoutineFormCubit>().updateSetValues(
+                            exerciseId: widget.exerciseId,
+                            setId: widget.set.id,
+                            clearTargetValue1: true,
+                          );
+                    },
                     onUnitChanged: (unit) {
                       context.read<RoutineFormCubit>().updateSetValues(
                             exerciseId: widget.exerciseId,
@@ -656,6 +666,13 @@ class _SetFormRowState extends State<_SetFormRow> {
                             exerciseId: widget.exerciseId,
                             setId: widget.set.id,
                             targetValue2: value,
+                          );
+                    },
+                    onValueCleared: () {
+                      context.read<RoutineFormCubit>().updateSetValues(
+                            exerciseId: widget.exerciseId,
+                            setId: widget.set.id,
+                            clearTargetValue2: true,
                           );
                     },
                     onUnitChanged: (unit) {
@@ -692,17 +709,21 @@ class _SetFormRowState extends State<_SetFormRow> {
     required double? value,
     required WorkoutUnit? unit,
     required ValueChanged<double> onValueChanged,
+    required VoidCallback onValueCleared,
     required ValueChanged<WorkoutUnit> onUnitChanged,
   }) {
+    final isNoneUnit = unit == WorkoutUnit.none;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextField(
           controller: controller,
+          enabled: !isNoneUnit,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           decoration: InputDecoration(
             isDense: true,
-            hintText: '0',
+            hintText: isNoneUnit ? '' : '0',
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 8,
               vertical: 8,
@@ -712,8 +733,15 @@ class _SetFormRowState extends State<_SetFormRow> {
             ),
           ),
           onChanged: (text) {
+            if (text.trim().isEmpty) {
+              onValueCleared();
+              return;
+            }
+
             final parsedValue = double.tryParse(text);
-            onValueChanged(parsedValue ?? 0);
+            if (parsedValue != null) {
+              onValueChanged(parsedValue);
+            }
           },
         ),
         const SizedBox(height: 4),
@@ -743,12 +771,40 @@ class _SetFormRowState extends State<_SetFormRow> {
           }).toList(),
           onChanged: (newUnit) {
             if (newUnit != null) {
+              if (newUnit == WorkoutUnit.none) {
+                controller.clear();
+                onValueCleared();
+              }
               onUnitChanged(newUnit);
             }
           },
         ),
       ],
     );
+  }
+
+  String _formatControllerValue(double? value) {
+    if (value == null || value == 0) {
+      return '';
+    }
+
+    return value.formatClean();
+  }
+
+  void _syncController(
+    TextEditingController controller,
+    double? value,
+    WorkoutUnit? unit,
+  ) {
+    final nextText = unit == WorkoutUnit.none ? '' : _formatControllerValue(value);
+
+    if (controller.text != nextText) {
+      controller.value = controller.value.copyWith(
+        text: nextText,
+        selection: TextSelection.collapsed(offset: nextText.length),
+        composing: TextRange.empty,
+      );
+    }
   }
 
   List<WorkoutUnit> get _orderedWorkoutUnits {
