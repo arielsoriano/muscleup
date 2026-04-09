@@ -280,6 +280,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get completedSession => 'Completed Session';
 
   @override
+  String get saveAsRoutineTarget => 'Save as routine target';
+
+  @override
+  String get saveAsRoutineTargetSuccess => 'Target updated for future workouts';
+
+  @override
+  String get saveAsRoutineTargetError => 'Could not update the routine target';
+
+  @override
+  String get editSetValue => 'Edit value';
+
+  @override
+  String get saveForToday => 'Save for today';
+
+  @override
+  String get saveForTodayDetail => 'Only records the value for this workout';
+
+  @override
+  String get updateRoutineTarget => 'Update target';
+
+  @override
+  String get updateRoutineTargetDetail =>
+      'Changes the target for future workouts';
+
+  @override
   String get errorEmptyName => 'Routine name cannot be empty';
 
   @override

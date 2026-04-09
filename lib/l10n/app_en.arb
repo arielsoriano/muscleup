@@ -368,6 +368,38 @@
   "@completedSession": {
     "description": "Header label indicating a workout session is already finished"
   },
+  "saveAsRoutineTarget": "Save as routine target",
+  "@saveAsRoutineTarget": {
+    "description": "Action to save current set values as future routine targets"
+  },
+  "saveAsRoutineTargetSuccess": "Target updated for future workouts",
+  "@saveAsRoutineTargetSuccess": {
+    "description": "Success message when current set values are saved as routine targets"
+  },
+  "saveAsRoutineTargetError": "Could not update the routine target",
+  "@saveAsRoutineTargetError": {
+    "description": "Error message when saving current set values as routine targets fails"
+  },
+  "editSetValue": "Edit value",
+  "@editSetValue": {
+    "description": "Title of the bottom sheet modal for editing a set value"
+  },
+  "saveForToday": "Save for today",
+  "@saveForToday": {
+    "description": "Button label to save the actual value for today's session only"
+  },
+  "saveForTodayDetail": "Only records the value for this workout",
+  "@saveForTodayDetail": {
+    "description": "Subtitle explaining that saving for today does not affect the routine target"
+  },
+  "updateRoutineTarget": "Update target",
+  "@updateRoutineTarget": {
+    "description": "Button label to update the routine target permanently"
+  },
+  "updateRoutineTargetDetail": "Changes the target for future workouts",
+  "@updateRoutineTargetDetail": {
+    "description": "Subtitle explaining that updating the target affects all future workouts"
+  },
   "errorEmptyName": "Routine name cannot be empty",
   "@errorEmptyName": {
     "description": "Error message when routine name is empty"

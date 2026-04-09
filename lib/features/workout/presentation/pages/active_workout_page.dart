@@ -10,6 +10,16 @@ import '../../domain/usecases/get_routine_by_id_usecase.dart';
 import '../cubit/active_workout_cubit.dart';
 import '../cubit/active_workout_state.dart';
 
+class _SetEditorResult {
+  const _SetEditorResult({
+    required this.value,
+    required this.saveAsTarget,
+  });
+
+  final double? value;
+  final bool saveAsTarget;
+}
+
 class ActiveWorkoutPage extends StatelessWidget {
   const ActiveWorkoutPage({
     this.routine,
@@ -371,20 +381,24 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
       orElse: () => false,
     );
 
-    return state.maybeMap(
-      tracking: (s) => _buildExerciseList(
-        context,
-        s.routine,
-        s.setLogs,
-        isViewingHistory,
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: state.maybeMap(
+        tracking: (s) => _buildExerciseList(
+          context,
+          s.routine,
+          s.setLogs,
+          isViewingHistory,
+        ),
+        initial: (s) => _buildExerciseList(
+          context,
+          s.routine,
+          s.setLogs,
+          isViewingHistory,
+        ),
+        orElse: () => const SizedBox.shrink(),
       ),
-      initial: (s) => _buildExerciseList(
-        context,
-        s.routine,
-        s.setLogs,
-        isViewingHistory,
-      ),
-      orElse: () => const SizedBox.shrink(),
     );
   }
 
@@ -395,6 +409,7 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
     bool isViewingHistory,
   ) {
     return ListView.builder(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: const EdgeInsets.all(16),
       itemCount: routine.exercises.length,
       itemBuilder: (context, index) {
@@ -539,8 +554,18 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
               )
             else
               ...exerciseLogs.asMap().entries.map((entry) {
+                final templateSetIndex = entry.value.setNumber - 1;
+                final templateSet = templateSetIndex >= 0 &&
+                        templateSetIndex < exercise.templateSets.length
+                    ? exercise.templateSets[templateSetIndex]
+                    : null;
                 return _buildSetRow(
-                    context, entry.value, entry.key, isViewingHistory,);
+                  context,
+                  entry.value,
+                  entry.key,
+                  isViewingHistory,
+                  templateSet: templateSet,
+                );
               }),
           ],
         ),
@@ -549,7 +574,12 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
   }
 
   Widget _buildSetRow(
-      BuildContext context, SetLog log, int index, bool isViewingHistory,) {
+    BuildContext context,
+    SetLog log,
+    int index,
+    bool isViewingHistory, {
+    WorkoutSet? templateSet,
+  }) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final cubit = context.read<ActiveWorkoutCubit>();
@@ -585,7 +615,7 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _formatTargetValues(context, log),
+                  _formatTargetValues(context, templateSet, log),
                   style: textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -600,14 +630,7 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
                           log,
                           true,
                           isViewingHistory,
-                          onChanged: (value) {
-                            if (!isViewingHistory) {
-                              final updatedLog = log.copyWith(
-                                actualValue1: double.tryParse(value),
-                              );
-                              cubit.updateSetLog(updatedLog);
-                            }
-                          },
+                          targetValue: templateSet?.targetValue1,
                         ),
                       ),
                       if (log.unit2 != null && log.unit2 != WorkoutUnit.none)
@@ -620,14 +643,7 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
                           log,
                           false,
                           isViewingHistory,
-                          onChanged: (value) {
-                            if (!isViewingHistory) {
-                              final updatedLog = log.copyWith(
-                                actualValue2: double.tryParse(value),
-                              );
-                              cubit.updateSetLog(updatedLog);
-                            }
-                          },
+                          targetValue: templateSet?.targetValue2,
                         ),
                       ),
                     ],
@@ -662,61 +678,230 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
     SetLog log,
     bool isFirstValue,
     bool isViewingHistory, {
-    required ValueChanged<String> onChanged,
+    required double? targetValue,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final cubit = context.read<ActiveWorkoutCubit>();
     final unit = isFirstValue ? log.unit1 : log.unit2;
     final value = isFirstValue ? log.actualValue1 : log.actualValue2;
+    final effectiveValue = value ?? targetValue;
+    final unitText = _formatUnit(unit);
+    final valueText = effectiveValue?.formatClean() ?? '-';
 
-    return TextField(
-      enabled: !isViewingHistory,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      textAlign: TextAlign.center,
-      style: textTheme.bodyLarge?.copyWith(
-        fontWeight: FontWeight.w600,
+    return InkWell(
+      borderRadius: BorderRadius.circular(8),
+      onTap: isViewingHistory
+          ? null
+          : () async {
+              FocusScope.of(context).unfocus();
+              final selectedAction = await _showSetValueEditorSheet(
+                context,
+                initialValue: value,
+                targetValue: targetValue,
+                unitText: unitText,
+              );
+
+              if (!context.mounted || selectedAction == null) {
+                return;
+              }
+
+              final updatedLog = isFirstValue
+                  ? log.copyWith(actualValue1: selectedAction.value)
+                  : log.copyWith(actualValue2: selectedAction.value);
+
+              cubit.updateSetLog(updatedLog);
+
+              if (selectedAction.saveAsTarget) {
+                final message = await cubit.saveSetAsRoutineTarget(updatedLog);
+                if (!context.mounted) {
+                  return;
+                }
+
+                if (message == null) {
+                  context.showAppSnackBar(
+                    message: context.l10n.saveAsRoutineTargetSuccess,
+                  );
+                } else {
+                  context.showAppSnackBar(
+                    message: _translateActiveWorkoutMessage(context, message),
+                    type: SnackBarType.error,
+                  );
+                }
+              }
+            },
+      child: Container(
+        height: 48,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: colorScheme.outlineVariant),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.center,
+                child: Text(
+                  valueText,
+                  maxLines: 1,
+                  style: textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+            if (unitText.isNotEmpty) ...[
+              const SizedBox(width: 6),
+              Text(
+                unitText,
+                style: textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
-      decoration: InputDecoration(
-        hintText: value?.formatClean() ?? '0',
-        suffixText: _formatUnit(unit),
-        suffixStyle: textTheme.bodySmall?.copyWith(
-          color: colorScheme.onSurfaceVariant,
-        ),
-        filled: true,
-        fillColor: colorScheme.surface,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: colorScheme.outline),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: colorScheme.outlineVariant),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: colorScheme.primary, width: 2),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 12,
-        ),
-      ),
-      onChanged: onChanged,
     );
   }
 
-  String _formatTargetValues(BuildContext context, SetLog log) {
+  Future<_SetEditorResult?> _showSetValueEditorSheet(
+    BuildContext context, {
+    required double? initialValue,
+    required double? targetValue,
+    required String unitText,
+  }) async {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    var draftValueText = initialValue?.formatClean() ?? '';
+
+    final result = await showModalBottomSheet<_SetEditorResult>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (sheetContext) {
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+            16,
+            8,
+            16,
+            MediaQuery.of(sheetContext).viewInsets.bottom + 16,
+          ),
+          child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    context.l10n.editSetValue,
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${context.l10n.target}: ${targetValue?.formatClean() ?? '-'}$unitText',
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    initialValue: draftValueText,
+                    autofocus: true,
+                    onTapOutside: (_) => FocusScope.of(sheetContext).unfocus(),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    textInputAction: TextInputAction.done,
+                    decoration: InputDecoration(
+                      hintText: targetValue?.formatClean() ?? '',
+                      suffixText: unitText,
+                    ),
+                    onChanged: (value) {
+                      draftValueText = value;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  const Divider(height: 1),
+                  ListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+                    leading: Icon(
+                      Icons.check_circle_outline,
+                      color: colorScheme.primary,
+                    ),
+                    title: Text(context.l10n.saveForToday),
+                    subtitle: Text(context.l10n.saveForTodayDetail),
+                    onTap: () {
+                      final parsed = _parseSetValue(draftValueText);
+                      Navigator.of(sheetContext).pop(
+                        _SetEditorResult(
+                          value: parsed,
+                          saveAsTarget: false,
+                        ),
+                      );
+                    },
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+                    leading: Icon(
+                      Icons.flag_outlined,
+                      color: colorScheme.tertiary,
+                    ),
+                    title: Text(context.l10n.updateRoutineTarget),
+                    subtitle: Text(context.l10n.updateRoutineTargetDetail),
+                    onTap: () {
+                      final parsed = _parseSetValue(draftValueText);
+                      Navigator.of(sheetContext).pop(
+                        _SetEditorResult(
+                          value: parsed,
+                          saveAsTarget: true,
+                        ),
+                      );
+                    },
+                  ),
+                  const Divider(height: 1),
+                ],
+              ),
+            );
+      },
+    );
+    return result;
+  }
+
+  double? _parseSetValue(String text) {
+    final trimmed = text.trim();
+    if (trimmed.isEmpty) {
+      return null;
+    }
+
+    return double.tryParse(trimmed.replaceAll(',', '.'));
+  }
+
+  String _formatTargetValues(
+    BuildContext context,
+    WorkoutSet? templateSet,
+    SetLog log,
+  ) {
     final parts = <String>[];
 
-    if (log.unit1 != null && log.unit1 != WorkoutUnit.none) {
-      final value = log.actualValue1?.formatClean() ?? '0';
-      final unit = _formatUnit(log.unit1);
+    final targetValue1 = templateSet?.targetValue1 ?? log.actualValue1;
+    final targetValue2 = templateSet?.targetValue2 ?? log.actualValue2;
+    final targetUnit1 = templateSet?.unit1 ?? log.unit1;
+    final targetUnit2 = templateSet?.unit2 ?? log.unit2;
+
+    if (targetUnit1 != null && targetUnit1 != WorkoutUnit.none) {
+      final value = targetValue1?.formatClean() ?? '0';
+      final unit = _formatUnit(targetUnit1);
       parts.add('$value$unit');
     }
 
-    if (log.unit2 != null && log.unit2 != WorkoutUnit.none) {
-      final value = log.actualValue2?.formatClean() ?? '0';
-      final unit = _formatUnit(log.unit2);
+    if (targetUnit2 != null && targetUnit2 != WorkoutUnit.none) {
+      final value = targetValue2?.formatClean() ?? '0';
+      final unit = _formatUnit(targetUnit2);
       parts.add('$value$unit');
     }
 
@@ -725,6 +910,18 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
     }
 
     return '${context.l10n.target}: ${parts.join(' × ')}';
+  }
+
+  String _translateActiveWorkoutMessage(BuildContext context, String message) {
+    switch (message) {
+      case 'error.cannotUpdateHistoryTarget':
+      case 'error.targetExerciseNotFound':
+      case 'error.targetSetNotFound':
+      case 'error.targetRoutineUnavailable':
+        return context.l10n.saveAsRoutineTargetError;
+      default:
+        return message;
+    }
   }
 
   String _formatUnit(WorkoutUnit? unit) {

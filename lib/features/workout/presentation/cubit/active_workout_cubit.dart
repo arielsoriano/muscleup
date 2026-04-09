@@ -300,6 +300,79 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
     );
   }
 
+  Future<String?> saveSetAsRoutineTarget(SetLog log) async {
+    final currentState = state;
+
+    return currentState.maybeWhen(
+      tracking: (
+        routine,
+        setLogs,
+        displayTitle,
+        isViewingHistory,
+        isSaving,
+        isLoading,
+        restTimerSeconds,
+        totalRestTime,
+        isResting,
+      ) async {
+        if (isViewingHistory) {
+          return 'error.cannotUpdateHistoryTarget';
+        }
+
+        final exerciseIndex = routine.exercises.indexWhere(
+          (exercise) => exercise.id == log.workoutExerciseId,
+        );
+
+        if (exerciseIndex == -1) {
+          return 'error.targetExerciseNotFound';
+        }
+
+        final exercise = routine.exercises[exerciseIndex];
+        final setIndex = log.setNumber - 1;
+
+        if (setIndex < 0 || setIndex >= exercise.templateSets.length) {
+          return 'error.targetSetNotFound';
+        }
+
+        final updatedSets = [...exercise.templateSets];
+        final currentSet = updatedSets[setIndex];
+        updatedSets[setIndex] = currentSet.copyWith(
+          targetValue1: log.actualValue1,
+          targetValue2: log.actualValue2,
+        );
+
+        final updatedExercises = [...routine.exercises];
+        updatedExercises[exerciseIndex] = exercise.copyWith(
+          templateSets: updatedSets,
+        );
+
+        final updatedRoutine = routine.copyWith(exercises: updatedExercises);
+        final saveResult = await _repository.saveRoutine(updatedRoutine);
+
+        return saveResult.fold(
+          (failure) => _mapFailureToMessage(failure),
+          (_) {
+            emit(
+              ActiveWorkoutState.tracking(
+                routine: updatedRoutine,
+                setLogs: setLogs,
+                displayTitle: displayTitle,
+                isViewingHistory: isViewingHistory,
+                isSaving: isSaving,
+                isLoading: isLoading,
+                restTimerSeconds: restTimerSeconds,
+                totalRestTime: totalRestTime,
+                isResting: isResting,
+              ),
+            );
+            return null;
+          },
+        );
+      },
+      orElse: () async => 'error.targetRoutineUnavailable',
+    );
+  }
+
   Future<void> finishWorkout() async {
     state.mapOrNull(
       tracking: (trackingState) async {

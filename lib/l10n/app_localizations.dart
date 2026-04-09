@@ -614,6 +614,54 @@ abstract class AppLocalizations {
   /// **'Completed Session'**
   String get completedSession;
 
+  /// Action to save current set values as future routine targets
+  ///
+  /// In en, this message translates to:
+  /// **'Save as routine target'**
+  String get saveAsRoutineTarget;
+
+  /// Success message when current set values are saved as routine targets
+  ///
+  /// In en, this message translates to:
+  /// **'Target updated for future workouts'**
+  String get saveAsRoutineTargetSuccess;
+
+  /// Error message when saving current set values as routine targets fails
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update the routine target'**
+  String get saveAsRoutineTargetError;
+
+  /// Title of the bottom sheet modal for editing a set value
+  ///
+  /// In en, this message translates to:
+  /// **'Edit value'**
+  String get editSetValue;
+
+  /// Button label to save the actual value for today's session only
+  ///
+  /// In en, this message translates to:
+  /// **'Save for today'**
+  String get saveForToday;
+
+  /// Subtitle explaining that saving for today does not affect the routine target
+  ///
+  /// In en, this message translates to:
+  /// **'Only records the value for this workout'**
+  String get saveForTodayDetail;
+
+  /// Button label to update the routine target permanently
+  ///
+  /// In en, this message translates to:
+  /// **'Update target'**
+  String get updateRoutineTarget;
+
+  /// Subtitle explaining that updating the target affects all future workouts
+  ///
+  /// In en, this message translates to:
+  /// **'Changes the target for future workouts'**
+  String get updateRoutineTargetDetail;
+
   /// Error message when routine name is empty
   ///
   /// In en, this message translates to:
