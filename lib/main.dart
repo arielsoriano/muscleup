@@ -12,6 +12,8 @@ import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/settings/presentation/cubit/settings_cubit.dart';
 import 'features/settings/presentation/cubit/settings_state.dart';
 import 'l10n/app_localizations.dart';
+import 'features/workout/presentation/services/rest_timer_service.dart';
+import 'features/workout/presentation/widgets/rest_timer_overlay.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -118,6 +120,10 @@ class MuscleupApp extends StatelessWidget {
               isDarkMode: true,
             ),
             themeMode: state.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+              builder: (context, child) => FloatingRestTimerOverlay(
+                service: di.serviceLocator<RestTimerService>(),
+                child: child ?? const SizedBox.shrink(),
+              ),
           );
         },
       ),

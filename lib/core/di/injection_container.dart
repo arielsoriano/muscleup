@@ -44,6 +44,7 @@ import '../../features/workout/presentation/cubit/active_workout_cubit.dart';
 import '../../features/workout/presentation/cubit/dashboard_cubit.dart';
 import '../../features/workout/presentation/cubit/routine_form_cubit.dart';
 import '../../features/workout/presentation/cubit/workout_cubit.dart';
+import '../../features/workout/presentation/services/rest_timer_service.dart';
 import '../router/app_router.dart';
 import '../settings/settings_data_source.dart';
 
@@ -224,6 +225,8 @@ Future<void> _initializePresentation() async {
     ),
   );
 
+  serviceLocator.registerSingleton<RestTimerService>(RestTimerService());
+
   serviceLocator.registerFactory(
     () => WorkoutCubit(
       watchRoutinesUseCase: serviceLocator(),
@@ -249,6 +252,7 @@ Future<void> _initializePresentation() async {
       saveSessionUseCase: serviceLocator(),
       saveSetLogUseCase: serviceLocator(),
       getLogsForSessionUseCase: serviceLocator(),
+      restTimerService: serviceLocator(),
       sessionId: sessionId,
     ),
   );

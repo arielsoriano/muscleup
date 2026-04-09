@@ -1,12 +1,10 @@
-import 'dart:async';
-
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/workout_entities.dart';
 import '../../domain/repositories/workout_repository.dart';
+import '../services/rest_timer_service.dart';
 import '../../domain/usecases/get_logs_for_session_usecase.dart';
 import '../../domain/usecases/get_routine_by_id_usecase.dart';
 import '../../domain/usecases/get_session_by_id_usecase.dart';
@@ -24,8 +22,10 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
     required SaveSessionUseCase saveSessionUseCase,
     required SaveSetLogUseCase saveSetLogUseCase,
     required GetLogsForSessionUseCase getLogsForSessionUseCase,
+    required RestTimerService restTimerService,
     String? sessionId,
   })  : _routineId = routineId,
+        _restTimerService = restTimerService,
         _repository = repository,
         _getRoutineByIdUseCase = getRoutineByIdUseCase,
         _getSessionByIdUseCase = getSessionByIdUseCase,
@@ -41,6 +41,7 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
 
   final String _routineId;
   final WorkoutRepository _repository;
+  final RestTimerService _restTimerService;
   final GetRoutineByIdUseCase _getRoutineByIdUseCase;
   final GetSessionByIdUseCase _getSessionByIdUseCase;
   final SaveSessionUseCase _saveSessionUseCase;
@@ -49,7 +50,6 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
   final String? _existingSessionId;
   final _uuid = const Uuid();
   late final String _sessionId;
-  Timer? _restTimer;
 
   Future<void> loadInitialData() async {
     
@@ -415,6 +415,7 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
             );
           },
           (_) {
+            _restTimerService.stop();
             emit(
               ActiveWorkoutState.success(
                 routine: trackingState.routine,
@@ -440,167 +441,19 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
   }
 
   void startRestTimer(int seconds) {
-    _restTimer?.cancel();
-
-    state.maybeWhen(
-      tracking: (routine, setLogs, displayTitle, isViewingHistory, _, __, ___, ____, _____) {
-        emit(
-          ActiveWorkoutState.tracking(
-            routine: routine,
-            setLogs: setLogs,
-            displayTitle: displayTitle,
-            isViewingHistory: isViewingHistory,
-            restTimerSeconds: seconds,
-            totalRestTime: seconds,
-            isResting: true,
-          ),
-        );
-
-        _restTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-          final currentState = state;
-          currentState.maybeWhen(
-            tracking: (routine, setLogs, displayTitle, isViewingHistory, _, __, restTimerSeconds, totalRestTime, isResting) {
-              if (restTimerSeconds != null && restTimerSeconds > 0) {
-                emit(
-                  ActiveWorkoutState.tracking(
-                    routine: routine,
-                    setLogs: setLogs,
-                    displayTitle: displayTitle,
-                    isViewingHistory: isViewingHistory,
-                    restTimerSeconds: restTimerSeconds - 1,
-                    totalRestTime: totalRestTime,
-                    isResting: true,
-                  ),
-                );
-              } else {
-                HapticFeedback.vibrate();
-                stopRestTimer();
-              }
-            },
-            orElse: () {
-              timer.cancel();
-            },
-          );
-        });
-      },
-      initial: (routine, setLogs, displayTitle, isViewingHistory, _, __, ___, ____, _____) {
-        emit(
-          ActiveWorkoutState.initial(
-            routine: routine,
-            setLogs: setLogs,
-            displayTitle: displayTitle,
-            isViewingHistory: isViewingHistory,
-            restTimerSeconds: seconds,
-            totalRestTime: seconds,
-            isResting: true,
-          ),
-        );
-
-        _restTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-          final currentState = state;
-          currentState.maybeWhen(
-            initial: (routine, setLogs, displayTitle, isViewingHistory, _, __, restTimerSeconds, totalRestTime, isResting) {
-              if (restTimerSeconds != null && restTimerSeconds > 0) {
-                emit(
-                  ActiveWorkoutState.initial(
-                    routine: routine,
-                    setLogs: setLogs,
-                    displayTitle: displayTitle,
-                    isViewingHistory: isViewingHistory,
-                    restTimerSeconds: restTimerSeconds - 1,
-                    totalRestTime: totalRestTime,
-                    isResting: true,
-                  ),
-                );
-              } else {
-                HapticFeedback.vibrate();
-                stopRestTimer();
-              }
-            },
-            orElse: () {
-              timer.cancel();
-            },
-          );
-        });
-      },
-      orElse: () {},
-    );
+    _restTimerService.start(seconds);
   }
 
   void stopRestTimer() {
-    _restTimer?.cancel();
-    _restTimer = null;
-
-    state.maybeWhen(
-      tracking: (routine, setLogs, displayTitle, isViewingHistory, _, __, ___, ____, _____) {
-        emit(
-          ActiveWorkoutState.tracking(
-            routine: routine,
-            setLogs: setLogs,
-            displayTitle: displayTitle,
-            isViewingHistory: isViewingHistory,
-            restTimerSeconds: null,
-            totalRestTime: null,
-            isResting: false,
-          ),
-        );
-      },
-      initial: (routine, setLogs, displayTitle, isViewingHistory, _, __, ___, ____, _____) {
-        emit(
-          ActiveWorkoutState.initial(
-            routine: routine,
-            setLogs: setLogs,
-            displayTitle: displayTitle,
-            isViewingHistory: isViewingHistory,
-            restTimerSeconds: null,
-            totalRestTime: null,
-            isResting: false,
-          ),
-        );
-      },
-      orElse: () {},
-    );
+    _restTimerService.stop();
   }
 
   void add30Seconds() {
-    state.maybeWhen(
-      tracking: (routine, setLogs, displayTitle, isViewingHistory, _, __, restTimerSeconds, totalRestTime, isResting) {
-        if (restTimerSeconds != null && totalRestTime != null) {
-          emit(
-            ActiveWorkoutState.tracking(
-              routine: routine,
-              setLogs: setLogs,
-              displayTitle: displayTitle,
-              isViewingHistory: isViewingHistory,
-              restTimerSeconds: restTimerSeconds + 30,
-              totalRestTime: totalRestTime + 30,
-              isResting: true,
-            ),
-          );
-        }
-      },
-      initial: (routine, setLogs, displayTitle, isViewingHistory, _, __, restTimerSeconds, totalRestTime, isResting) {
-        if (restTimerSeconds != null && totalRestTime != null) {
-          emit(
-            ActiveWorkoutState.initial(
-              routine: routine,
-              setLogs: setLogs,
-              displayTitle: displayTitle,
-              isViewingHistory: isViewingHistory,
-              restTimerSeconds: restTimerSeconds + 30,
-              totalRestTime: totalRestTime + 30,
-              isResting: true,
-            ),
-          );
-        }
-      },
-      orElse: () {},
-    );
+    _restTimerService.addSeconds(30);
   }
 
   @override
   Future<void> close() {
-    _restTimer?.cancel();
     return super.close();
   }
 }

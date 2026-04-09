@@ -147,11 +147,6 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
           saving: (s) => s.isViewingHistory,
           orElse: () => false,
         );
-        final isResting = state.maybeMap(
-          tracking: (s) => s.isResting,
-          initial: (s) => s.isResting,
-          orElse: () => false,
-        );
         final displayTitle = state.maybeMap(
           tracking: (s) => s.displayTitle,
           initial: (s) => s.displayTitle,
@@ -189,8 +184,6 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (isResting && !isViewingHistory)
-                  _buildRestTimerOverlay(context, state),
                 if (!isSaving && !isLoading && !isViewingHistory)
                   _buildFinishButton(context),
               ],
@@ -201,117 +194,6 @@ class _ActiveWorkoutPageContent extends StatelessWidget {
     );
   }
 
-  Widget _buildRestTimerOverlay(
-    BuildContext context,
-    ActiveWorkoutState state,
-  ) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    final restTimerSeconds = state.maybeMap(
-      tracking: (s) => s.restTimerSeconds,
-      initial: (s) => s.restTimerSeconds,
-      orElse: () => null,
-    );
-
-    final totalRestTime = state.maybeMap(
-      tracking: (s) => s.totalRestTime,
-      initial: (s) => s.totalRestTime,
-      orElse: () => null,
-    );
-
-    if (restTimerSeconds == null || totalRestTime == null) {
-      return const SizedBox.shrink();
-    }
-
-    final progress = totalRestTime > 0
-        ? (totalRestTime - restTimerSeconds) / totalRestTime
-        : 0.0;
-
-    return SafeArea(
-      child: Container(
-        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainer,
-              boxShadow: [
-                BoxShadow(
-                  color: colorScheme.shadow.withValues(alpha: 0.15),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              context.l10n.resting,
-                              style: textTheme.labelMedium?.copyWith(
-                                color: colorScheme.onSurface,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              '${restTimerSeconds}s',
-                              style: textTheme.headlineMedium?.copyWith(
-                                color: colorScheme.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      FilledButton.tonal(
-                        onPressed: () =>
-                            context.read<ActiveWorkoutCubit>().add30Seconds(),
-                        style: FilledButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                        ),
-                        child: Text(context.l10n.add30Seconds),
-                      ),
-                      const SizedBox(width: 8),
-                      TextButton(
-                        onPressed: () =>
-                            context.read<ActiveWorkoutCubit>().stopRestTimer(),
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 12,
-                          ),
-                        ),
-                        child: const Icon(Icons.close_rounded),
-                      ),
-                    ],
-                  ),
-                ),
-                LinearProgressIndicator(
-                  value: progress,
-                  minHeight: 4,
-                  backgroundColor: colorScheme.surfaceContainerHighest,
-                  valueColor:
-                      AlwaysStoppedAnimation<Color>(colorScheme.primary),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget _buildCompletedSessionBanner(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
