@@ -9,7 +9,7 @@ enum SnackBarType {
 
 extension BuildContextSnackBarExtension on BuildContext {
   static const EdgeInsets _defaultSnackBarMargin = EdgeInsets.only(
-    bottom: 24,
+    bottom: 100,
     left: 20,
     right: 20,
   );
