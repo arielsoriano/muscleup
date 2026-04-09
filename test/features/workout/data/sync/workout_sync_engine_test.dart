@@ -460,9 +460,9 @@ class _ProgrammableWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   @override
   Future<void> upsertTrainingDefaults(
     String uid, {
-    required int defaultRestSeconds,
-    required int defaultRepetitions,
-    required double defaultWeight,
+    required int? defaultRestSeconds,
+    required int? defaultRepetitions,
+    required double? defaultWeight,
     required DateTime updatedAt,
   }) async {}
 
