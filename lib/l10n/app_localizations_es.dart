@@ -466,6 +466,17 @@ class AppLocalizationsEs extends AppLocalizations {
   String get syncing => 'Sincronizando...';
 
   @override
+  String get globalSyncOverlayTitle => 'Sincronizando tus datos';
+
+  @override
+  String get globalSyncOverlaySubtitle =>
+      'Preparando rutinas e historial desde la nube...';
+
+  @override
+  String get routinesSyncingPlaceholder =>
+      'Cargando tus rutinas desde la nube...';
+
+  @override
   String get syncPending => 'Sincronización pendiente';
 
   @override

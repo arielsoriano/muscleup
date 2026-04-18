@@ -7,6 +7,7 @@ import '../../../../core/router/app_router.dart';
 import '../../../../core/utils/l10n_extension.dart';
 import '../../../../core/utils/ui_helpers.dart';
 import '../../../../core/widgets/app_logo.dart';
+import '../../../settings/presentation/cubit/sync_status_cubit.dart';
 import '../../domain/entities/workout_entities.dart';
 import '../../domain/repositories/workout_repository.dart';
 import '../cubit/workout_cubit.dart';
@@ -186,6 +187,10 @@ class _RoutinesPageContent extends StatelessWidget {
       ),
       body: BlocBuilder<WorkoutCubit, WorkoutState>(
         builder: (context, state) {
+          final isSyncing = context.select(
+            (SyncStatusCubit cubit) => cubit.state.isSyncing,
+          );
+
           return state.when(
             initial: () => const SizedBox.shrink(),
             loading: () => const Center(
@@ -193,6 +198,10 @@ class _RoutinesPageContent extends StatelessWidget {
             ),
             success: (routines) {
               if (routines.isEmpty) {
+                if (isSyncing) {
+                  return _SyncingRoutinesPlaceholder();
+                }
+
                 return Center(
                   child: Text(
                     context.l10n.noRoutines,
@@ -302,6 +311,40 @@ class _RoutinesPageContent extends StatelessWidget {
         onPressed: () => context.push(AppRoutes.manageRoutine),
         icon: const Icon(Icons.add_rounded),
         label: Text(context.l10n.addRoutine),
+      ),
+    );
+  }
+}
+
+class _SyncingRoutinesPlaceholder extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 28),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(
+              width: 28,
+              height: 28,
+              child: CircularProgressIndicator(strokeWidth: 2.5),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              context.l10n.syncing,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              context.l10n.routinesSyncingPlaceholder,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }

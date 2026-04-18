@@ -962,6 +962,24 @@ abstract class AppLocalizations {
   /// **'Syncing...'**
   String get syncing;
 
+  /// No description provided for @globalSyncOverlayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing your data'**
+  String get globalSyncOverlayTitle;
+
+  /// No description provided for @globalSyncOverlaySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing routines and history from the cloud...'**
+  String get globalSyncOverlaySubtitle;
+
+  /// No description provided for @routinesSyncingPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Fetching your routines from the cloud...'**
+  String get routinesSyncingPlaceholder;
+
   /// No description provided for @syncPending.
   ///
   /// In en, this message translates to:

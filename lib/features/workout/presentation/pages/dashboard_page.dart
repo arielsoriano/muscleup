@@ -8,6 +8,7 @@ import '../../../../core/router/app_router.dart';
 import '../../../../core/utils/l10n_extension.dart';
 import '../../../../core/utils/ui_helpers.dart';
 import '../../../../core/widgets/app_logo.dart';
+import '../../../settings/presentation/cubit/sync_status_cubit.dart';
 import '../../domain/entities/workout_entities.dart';
 import '../cubit/dashboard_cubit.dart';
 import '../cubit/dashboard_state.dart';
@@ -144,16 +145,21 @@ class _ShellContent extends StatelessWidget {
         }),
       ),
       child: Scaffold(
-        body: IndexedStack(
-          index: currentIndex,
+        body: Stack(
           children: [
-            _TodayTab(onGoToRoutines: onGoToRoutinesFromToday),
-            RoutinesPage(
-              onOpenRoutineDetails: onOpenRoutineDetails,
-              onStartRoutine: onStartRoutineFromList,
-              returnToToday: returnToTodayAfterRoutineDetails,
+            IndexedStack(
+              index: currentIndex,
+              children: [
+                _TodayTab(onGoToRoutines: onGoToRoutinesFromToday),
+                RoutinesPage(
+                  onOpenRoutineDetails: onOpenRoutineDetails,
+                  onStartRoutine: onStartRoutineFromList,
+                  returnToToday: returnToTodayAfterRoutineDetails,
+                ),
+                const _HistoryTab(),
+              ],
             ),
-            const _HistoryTab(),
+            const _InitialSyncOverlay(),
           ],
         ),
         bottomNavigationBar: NavigationBar(
@@ -179,6 +185,65 @@ class _ShellContent extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _InitialSyncOverlay extends StatelessWidget {
+  const _InitialSyncOverlay();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<SyncStatusCubit, SyncStatusState>(
+      builder: (context, syncState) {
+        final showOverlay = syncState.isSyncing && syncState.lastRunMetrics == null;
+        if (!showOverlay) {
+          return const SizedBox.shrink();
+        }
+
+        return Positioned.fill(
+          child: AbsorbPointer(
+            child: ColoredBox(
+              color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.92),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 320),
+                  child: Card(
+                    elevation: 0,
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const SizedBox(
+                            width: 28,
+                            height: 28,
+                            child: CircularProgressIndicator(strokeWidth: 2.5),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            context.l10n.globalSyncOverlayTitle,
+                            style: Theme.of(context).textTheme.titleMedium,
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            context.l10n.globalSyncOverlaySubtitle,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

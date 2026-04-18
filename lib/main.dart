@@ -11,6 +11,7 @@ import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/settings/presentation/cubit/settings_cubit.dart';
 import 'features/settings/presentation/cubit/settings_state.dart';
+import 'features/settings/presentation/cubit/sync_status_cubit.dart';
 import 'l10n/app_localizations.dart';
 import 'features/workout/presentation/services/rest_timer_service.dart';
 import 'features/workout/presentation/widgets/rest_timer_overlay.dart';
@@ -91,11 +92,13 @@ class MuscleupApp extends StatelessWidget {
     final router = di.serviceLocator<GoRouter>();
     final settingsCubit = di.serviceLocator<SettingsCubit>();
     final authCubit = di.serviceLocator<AuthCubit>();
+    final syncStatusCubit = di.serviceLocator<SyncStatusCubit>();
 
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: settingsCubit),
         BlocProvider.value(value: authCubit),
+        BlocProvider.value(value: syncStatusCubit),
       ],
       child: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, state) {
