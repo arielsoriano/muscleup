@@ -21,6 +21,8 @@ class WorkoutCubit extends Cubit<WorkoutState> {
   final WatchRoutinesUseCase _watchRoutinesUseCase;
   final DeleteRoutineUseCase _deleteRoutineUseCase;
   StreamSubscription? _routinesSubscription;
+  bool _isFirstEmission = true;
+  Timer? _emptyDebounceTimer;
 
   void _initializeRoutinesStream() {
     emit(const WorkoutState.loading());
@@ -29,7 +31,20 @@ class WorkoutCubit extends Cubit<WorkoutState> {
       (either) {
         either.fold(
           (failure) => emit(WorkoutState.error(message: _mapFailureToMessage(failure))),
-          (routines) => emit(WorkoutState.success(routines: routines)),
+          (routines) {
+            _emptyDebounceTimer?.cancel();
+            if (_isFirstEmission && routines.isEmpty) {
+              // DB is empty — sync is likely still in progress.
+              // Stay in loading and wait for data or a timeout.
+              _emptyDebounceTimer = Timer(const Duration(seconds: 5), () {
+                _isFirstEmission = false;
+                emit(WorkoutState.success(routines: routines));
+              });
+            } else {
+              _isFirstEmission = false;
+              emit(WorkoutState.success(routines: routines));
+            }
+          },
         );
       },
     );
@@ -61,6 +76,7 @@ class WorkoutCubit extends Cubit<WorkoutState> {
   @override
   Future<void> close() {
     _routinesSubscription?.cancel();
+    _emptyDebounceTimer?.cancel();
     return super.close();
   }
 }

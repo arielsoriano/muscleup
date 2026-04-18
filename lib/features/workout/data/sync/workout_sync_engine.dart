@@ -57,7 +57,6 @@ class WorkoutSyncEngine implements SyncEngine {
   final int _pushBatchSize;
   final int _maxRetryCount;
   final SyncSleep _syncSleep;
-
   final StreamController<SyncRunState> _stateController =
       StreamController<SyncRunState>.broadcast();
 
@@ -586,521 +585,554 @@ class WorkoutSyncEngine implements SyncEngine {
   }
 
   Future<void> _pullIncremental(String uid, _MutableSyncMetrics mutableMetrics) async {
-    await _pullRoutines(uid, mutableMetrics);
-    await _pullExercises(uid, mutableMetrics);
-    await _pullSets(uid, mutableMetrics);
-    await _pullSessions(uid, mutableMetrics);
-    await _pullSetLogs(uid, mutableMetrics);
-    await _pullLibraryExercises(uid, mutableMetrics);
-  }
+    // ── Phase 1: fetch every entity type from Firebase (network-only, no DB) ──
+    // For each entity type, paginate until we get fewer than batchSize results.
 
-  Future<void> _pullRoutines(String uid, _MutableSyncMetrics mutableMetrics) async {
-    const entityType = 'routine';
-    final checkpoint = _syncCheckpointStore.getCheckpoint(uid: uid, entityType: entityType);
-    final remoteDtos = await _workoutRemoteDataSource.fetchRoutinesUpdatedSince(
-      uid,
-      checkpoint,
-      limit: _pushBatchSize,
-    );
-
-    if (remoteDtos.isEmpty) {
-      return;
+    final routineDtos = <RoutineRemoteDto>[];
+    {
+      DateTime? checkpoint =
+          _syncCheckpointStore.getCheckpoint(uid: uid, entityType: 'routine');
+      while (true) {
+        final batch = await _workoutRemoteDataSource.fetchRoutinesUpdatedSince(
+          uid, checkpoint, limit: _pushBatchSize,
+        );
+        if (batch.isEmpty) break;
+        routineDtos.addAll(batch);
+        if (batch.length < _pushBatchSize) break;
+        checkpoint = _maxRoutineUpdatedAt(batch);
+      }
     }
 
-    await _database.transaction(() async {
-      for (final dto in remoteDtos) {
-        final localRow = await (_database.select(_database.routines)
-              ..where((tbl) => tbl.id.equals(dto.id)))
-            .getSingleOrNull();
-
-        if (localRow == null) {
-          if (dto.deletedAt == null) {
-            await _database.into(_database.routines).insertOnConflictUpdate(
-                  RoutinesCompanion.insert(
-                    id: dto.id,
-                    name: dto.name,
-                    sortOrder: dto.sortOrder,
-                    isDeleted: const Value(false),
-                    updatedAt: Value(dto.updatedAt),
-                    deletedAt: Value(dto.deletedAt),
-                    syncStatus: const Value(SyncStatus.synced),
-                    remoteVersion: Value(dto.remoteVersion),
-                  ),
-                );
-            mutableMetrics.pulledCount += 1;
-          }
-          continue;
-        }
-
-        if (_syncConflictPolicy.isConflict(
-          localUpdatedAt: localRow.updatedAt,
-          localDeletedAt: localRow.deletedAt,
-          remoteUpdatedAt: dto.updatedAt,
-          remoteDeletedAt: dto.deletedAt,
-        )) {
-          mutableMetrics.conflictsResolvedCount += 1;
-        }
-
-        final winner = _syncConflictPolicy.resolve(
-          localUpdatedAt: localRow.updatedAt,
-          localDeletedAt: localRow.deletedAt,
-          remoteUpdatedAt: dto.updatedAt,
-          remoteDeletedAt: dto.deletedAt,
+    final exerciseDtos = <ExerciseRemoteDto>[];
+    {
+      DateTime? checkpoint =
+          _syncCheckpointStore.getCheckpoint(uid: uid, entityType: 'exercise');
+      while (true) {
+        final batch = await _workoutRemoteDataSource.fetchExercisesUpdatedSince(
+          uid, checkpoint, limit: _pushBatchSize,
         );
-
-        if (winner == SyncConflictWinner.remote) {
-          await (_database.update(_database.routines)
-                ..where((tbl) => tbl.id.equals(dto.id)))
-              .write(
-            RoutinesCompanion(
-              name: Value(dto.name),
-              sortOrder: Value(dto.sortOrder),
-              isDeleted: Value(dto.deletedAt != null),
-              updatedAt: Value(dto.updatedAt),
-              deletedAt: Value(dto.deletedAt),
-              syncStatus: const Value(SyncStatus.synced),
-              remoteVersion: Value(dto.remoteVersion),
-            ),
-          );
-          mutableMetrics.pulledCount += 1;
-        }
+        if (batch.isEmpty) break;
+        exerciseDtos.addAll(batch);
+        if (batch.length < _pushBatchSize) break;
+        checkpoint = _maxExerciseUpdatedAt(batch);
       }
-    });
-
-    await _syncCheckpointStore.setCheckpoint(
-      uid: uid,
-      entityType: entityType,
-      checkpoint: _maxRoutineUpdatedAt(remoteDtos),
-    );
-  }
-
-  Future<void> _pullExercises(String uid, _MutableSyncMetrics mutableMetrics) async {
-    const entityType = 'exercise';
-    final checkpoint = _syncCheckpointStore.getCheckpoint(uid: uid, entityType: entityType);
-    final remoteDtos = await _workoutRemoteDataSource.fetchExercisesUpdatedSince(
-      uid,
-      checkpoint,
-      limit: _pushBatchSize,
-    );
-
-    if (remoteDtos.isEmpty) {
-      return;
     }
 
-    await _database.transaction(() async {
-      for (final dto in remoteDtos) {
-        final localRow = await (_database.select(_database.exercises)
-              ..where((tbl) => tbl.id.equals(dto.id)))
-            .getSingleOrNull();
-
-        if (localRow == null) {
-          if (dto.deletedAt == null) {
-            await _database.into(_database.exercises).insertOnConflictUpdate(
-                  ExercisesCompanion.insert(
-                    id: dto.id,
-                    routineId: dto.routineId,
-                    name: dto.name,
-                    notes: Value(dto.notes),
-                    restTimeSeconds: dto.restTimeSeconds,
-                    sortOrder: dto.sortOrder,
-                    updatedAt: Value(dto.updatedAt),
-                    deletedAt: Value(dto.deletedAt),
-                    syncStatus: const Value(SyncStatus.synced),
-                    remoteVersion: Value(dto.remoteVersion),
-                  ),
-                );
-            mutableMetrics.pulledCount += 1;
-          }
-          continue;
-        }
-
-        if (_syncConflictPolicy.isConflict(
-          localUpdatedAt: localRow.updatedAt,
-          localDeletedAt: localRow.deletedAt,
-          remoteUpdatedAt: dto.updatedAt,
-          remoteDeletedAt: dto.deletedAt,
-        )) {
-          mutableMetrics.conflictsResolvedCount += 1;
-        }
-
-        final winner = _syncConflictPolicy.resolve(
-          localUpdatedAt: localRow.updatedAt,
-          localDeletedAt: localRow.deletedAt,
-          remoteUpdatedAt: dto.updatedAt,
-          remoteDeletedAt: dto.deletedAt,
+    final setDtos = <SetRemoteDto>[];
+    {
+      DateTime? checkpoint =
+          _syncCheckpointStore.getCheckpoint(uid: uid, entityType: 'set');
+      while (true) {
+        final batch = await _workoutRemoteDataSource.fetchSetsUpdatedSince(
+          uid, checkpoint, limit: _pushBatchSize,
         );
-
-        if (winner == SyncConflictWinner.remote) {
-          await (_database.update(_database.exercises)
-                ..where((tbl) => tbl.id.equals(dto.id)))
-              .write(
-            ExercisesCompanion(
-              routineId: Value(dto.routineId),
-              name: Value(dto.name),
-              notes: Value(dto.notes),
-              restTimeSeconds: Value(dto.restTimeSeconds),
-              sortOrder: Value(dto.sortOrder),
-              updatedAt: Value(dto.updatedAt),
-              deletedAt: Value(dto.deletedAt),
-              syncStatus: const Value(SyncStatus.synced),
-              remoteVersion: Value(dto.remoteVersion),
-            ),
-          );
-          mutableMetrics.pulledCount += 1;
-        }
+        if (batch.isEmpty) break;
+        setDtos.addAll(batch);
+        if (batch.length < _pushBatchSize) break;
+        checkpoint = _maxSetUpdatedAt(batch);
       }
-    });
-
-    await _syncCheckpointStore.setCheckpoint(
-      uid: uid,
-      entityType: entityType,
-      checkpoint: _maxExerciseUpdatedAt(remoteDtos),
-    );
-  }
-
-  Future<void> _pullSets(String uid, _MutableSyncMetrics mutableMetrics) async {
-    const entityType = 'set';
-    final checkpoint = _syncCheckpointStore.getCheckpoint(uid: uid, entityType: entityType);
-    final remoteDtos = await _workoutRemoteDataSource.fetchSetsUpdatedSince(
-      uid,
-      checkpoint,
-      limit: _pushBatchSize,
-    );
-
-    if (remoteDtos.isEmpty) {
-      return;
     }
 
-    await _database.transaction(() async {
-      for (final dto in remoteDtos) {
-        final localRow = await (_database.select(_database.sets)
-              ..where((tbl) => tbl.id.equals(dto.id)))
-            .getSingleOrNull();
-
-        if (localRow == null) {
-          if (dto.deletedAt == null) {
-            await _database.into(_database.sets).insertOnConflictUpdate(
-                  SetsCompanion.insert(
-                    id: dto.id,
-                    exerciseId: dto.exerciseId,
-                    targetValue1: Value(dto.targetValue1),
-                    targetValue2: Value(dto.targetValue2),
-                    unit1: Value(dto.unit1),
-                    unit2: Value(dto.unit2),
-                    sortOrder: dto.sortOrder,
-                    updatedAt: Value(dto.updatedAt),
-                    deletedAt: Value(dto.deletedAt),
-                    syncStatus: const Value(SyncStatus.synced),
-                    remoteVersion: Value(dto.remoteVersion),
-                  ),
-                );
-            mutableMetrics.pulledCount += 1;
-          }
-          continue;
-        }
-
-        if (_syncConflictPolicy.isConflict(
-          localUpdatedAt: localRow.updatedAt,
-          localDeletedAt: localRow.deletedAt,
-          remoteUpdatedAt: dto.updatedAt,
-          remoteDeletedAt: dto.deletedAt,
-        )) {
-          mutableMetrics.conflictsResolvedCount += 1;
-        }
-
-        final winner = _syncConflictPolicy.resolve(
-          localUpdatedAt: localRow.updatedAt,
-          localDeletedAt: localRow.deletedAt,
-          remoteUpdatedAt: dto.updatedAt,
-          remoteDeletedAt: dto.deletedAt,
+    final sessionDtos = <SessionRemoteDto>[];
+    {
+      DateTime? checkpoint =
+          _syncCheckpointStore.getCheckpoint(uid: uid, entityType: 'session');
+      while (true) {
+        final batch = await _workoutRemoteDataSource.fetchSessionsUpdatedSince(
+          uid, checkpoint, limit: _pushBatchSize,
         );
-
-        if (winner == SyncConflictWinner.remote) {
-          await (_database.update(_database.sets)
-                ..where((tbl) => tbl.id.equals(dto.id)))
-              .write(
-            SetsCompanion(
-              exerciseId: Value(dto.exerciseId),
-              targetValue1: Value(dto.targetValue1),
-              targetValue2: Value(dto.targetValue2),
-              unit1: Value(dto.unit1),
-              unit2: Value(dto.unit2),
-              sortOrder: Value(dto.sortOrder),
-              updatedAt: Value(dto.updatedAt),
-              deletedAt: Value(dto.deletedAt),
-              syncStatus: const Value(SyncStatus.synced),
-              remoteVersion: Value(dto.remoteVersion),
-            ),
-          );
-          mutableMetrics.pulledCount += 1;
-        }
+        if (batch.isEmpty) break;
+        sessionDtos.addAll(batch);
+        if (batch.length < _pushBatchSize) break;
+        checkpoint = _maxSessionUpdatedAt(batch);
       }
-    });
-
-    await _syncCheckpointStore.setCheckpoint(
-      uid: uid,
-      entityType: entityType,
-      checkpoint: _maxSetUpdatedAt(remoteDtos),
-    );
-  }
-
-  Future<void> _pullSessions(String uid, _MutableSyncMetrics mutableMetrics) async {
-    const entityType = 'session';
-    final checkpoint = _syncCheckpointStore.getCheckpoint(uid: uid, entityType: entityType);
-    final remoteDtos = await _workoutRemoteDataSource.fetchSessionsUpdatedSince(
-      uid,
-      checkpoint,
-      limit: _pushBatchSize,
-    );
-
-    if (remoteDtos.isEmpty) {
-      return;
     }
 
-    await _database.transaction(() async {
-      for (final dto in remoteDtos) {
-        final localRow = await (_database.select(_database.sessions)
-              ..where((tbl) => tbl.id.equals(dto.id)))
-            .getSingleOrNull();
-
-        if (localRow == null) {
-          if (dto.deletedAt == null) {
-            await _database.into(_database.sessions).insertOnConflictUpdate(
-                  SessionsCompanion.insert(
-                    id: dto.id,
-                    routineId: dto.routineId,
-                    routineName: dto.routineName,
-                    createdAt: dto.createdAt,
-                    notes: Value(dto.notes),
-                    isCompleted: Value(dto.isCompleted),
-                    updatedAt: Value(dto.updatedAt),
-                    deletedAt: Value(dto.deletedAt),
-                    syncStatus: const Value(SyncStatus.synced),
-                    remoteVersion: Value(dto.remoteVersion),
-                  ),
-                );
-            mutableMetrics.pulledCount += 1;
-          }
-          continue;
-        }
-
-        if (_syncConflictPolicy.isConflict(
-          localUpdatedAt: localRow.updatedAt,
-          localDeletedAt: localRow.deletedAt,
-          remoteUpdatedAt: dto.updatedAt,
-          remoteDeletedAt: dto.deletedAt,
-        )) {
-          mutableMetrics.conflictsResolvedCount += 1;
-        }
-
-        final winner = _syncConflictPolicy.resolve(
-          localUpdatedAt: localRow.updatedAt,
-          localDeletedAt: localRow.deletedAt,
-          remoteUpdatedAt: dto.updatedAt,
-          remoteDeletedAt: dto.deletedAt,
+    final setLogDtos = <SetLogRemoteDto>[];
+    {
+      DateTime? checkpoint =
+          _syncCheckpointStore.getCheckpoint(uid: uid, entityType: 'setLog');
+      while (true) {
+        final batch = await _workoutRemoteDataSource.fetchSetLogsUpdatedSince(
+          uid, checkpoint, limit: _pushBatchSize,
         );
-
-        if (winner == SyncConflictWinner.remote) {
-          await (_database.update(_database.sessions)
-                ..where((tbl) => tbl.id.equals(dto.id)))
-              .write(
-            SessionsCompanion(
-              routineId: Value(dto.routineId),
-              routineName: Value(dto.routineName),
-              createdAt: Value(dto.createdAt),
-              notes: Value(dto.notes),
-              isCompleted: Value(dto.isCompleted),
-              updatedAt: Value(dto.updatedAt),
-              deletedAt: Value(dto.deletedAt),
-              syncStatus: const Value(SyncStatus.synced),
-              remoteVersion: Value(dto.remoteVersion),
-            ),
-          );
-          mutableMetrics.pulledCount += 1;
-        }
+        if (batch.isEmpty) break;
+        setLogDtos.addAll(batch);
+        if (batch.length < _pushBatchSize) break;
+        checkpoint = _maxSetLogUpdatedAt(batch);
       }
-    });
-
-    await _syncCheckpointStore.setCheckpoint(
-      uid: uid,
-      entityType: entityType,
-      checkpoint: _maxSessionUpdatedAt(remoteDtos),
-    );
-  }
-
-  Future<void> _pullSetLogs(String uid, _MutableSyncMetrics mutableMetrics) async {
-    const entityType = 'setLog';
-    final checkpoint = _syncCheckpointStore.getCheckpoint(uid: uid, entityType: entityType);
-    final remoteDtos = await _workoutRemoteDataSource.fetchSetLogsUpdatedSince(
-      uid,
-      checkpoint,
-      limit: _pushBatchSize,
-    );
-
-    if (remoteDtos.isEmpty) {
-      return;
     }
 
-    await _database.transaction(() async {
-      for (final dto in remoteDtos) {
-        final localRow = await (_database.select(_database.setLogs)
-              ..where((tbl) => tbl.id.equals(dto.id)))
-            .getSingleOrNull();
-
-        if (localRow == null) {
-          if (dto.deletedAt == null) {
-            await _database.into(_database.setLogs).insertOnConflictUpdate(
-                  SetLogsCompanion.insert(
-                    id: dto.id,
-                    sessionId: dto.sessionId,
-                    workoutExerciseId: dto.workoutExerciseId,
-                    setNumber: dto.setNumber,
-                    actualValue1: Value(dto.actualValue1),
-                    actualValue2: Value(dto.actualValue2),
-                    unit1: Value(dto.unit1),
-                    unit2: Value(dto.unit2),
-                    isCompleted: dto.isCompleted,
-                    timestamp: dto.timestamp,
-                    updatedAt: Value(dto.updatedAt),
-                    deletedAt: Value(dto.deletedAt),
-                    syncStatus: const Value(SyncStatus.synced),
-                    remoteVersion: Value(dto.remoteVersion),
-                  ),
-                );
-            mutableMetrics.pulledCount += 1;
-          }
-          continue;
-        }
-
-        if (_syncConflictPolicy.isConflict(
-          localUpdatedAt: localRow.updatedAt,
-          localDeletedAt: localRow.deletedAt,
-          remoteUpdatedAt: dto.updatedAt,
-          remoteDeletedAt: dto.deletedAt,
-        )) {
-          mutableMetrics.conflictsResolvedCount += 1;
-        }
-
-        final winner = _syncConflictPolicy.resolve(
-          localUpdatedAt: localRow.updatedAt,
-          localDeletedAt: localRow.deletedAt,
-          remoteUpdatedAt: dto.updatedAt,
-          remoteDeletedAt: dto.deletedAt,
+    final libraryExerciseDtos = <LibraryExerciseRemoteDto>[];
+    {
+      DateTime? checkpoint =
+          _syncCheckpointStore.getCheckpoint(uid: uid, entityType: 'libraryExercise');
+      while (true) {
+        final batch =
+            await _workoutRemoteDataSource.fetchLibraryExercisesUpdatedSince(
+          uid, checkpoint, limit: _pushBatchSize,
         );
-
-        if (winner == SyncConflictWinner.remote) {
-          await (_database.update(_database.setLogs)
-                ..where((tbl) => tbl.id.equals(dto.id)))
-              .write(
-            SetLogsCompanion(
-              sessionId: Value(dto.sessionId),
-              workoutExerciseId: Value(dto.workoutExerciseId),
-              setNumber: Value(dto.setNumber),
-              actualValue1: Value(dto.actualValue1),
-              actualValue2: Value(dto.actualValue2),
-              unit1: Value(dto.unit1),
-              unit2: Value(dto.unit2),
-              isCompleted: Value(dto.isCompleted),
-              timestamp: Value(dto.timestamp),
-              updatedAt: Value(dto.updatedAt),
-              deletedAt: Value(dto.deletedAt),
-              syncStatus: const Value(SyncStatus.synced),
-              remoteVersion: Value(dto.remoteVersion),
-            ),
-          );
-          mutableMetrics.pulledCount += 1;
-        }
+        if (batch.isEmpty) break;
+        libraryExerciseDtos.addAll(batch);
+        if (batch.length < _pushBatchSize) break;
+        checkpoint = _maxLibraryExerciseUpdatedAt(batch);
       }
-    });
-
-    await _syncCheckpointStore.setCheckpoint(
-      uid: uid,
-      entityType: entityType,
-      checkpoint: _maxSetLogUpdatedAt(remoteDtos),
-    );
-  }
-
-  Future<void> _pullLibraryExercises(String uid, _MutableSyncMetrics mutableMetrics) async {
-    const entityType = 'libraryExercise';
-    final checkpoint = _syncCheckpointStore.getCheckpoint(uid: uid, entityType: entityType);
-    final remoteDtos = await _workoutRemoteDataSource.fetchLibraryExercisesUpdatedSince(
-      uid,
-      checkpoint,
-      limit: _pushBatchSize,
-    );
-
-    if (remoteDtos.isEmpty) {
-      return;
     }
 
+    // ── Phase 2: apply all fetched data in a single flat DB transaction ──
     await _database.transaction(() async {
-      for (final dto in remoteDtos) {
-        final localRow = await (_database.select(_database.libraryExercises)
-              ..where((tbl) => tbl.id.equals(dto.id)))
-            .getSingleOrNull();
-
-        if (localRow == null) {
-          if (dto.deletedAt == null) {
-            await _database.into(_database.libraryExercises).insertOnConflictUpdate(
-                  LibraryExercisesCompanion.insert(
-                    id: dto.id,
-                    name: dto.name,
-                    nameEn: dto.nameEn,
-                    nameEs: dto.nameEs,
-                    isCustom: dto.isCustom,
-                    category: const Value(null),
-                    updatedAt: Value(dto.updatedAt),
-                    deletedAt: Value(dto.deletedAt),
-                    syncStatus: const Value(SyncStatus.synced),
-                    remoteVersion: Value(dto.remoteVersion),
-                  ),
-                );
-            mutableMetrics.pulledCount += 1;
-          }
-          continue;
-        }
-
-        if (_syncConflictPolicy.isConflict(
-          localUpdatedAt: localRow.updatedAt,
-          localDeletedAt: localRow.deletedAt,
-          remoteUpdatedAt: dto.updatedAt,
-          remoteDeletedAt: dto.deletedAt,
-        )) {
-          mutableMetrics.conflictsResolvedCount += 1;
-        }
-
-        final winner = _syncConflictPolicy.resolve(
-          localUpdatedAt: localRow.updatedAt,
-          localDeletedAt: localRow.deletedAt,
-          remoteUpdatedAt: dto.updatedAt,
-          remoteDeletedAt: dto.deletedAt,
-        );
-
-        if (winner == SyncConflictWinner.remote) {
-          await (_database.update(_database.libraryExercises)
-                ..where((tbl) => tbl.id.equals(dto.id)))
-              .write(
-            LibraryExercisesCompanion(
-              name: Value(dto.name),
-              nameEn: Value(dto.nameEn),
-              nameEs: Value(dto.nameEs),
-              isCustom: Value(dto.isCustom),
-              updatedAt: Value(dto.updatedAt),
-              deletedAt: Value(dto.deletedAt),
-              syncStatus: const Value(SyncStatus.synced),
-              remoteVersion: Value(dto.remoteVersion),
-            ),
-          );
-          mutableMetrics.pulledCount += 1;
-        }
-      }
+      await _applyPulledRoutines(routineDtos, mutableMetrics);
+      await _applyPulledExercises(exerciseDtos, mutableMetrics);
+      await _applyPulledSets(setDtos, mutableMetrics);
+      await _applyPulledSessions(sessionDtos, mutableMetrics);
+      await _applyPulledSetLogs(setLogDtos, mutableMetrics);
+      await _applyPulledLibraryExercises(libraryExerciseDtos, mutableMetrics);
     });
 
-    await _syncCheckpointStore.setCheckpoint(
-      uid: uid,
-      entityType: entityType,
-      checkpoint: _maxLibraryExerciseUpdatedAt(remoteDtos),
-    );
+    // ── Phase 3: persist checkpoints only after a successful commit ──
+    if (routineDtos.isNotEmpty) {
+      await _syncCheckpointStore.setCheckpoint(
+        uid: uid, entityType: 'routine',
+        checkpoint: _maxRoutineUpdatedAt(routineDtos),
+      );
+    }
+    if (exerciseDtos.isNotEmpty) {
+      await _syncCheckpointStore.setCheckpoint(
+        uid: uid, entityType: 'exercise',
+        checkpoint: _maxExerciseUpdatedAt(exerciseDtos),
+      );
+    }
+    if (setDtos.isNotEmpty) {
+      await _syncCheckpointStore.setCheckpoint(
+        uid: uid, entityType: 'set',
+        checkpoint: _maxSetUpdatedAt(setDtos),
+      );
+    }
+    if (sessionDtos.isNotEmpty) {
+      await _syncCheckpointStore.setCheckpoint(
+        uid: uid, entityType: 'session',
+        checkpoint: _maxSessionUpdatedAt(sessionDtos),
+      );
+    }
+    if (setLogDtos.isNotEmpty) {
+      await _syncCheckpointStore.setCheckpoint(
+        uid: uid, entityType: 'setLog',
+        checkpoint: _maxSetLogUpdatedAt(setLogDtos),
+      );
+    }
+    if (libraryExerciseDtos.isNotEmpty) {
+      await _syncCheckpointStore.setCheckpoint(
+        uid: uid, entityType: 'libraryExercise',
+        checkpoint: _maxLibraryExerciseUpdatedAt(libraryExerciseDtos),
+      );
+    }
+  }
+
+  Future<void> _applyPulledRoutines(
+    List<RoutineRemoteDto> remoteDtos,
+    _MutableSyncMetrics mutableMetrics,
+  ) async {
+    for (final dto in remoteDtos) {
+      final localRow = await (_database.select(_database.routines)
+            ..where((tbl) => tbl.id.equals(dto.id)))
+          .getSingleOrNull();
+
+      if (localRow == null) {
+        if (dto.deletedAt == null) {
+          await _database.into(_database.routines).insertOnConflictUpdate(
+                RoutinesCompanion.insert(
+                  id: dto.id,
+                  name: dto.name,
+                  sortOrder: dto.sortOrder,
+                  isDeleted: const Value(false),
+                  updatedAt: Value(dto.updatedAt),
+                  deletedAt: Value(dto.deletedAt),
+                  syncStatus: const Value(SyncStatus.synced),
+                  remoteVersion: Value(dto.remoteVersion),
+                ),
+              );
+          mutableMetrics.pulledCount += 1;
+        }
+        continue;
+      }
+
+      if (_syncConflictPolicy.isConflict(
+        localUpdatedAt: localRow.updatedAt,
+        localDeletedAt: localRow.deletedAt,
+        remoteUpdatedAt: dto.updatedAt,
+        remoteDeletedAt: dto.deletedAt,
+      )) {
+        mutableMetrics.conflictsResolvedCount += 1;
+      }
+
+      final winner = _syncConflictPolicy.resolve(
+        localUpdatedAt: localRow.updatedAt,
+        localDeletedAt: localRow.deletedAt,
+        remoteUpdatedAt: dto.updatedAt,
+        remoteDeletedAt: dto.deletedAt,
+      );
+
+      if (winner == SyncConflictWinner.remote) {
+        await (_database.update(_database.routines)
+              ..where((tbl) => tbl.id.equals(dto.id)))
+            .write(
+          RoutinesCompanion(
+            name: Value(dto.name),
+            sortOrder: Value(dto.sortOrder),
+            isDeleted: Value(dto.deletedAt != null),
+            updatedAt: Value(dto.updatedAt),
+            deletedAt: Value(dto.deletedAt),
+            syncStatus: const Value(SyncStatus.synced),
+            remoteVersion: Value(dto.remoteVersion),
+          ),
+        );
+        mutableMetrics.pulledCount += 1;
+      }
+    }
+  }
+
+  Future<void> _applyPulledExercises(
+    List<ExerciseRemoteDto> remoteDtos,
+    _MutableSyncMetrics mutableMetrics,
+  ) async {
+    for (final dto in remoteDtos) {
+      final localRow = await (_database.select(_database.exercises)
+            ..where((tbl) => tbl.id.equals(dto.id)))
+          .getSingleOrNull();
+
+      if (localRow == null) {
+        if (dto.deletedAt == null) {
+          await _database.into(_database.exercises).insertOnConflictUpdate(
+                ExercisesCompanion.insert(
+                  id: dto.id,
+                  routineId: dto.routineId,
+                  name: dto.name,
+                  notes: Value(dto.notes),
+                  restTimeSeconds: dto.restTimeSeconds,
+                  sortOrder: dto.sortOrder,
+                  updatedAt: Value(dto.updatedAt),
+                  deletedAt: Value(dto.deletedAt),
+                  syncStatus: const Value(SyncStatus.synced),
+                  remoteVersion: Value(dto.remoteVersion),
+                ),
+              );
+          mutableMetrics.pulledCount += 1;
+        }
+        continue;
+      }
+
+      if (_syncConflictPolicy.isConflict(
+        localUpdatedAt: localRow.updatedAt,
+        localDeletedAt: localRow.deletedAt,
+        remoteUpdatedAt: dto.updatedAt,
+        remoteDeletedAt: dto.deletedAt,
+      )) {
+        mutableMetrics.conflictsResolvedCount += 1;
+      }
+
+      final winner = _syncConflictPolicy.resolve(
+        localUpdatedAt: localRow.updatedAt,
+        localDeletedAt: localRow.deletedAt,
+        remoteUpdatedAt: dto.updatedAt,
+        remoteDeletedAt: dto.deletedAt,
+      );
+
+      if (winner == SyncConflictWinner.remote) {
+        await (_database.update(_database.exercises)
+              ..where((tbl) => tbl.id.equals(dto.id)))
+            .write(
+          ExercisesCompanion(
+            routineId: Value(dto.routineId),
+            name: Value(dto.name),
+            notes: Value(dto.notes),
+            restTimeSeconds: Value(dto.restTimeSeconds),
+            sortOrder: Value(dto.sortOrder),
+            updatedAt: Value(dto.updatedAt),
+            deletedAt: Value(dto.deletedAt),
+            syncStatus: const Value(SyncStatus.synced),
+            remoteVersion: Value(dto.remoteVersion),
+          ),
+        );
+        mutableMetrics.pulledCount += 1;
+      }
+    }
+  }
+
+  Future<void> _applyPulledSets(
+    List<SetRemoteDto> remoteDtos,
+    _MutableSyncMetrics mutableMetrics,
+  ) async {
+    for (final dto in remoteDtos) {
+      final localRow = await (_database.select(_database.sets)
+            ..where((tbl) => tbl.id.equals(dto.id)))
+          .getSingleOrNull();
+
+      if (localRow == null) {
+        if (dto.deletedAt == null) {
+          await _database.into(_database.sets).insertOnConflictUpdate(
+                SetsCompanion.insert(
+                  id: dto.id,
+                  exerciseId: dto.exerciseId,
+                  targetValue1: Value(dto.targetValue1),
+                  targetValue2: Value(dto.targetValue2),
+                  unit1: Value(dto.unit1),
+                  unit2: Value(dto.unit2),
+                  sortOrder: dto.sortOrder,
+                  updatedAt: Value(dto.updatedAt),
+                  deletedAt: Value(dto.deletedAt),
+                  syncStatus: const Value(SyncStatus.synced),
+                  remoteVersion: Value(dto.remoteVersion),
+                ),
+              );
+          mutableMetrics.pulledCount += 1;
+        }
+        continue;
+      }
+
+      if (_syncConflictPolicy.isConflict(
+        localUpdatedAt: localRow.updatedAt,
+        localDeletedAt: localRow.deletedAt,
+        remoteUpdatedAt: dto.updatedAt,
+        remoteDeletedAt: dto.deletedAt,
+      )) {
+        mutableMetrics.conflictsResolvedCount += 1;
+      }
+
+      final winner = _syncConflictPolicy.resolve(
+        localUpdatedAt: localRow.updatedAt,
+        localDeletedAt: localRow.deletedAt,
+        remoteUpdatedAt: dto.updatedAt,
+        remoteDeletedAt: dto.deletedAt,
+      );
+
+      if (winner == SyncConflictWinner.remote) {
+        await (_database.update(_database.sets)
+              ..where((tbl) => tbl.id.equals(dto.id)))
+            .write(
+          SetsCompanion(
+            exerciseId: Value(dto.exerciseId),
+            targetValue1: Value(dto.targetValue1),
+            targetValue2: Value(dto.targetValue2),
+            unit1: Value(dto.unit1),
+            unit2: Value(dto.unit2),
+            sortOrder: Value(dto.sortOrder),
+            updatedAt: Value(dto.updatedAt),
+            deletedAt: Value(dto.deletedAt),
+            syncStatus: const Value(SyncStatus.synced),
+            remoteVersion: Value(dto.remoteVersion),
+          ),
+        );
+        mutableMetrics.pulledCount += 1;
+      }
+    }
+  }
+
+  Future<void> _applyPulledSessions(
+    List<SessionRemoteDto> remoteDtos,
+    _MutableSyncMetrics mutableMetrics,
+  ) async {
+    for (final dto in remoteDtos) {
+      final localRow = await (_database.select(_database.sessions)
+            ..where((tbl) => tbl.id.equals(dto.id)))
+          .getSingleOrNull();
+
+      if (localRow == null) {
+        if (dto.deletedAt == null) {
+          await _database.into(_database.sessions).insertOnConflictUpdate(
+                SessionsCompanion.insert(
+                  id: dto.id,
+                  routineId: dto.routineId,
+                  routineName: dto.routineName,
+                  createdAt: dto.createdAt,
+                  notes: Value(dto.notes),
+                  isCompleted: Value(dto.isCompleted),
+                  updatedAt: Value(dto.updatedAt),
+                  deletedAt: Value(dto.deletedAt),
+                  syncStatus: const Value(SyncStatus.synced),
+                  remoteVersion: Value(dto.remoteVersion),
+                ),
+              );
+          mutableMetrics.pulledCount += 1;
+        }
+        continue;
+      }
+
+      if (_syncConflictPolicy.isConflict(
+        localUpdatedAt: localRow.updatedAt,
+        localDeletedAt: localRow.deletedAt,
+        remoteUpdatedAt: dto.updatedAt,
+        remoteDeletedAt: dto.deletedAt,
+      )) {
+        mutableMetrics.conflictsResolvedCount += 1;
+      }
+
+      final winner = _syncConflictPolicy.resolve(
+        localUpdatedAt: localRow.updatedAt,
+        localDeletedAt: localRow.deletedAt,
+        remoteUpdatedAt: dto.updatedAt,
+        remoteDeletedAt: dto.deletedAt,
+      );
+
+      if (winner == SyncConflictWinner.remote) {
+        await (_database.update(_database.sessions)
+              ..where((tbl) => tbl.id.equals(dto.id)))
+            .write(
+          SessionsCompanion(
+            routineId: Value(dto.routineId),
+            routineName: Value(dto.routineName),
+            createdAt: Value(dto.createdAt),
+            notes: Value(dto.notes),
+            isCompleted: Value(dto.isCompleted),
+            updatedAt: Value(dto.updatedAt),
+            deletedAt: Value(dto.deletedAt),
+            syncStatus: const Value(SyncStatus.synced),
+            remoteVersion: Value(dto.remoteVersion),
+          ),
+        );
+        mutableMetrics.pulledCount += 1;
+      }
+    }
+  }
+
+  Future<void> _applyPulledSetLogs(
+    List<SetLogRemoteDto> remoteDtos,
+    _MutableSyncMetrics mutableMetrics,
+  ) async {
+    for (final dto in remoteDtos) {
+      final localRow = await (_database.select(_database.setLogs)
+            ..where((tbl) => tbl.id.equals(dto.id)))
+          .getSingleOrNull();
+
+      if (localRow == null) {
+        if (dto.deletedAt == null) {
+          await _database.into(_database.setLogs).insertOnConflictUpdate(
+                SetLogsCompanion.insert(
+                  id: dto.id,
+                  sessionId: dto.sessionId,
+                  workoutExerciseId: dto.workoutExerciseId,
+                  setNumber: dto.setNumber,
+                  actualValue1: Value(dto.actualValue1),
+                  actualValue2: Value(dto.actualValue2),
+                  unit1: Value(dto.unit1),
+                  unit2: Value(dto.unit2),
+                  isCompleted: dto.isCompleted,
+                  timestamp: dto.timestamp,
+                  updatedAt: Value(dto.updatedAt),
+                  deletedAt: Value(dto.deletedAt),
+                  syncStatus: const Value(SyncStatus.synced),
+                  remoteVersion: Value(dto.remoteVersion),
+                ),
+              );
+          mutableMetrics.pulledCount += 1;
+        }
+        continue;
+      }
+
+      if (_syncConflictPolicy.isConflict(
+        localUpdatedAt: localRow.updatedAt,
+        localDeletedAt: localRow.deletedAt,
+        remoteUpdatedAt: dto.updatedAt,
+        remoteDeletedAt: dto.deletedAt,
+      )) {
+        mutableMetrics.conflictsResolvedCount += 1;
+      }
+
+      final winner = _syncConflictPolicy.resolve(
+        localUpdatedAt: localRow.updatedAt,
+        localDeletedAt: localRow.deletedAt,
+        remoteUpdatedAt: dto.updatedAt,
+        remoteDeletedAt: dto.deletedAt,
+      );
+
+      if (winner == SyncConflictWinner.remote) {
+        await (_database.update(_database.setLogs)
+              ..where((tbl) => tbl.id.equals(dto.id)))
+            .write(
+          SetLogsCompanion(
+            sessionId: Value(dto.sessionId),
+            workoutExerciseId: Value(dto.workoutExerciseId),
+            setNumber: Value(dto.setNumber),
+            actualValue1: Value(dto.actualValue1),
+            actualValue2: Value(dto.actualValue2),
+            unit1: Value(dto.unit1),
+            unit2: Value(dto.unit2),
+            isCompleted: Value(dto.isCompleted),
+            timestamp: Value(dto.timestamp),
+            updatedAt: Value(dto.updatedAt),
+            deletedAt: Value(dto.deletedAt),
+            syncStatus: const Value(SyncStatus.synced),
+            remoteVersion: Value(dto.remoteVersion),
+          ),
+        );
+        mutableMetrics.pulledCount += 1;
+      }
+    }
+  }
+
+  Future<void> _applyPulledLibraryExercises(
+    List<LibraryExerciseRemoteDto> remoteDtos,
+    _MutableSyncMetrics mutableMetrics,
+  ) async {
+    for (final dto in remoteDtos) {
+      final localRow = await (_database.select(_database.libraryExercises)
+            ..where((tbl) => tbl.id.equals(dto.id)))
+          .getSingleOrNull();
+
+      if (localRow == null) {
+        if (dto.deletedAt == null) {
+          await _database.into(_database.libraryExercises).insertOnConflictUpdate(
+                LibraryExercisesCompanion.insert(
+                  id: dto.id,
+                  name: dto.name,
+                  nameEn: dto.nameEn,
+                  nameEs: dto.nameEs,
+                  isCustom: dto.isCustom,
+                  category: const Value(null),
+                  updatedAt: Value(dto.updatedAt),
+                  deletedAt: Value(dto.deletedAt),
+                  syncStatus: const Value(SyncStatus.synced),
+                  remoteVersion: Value(dto.remoteVersion),
+                ),
+              );
+          mutableMetrics.pulledCount += 1;
+        }
+        continue;
+      }
+
+      if (_syncConflictPolicy.isConflict(
+        localUpdatedAt: localRow.updatedAt,
+        localDeletedAt: localRow.deletedAt,
+        remoteUpdatedAt: dto.updatedAt,
+        remoteDeletedAt: dto.deletedAt,
+      )) {
+        mutableMetrics.conflictsResolvedCount += 1;
+      }
+
+      final winner = _syncConflictPolicy.resolve(
+        localUpdatedAt: localRow.updatedAt,
+        localDeletedAt: localRow.deletedAt,
+        remoteUpdatedAt: dto.updatedAt,
+        remoteDeletedAt: dto.deletedAt,
+      );
+
+      if (winner == SyncConflictWinner.remote) {
+        await (_database.update(_database.libraryExercises)
+              ..where((tbl) => tbl.id.equals(dto.id)))
+            .write(
+          LibraryExercisesCompanion(
+            name: Value(dto.name),
+            nameEn: Value(dto.nameEn),
+            nameEs: Value(dto.nameEs),
+            isCustom: Value(dto.isCustom),
+            updatedAt: Value(dto.updatedAt),
+            deletedAt: Value(dto.deletedAt),
+            syncStatus: const Value(SyncStatus.synced),
+            remoteVersion: Value(dto.remoteVersion),
+          ),
+        );
+        mutableMetrics.pulledCount += 1;
+      }
+    }
   }
 
   DateTime _maxRoutineUpdatedAt(List<RoutineRemoteDto> remoteDtos) {

@@ -151,9 +151,14 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
           ),
         );
       },
-      (existingLogs) {
+      (existingLogs) async {
+        final mergedLogs = await _ensureMissingLogsForRoutine(
+          routine: routine,
+          existingLogs: existingLogs,
+        );
+
         final updatedExercises = routine.exercises.map((exercise) {
-          final exerciseLogs = existingLogs
+          final exerciseLogs = mergedLogs
               .where((log) => log.workoutExerciseId == exercise.id)
               .toList();
 
@@ -182,13 +187,66 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
         emit(
           ActiveWorkoutState.tracking(
             routine: updatedRoutine,
-            setLogs: existingLogs,
+            setLogs: mergedLogs,
             displayTitle: historicalSession.routineName,
             isViewingHistory: historicalSession.isCompleted,
           ),
         );
       },
     );
+  }
+
+  Future<List<SetLog>> _ensureMissingLogsForRoutine({
+    required WorkoutRoutine routine,
+    required List<SetLog> existingLogs,
+  }) async {
+    final mergedLogs = List<SetLog>.from(existingLogs);
+
+    final existingKeys = existingLogs
+        .map((log) => '${log.workoutExerciseId}:${log.setNumber}')
+        .toSet();
+
+    for (final exercise in routine.exercises) {
+      final orderedSets = [...exercise.templateSets]
+        ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+
+      for (var index = 0; index < orderedSets.length; index++) {
+        final setNumber = index + 1;
+        final setKey = '${exercise.id}:$setNumber';
+
+        if (existingKeys.contains(setKey)) {
+          continue;
+        }
+
+        final templateSet = orderedSets[index];
+        final newLog = SetLog(
+          id: _uuid.v4(),
+          sessionId: _sessionId,
+          workoutExerciseId: exercise.id,
+          setNumber: setNumber,
+          actualValue1: templateSet.targetValue1,
+          actualValue2: templateSet.targetValue2,
+          unit1: templateSet.unit1,
+          unit2: templateSet.unit2,
+          isCompleted: false,
+          timestamp: DateTime.now(),
+        );
+
+        final saveResult = await _saveSetLogUseCase(
+          SaveSetLogParams(log: newLog),
+        );
+
+        saveResult.fold(
+          (_) {},
+          (_) {
+            mergedLogs.add(newLog);
+            existingKeys.add(setKey);
+          },
+        );
+      }
+    }
+
+    return mergedLogs;
   }
 
   void _createNewSession(WorkoutRoutine routine) async {

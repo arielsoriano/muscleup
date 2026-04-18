@@ -25,18 +25,33 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
   @override
   Stream<Either<Failure, List<WorkoutRoutine>>> watchRoutines() {
     try {
-      return (database.select(database.routines)
-        ..where((routine) => routine.isDeleted.equals(false))
-        ..where((routine) => routine.deletedAt.isNull()))
+      // Watch a joined projection so updates in exercises/sets also refresh routines.
+      return database
+          .customSelect(
+            '''
+            SELECT r.id
+            FROM routines r
+            LEFT JOIN exercises e
+              ON e.routine_id = r.id
+             AND e.deleted_at IS NULL
+            LEFT JOIN sets s
+              ON s.exercise_id = e.id
+             AND s.deleted_at IS NULL
+            WHERE r.is_deleted = 0
+              AND r.deleted_at IS NULL
+            GROUP BY r.id
+            ORDER BY r.sort_order ASC
+            ''',
+            readsFrom: {
+              database.routines,
+              database.exercises,
+              database.sets,
+            },
+          )
           .watch()
-          .asyncMap((routineDataList) async {
+          .asyncMap((_) async {
         try {
-          final routines = <WorkoutRoutine>[];
-
-          for (final routineData in routineDataList) {
-            final exercises = await _fetchExercisesForRoutine(routineData.id);
-            routines.add(_mapRoutineDataToEntity(routineData, exercises));
-          }
+          final routines = await _loadActiveRoutinesWithExercises();
 
           return Either<Failure, List<WorkoutRoutine>>.right(routines);
         } catch (e) {
@@ -52,6 +67,23 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
         ),
       );
     }
+  }
+
+  Future<List<WorkoutRoutine>> _loadActiveRoutinesWithExercises() async {
+    final routineDataList = await (database.select(database.routines)
+          ..where((routine) => routine.isDeleted.equals(false))
+          ..where((routine) => routine.deletedAt.isNull())
+          ..orderBy([(routine) => OrderingTerm.asc(routine.sortOrder)]))
+        .get();
+
+    final routines = <WorkoutRoutine>[];
+
+    for (final routineData in routineDataList) {
+      final exercises = await _fetchExercisesForRoutine(routineData.id);
+      routines.add(_mapRoutineDataToEntity(routineData, exercises));
+    }
+
+    return routines;
   }
 
   @override
@@ -645,7 +677,19 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                             ..where((log) => log.deletedAt.isNull()))
                           .get();
 
-                      final logs = logDataList
+                      // Deduplicate by (workoutExerciseId, setNumber).
+                      // Duplicates exist in Firebase from earlier bugs.
+                      // Keep the first occurrence (oldest / original).
+                      final seen = <String, SetLogData>{};
+                      for (final log in logDataList) {
+                        final key = '${log.workoutExerciseId}:${log.setNumber}';
+                        if (!seen.containsKey(key)) {
+                          seen[key] = log;
+                        }
+                      }
+                      final dedupedList = seen.values.toList();
+
+                      final logs = dedupedList
                           .map((logData) => _mapSetLogDataToEntity(logData))
                           .toList();
                       return Either<Failure, List<SetLog>>.right(logs);
