@@ -15,12 +15,14 @@ import '../cubit/workout_state.dart';
 
 class RoutinesPage extends StatelessWidget {
   const RoutinesPage({
+    this.onGoToToday,
     this.onOpenRoutineDetails,
     this.onStartRoutine,
     this.returnToToday = false,
     super.key,
   });
 
+  final VoidCallback? onGoToToday;
   final Future<void> Function(BuildContext context, String routineId)?
       onOpenRoutineDetails;
   final Future<void> Function(
@@ -35,6 +37,7 @@ class RoutinesPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => serviceLocator<WorkoutCubit>(),
       child: _RoutinesPageContent(
+        onGoToToday: onGoToToday,
         onOpenRoutineDetails: onOpenRoutineDetails,
         onStartRoutine: onStartRoutine,
         returnToToday: returnToToday,
@@ -45,11 +48,13 @@ class RoutinesPage extends StatelessWidget {
 
 class _RoutinesPageContent extends StatelessWidget {
   const _RoutinesPageContent({
+    this.onGoToToday,
     this.onOpenRoutineDetails,
     this.onStartRoutine,
     this.returnToToday = false,
   });
 
+  final VoidCallback? onGoToToday;
   final Future<void> Function(BuildContext context, String routineId)?
       onOpenRoutineDetails;
   final Future<void> Function(
@@ -157,9 +162,16 @@ class _RoutinesPageContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: const Padding(
-          padding: EdgeInsets.only(left: 12),
-          child: Center(child: AppLogo()),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 12),
+          child: IconButton(
+            tooltip: context.l10n.today,
+            padding: EdgeInsets.zero,
+            visualDensity: VisualDensity.compact,
+            splashRadius: 22,
+            onPressed: onGoToToday,
+            icon: const AppLogo(),
+          ),
         ),
         title: Text(context.l10n.routines),
         actions: [

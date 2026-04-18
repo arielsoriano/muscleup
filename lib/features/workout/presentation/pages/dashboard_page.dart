@@ -25,6 +25,13 @@ class _DashboardPageState extends State<DashboardPage> {
   int _currentIndex = 0;
   bool _returnToTodayAfterRoutineDetails = false;
 
+  void _handleGoToToday() {
+    setState(() {
+      _currentIndex = 0;
+      _returnToTodayAfterRoutineDetails = false;
+    });
+  }
+
   void _handleTabSelected(int index) {
     setState(() {
       _currentIndex = index;
@@ -89,6 +96,7 @@ class _DashboardPageState extends State<DashboardPage> {
       child: _ShellContent(
         currentIndex: _currentIndex,
         onTabSelected: _handleTabSelected,
+        onGoToToday: _handleGoToToday,
         onGoToRoutinesFromToday: _handleGoToRoutinesFromToday,
         onOpenRoutineDetails: _handleOpenRoutineDetails,
         onStartRoutineFromList: _handleStartRoutineFromRoutinesList,
@@ -102,6 +110,7 @@ class _ShellContent extends StatelessWidget {
   const _ShellContent({
     required this.currentIndex,
     required this.onTabSelected,
+    required this.onGoToToday,
     required this.onGoToRoutinesFromToday,
     required this.onOpenRoutineDetails,
     required this.onStartRoutineFromList,
@@ -110,6 +119,7 @@ class _ShellContent extends StatelessWidget {
 
   final int currentIndex;
   final ValueChanged<int> onTabSelected;
+  final VoidCallback onGoToToday;
   final VoidCallback onGoToRoutinesFromToday;
   final Future<void> Function(BuildContext context, String routineId)
       onOpenRoutineDetails;
@@ -150,13 +160,17 @@ class _ShellContent extends StatelessWidget {
             IndexedStack(
               index: currentIndex,
               children: [
-                _TodayTab(onGoToRoutines: onGoToRoutinesFromToday),
+                _TodayTab(
+                  onGoToToday: onGoToToday,
+                  onGoToRoutines: onGoToRoutinesFromToday,
+                ),
                 RoutinesPage(
+                  onGoToToday: onGoToToday,
                   onOpenRoutineDetails: onOpenRoutineDetails,
                   onStartRoutine: onStartRoutineFromList,
                   returnToToday: returnToTodayAfterRoutineDetails,
                 ),
-                const _HistoryTab(),
+                _HistoryTab(onGoToToday: onGoToToday),
               ],
             ),
             const _InitialSyncOverlay(),
@@ -277,17 +291,21 @@ class _DashboardTopMenu extends StatelessWidget {
 }
 
 class _TodayTab extends StatelessWidget {
-  const _TodayTab({required this.onGoToRoutines});
+  const _TodayTab({
+    required this.onGoToToday,
+    required this.onGoToRoutines,
+  });
 
+  final VoidCallback onGoToToday;
   final VoidCallback onGoToRoutines;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: const Padding(
-          padding: EdgeInsets.only(left: 12),
-          child: Center(child: AppLogo()),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 12),
+          child: _AppLogoLeadingButton(onTap: onGoToToday),
         ),
         title: Text(context.l10n.today),
         actions: const [_DashboardTopMenu()],
@@ -487,15 +505,17 @@ class _ActiveSessionCard extends StatelessWidget {
 }
 
 class _HistoryTab extends StatelessWidget {
-  const _HistoryTab();
+  const _HistoryTab({required this.onGoToToday});
+
+  final VoidCallback onGoToToday;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: const Padding(
-          padding: EdgeInsets.only(left: 12),
-          child: Center(child: AppLogo()),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 12),
+          child: _AppLogoLeadingButton(onTap: onGoToToday),
         ),
         title: Text(context.l10n.history),
         actions: const [_DashboardTopMenu()],
@@ -684,6 +704,24 @@ class _HistoryTab extends StatelessWidget {
 
   bool _isSameDay(DateTime a, DateTime b) {
     return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
+}
+
+class _AppLogoLeadingButton extends StatelessWidget {
+  const _AppLogoLeadingButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      tooltip: context.l10n.today,
+      padding: EdgeInsets.zero,
+      visualDensity: VisualDensity.compact,
+      splashRadius: 22,
+      onPressed: onTap,
+      icon: const AppLogo(),
+    );
   }
 }
 
