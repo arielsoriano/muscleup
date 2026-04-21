@@ -5,21 +5,26 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../domain/usecases/delete_routine_usecase.dart';
+import '../../domain/usecases/update_routine_order_usecase.dart';
 import '../../domain/usecases/watch_routines_usecase.dart';
+import '../../domain/entities/workout_entities.dart';
 import 'workout_state.dart';
 
 class WorkoutCubit extends Cubit<WorkoutState> {
   WorkoutCubit({
     required WatchRoutinesUseCase watchRoutinesUseCase,
     required DeleteRoutineUseCase deleteRoutineUseCase,
+    required UpdateRoutineOrderUseCase updateRoutineOrderUseCase,
   })  : _watchRoutinesUseCase = watchRoutinesUseCase,
         _deleteRoutineUseCase = deleteRoutineUseCase,
+        _updateRoutineOrderUseCase = updateRoutineOrderUseCase,
         super(const WorkoutState.initial()) {
     _initializeRoutinesStream();
   }
 
   final WatchRoutinesUseCase _watchRoutinesUseCase;
   final DeleteRoutineUseCase _deleteRoutineUseCase;
+  final UpdateRoutineOrderUseCase _updateRoutineOrderUseCase;
   StreamSubscription? _routinesSubscription;
   bool _isFirstEmission = true;
   Timer? _emptyDebounceTimer;
@@ -56,6 +61,22 @@ class WorkoutCubit extends Cubit<WorkoutState> {
     if (currentState is! WorkoutStateSuccess) return;
 
     final result = await _deleteRoutineUseCase(DeleteRoutineParams(id: id));
+
+    result.fold(
+      (failure) => emit(WorkoutState.error(message: _mapFailureToMessage(failure))),
+      (_) {},
+    );
+  }
+
+  Future<void> updateRoutineOrder(List<WorkoutRoutine> routines) async {
+    final normalized = List<WorkoutRoutine>.generate(
+      routines.length,
+      (index) => routines[index].copyWith(sortOrder: index),
+    );
+
+    final result = await _updateRoutineOrderUseCase(
+      UpdateRoutineOrderParams(routines: normalized),
+    );
 
     result.fold(
       (failure) => emit(WorkoutState.error(message: _mapFailureToMessage(failure))),

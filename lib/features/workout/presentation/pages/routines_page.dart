@@ -222,13 +222,26 @@ class _RoutinesPageContent extends StatelessWidget {
                 );
               }
 
-              return ListView.builder(
-                itemCount: routines.length,
+              return ReorderableListView.builder(
                 padding: const EdgeInsets.all(16),
+                itemCount: routines.length,
+                buildDefaultDragHandles: false,
+                onReorder: (oldIndex, newIndex) async {
+                  final reordered = List<WorkoutRoutine>.from(routines);
+                  if (newIndex > oldIndex) {
+                    newIndex -= 1;
+                  }
+
+                  final moved = reordered.removeAt(oldIndex);
+                  reordered.insert(newIndex, moved);
+                  await context.read<WorkoutCubit>().updateRoutineOrder(reordered);
+                },
                 itemBuilder: (context, index) {
                   final routine = routines[index];
                   final isEmptyRoutine = routine.exercises.isEmpty;
+
                   return Card(
+                    key: ValueKey('routine-${routine.id}'),
                     margin: const EdgeInsets.only(bottom: 12),
                     child: ListTile(
                       title: Row(
@@ -279,7 +292,13 @@ class _RoutinesPageContent extends StatelessWidget {
                               routine.id,
                             ),
                           ),
-                          const Icon(Icons.chevron_right),
+                          ReorderableDragStartListener(
+                            index: index,
+                            child: const Padding(
+                              padding: EdgeInsets.only(left: 4),
+                              child: Icon(Icons.drag_handle_rounded),
+                            ),
+                          ),
                         ],
                       ),
                       onTap: () async {

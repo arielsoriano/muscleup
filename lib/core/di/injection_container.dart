@@ -231,6 +231,7 @@ Future<void> _initializePresentation() async {
     () => WorkoutCubit(
       watchRoutinesUseCase: serviceLocator(),
       deleteRoutineUseCase: serviceLocator(),
+      updateRoutineOrderUseCase: serviceLocator(),
     ),
   );
 

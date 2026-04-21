@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="96" y1="40" x2="928" y2="500" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#05070A" />
+      <stop offset="0.55" stop-color="#0B1018" />
+      <stop offset="1" stop-color="#111A28" />
+    </linearGradient>
+    <linearGradient id="glow" x1="260" y1="80" x2="760" y2="430" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D8FF3E" stop-opacity="0.26" />
+      <stop offset="1" stop-color="#D8FF3E" stop-opacity="0" />
+    </linearGradient>
+    <filter id="blur" x="0" y="0" width="1024" height="500" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="36" />
+    </filter>
+  </defs>
+
+  <rect width="1024" height="500" rx="32" fill="url(#bg)" />
+
+  <g opacity="0.14">
+    <path d="M0 401H1024" stroke="#D8FF3E" />
+    <path d="M0 349H1024" stroke="#D8FF3E" />
+    <path d="M0 297H1024" stroke="#D8FF3E" />
+    <path d="M0 245H1024" stroke="#D8FF3E" />
+    <path d="M0 193H1024" stroke="#D8FF3E" />
+    <path d="M0 141H1024" stroke="#D8FF3E" />
+    <path d="M0 89H1024" stroke="#D8FF3E" />
+  </g>
+
+  <g filter="url(#blur)">
+    <ellipse cx="772" cy="144" rx="182" ry="92" fill="url(#glow)" />
+    <ellipse cx="329" cy="398" rx="248" ry="96" fill="#75FF8A" fill-opacity="0.08" />
+  </g>
+
+  <rect x="72" y="66" width="268" height="368" rx="52" fill="#000000" stroke="#202835" stroke-width="2" />
+
+  <circle cx="318" cy="108" r="6" fill="#2A3442" />
+  <rect x="104" y="336" width="204" height="12" rx="6" fill="#202835" />
+  <rect x="104" y="360" width="142" height="12" rx="6" fill="#202835" />
+
+  <g transform="translate(206 250) rotate(45)">
+    <rect x="-25" y="-10" width="50" height="260" fill="#CCFF00" />
+    <rect x="-75" y="-50" width="150" height="40" fill="#CCFF00" />
+    <rect x="-115" y="-90" width="230" height="40" fill="#CCFF00" />
+    <rect x="-75" y="-130" width="150" height="40" fill="#CCFF00" />
+  </g>
+
+  <text x="408" y="186" fill="#F4F7FB" font-family="Arial, Helvetica, sans-serif" font-size="82" font-weight="700" letter-spacing="3">MUSCLEUP</text>
+  <text x="410" y="248" fill="#D8FF3E" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="700" letter-spacing="0.4">Tu entrenamiento, sin distracciones.</text>
+
+  <text x="410" y="312" fill="#C6D0DF" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400">Rutinas personalizadas. Historial claro. Sin anuncios.</text>
+  <text x="410" y="348" fill="#C6D0DF" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400">Disenada para registrar fuerza, series, peso y progreso.</text>
+
+  <rect x="410" y="388" width="188" height="42" rx="21" fill="#161F2C" stroke="#2A3442" />
+  <text x="433" y="416" fill="#D8FF3E" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" letter-spacing="1">GYM TRACKER</text>
+
+  <rect x="0.5" y="0.5" width="1023" height="499" rx="31.5" stroke="#202835" />
+</svg>
