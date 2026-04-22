@@ -341,29 +341,39 @@ class _TodayTab extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     if (activeSessions.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.fitness_center_rounded,
-                size: 80,
-                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.35),
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          const fabClearance = 112.0;
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, fabClearance),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight - fabClearance,
               ),
-              const SizedBox(height: 24),
-              Text(
-                context.l10n.noWorkoutToday,
-                style: textTheme.titleMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.fitness_center_rounded,
+                      size: 80,
+                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.35),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      context.l10n.noWorkoutToday,
+                      style: textTheme.titleMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
-                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 80),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       );
     }
 
