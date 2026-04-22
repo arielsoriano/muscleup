@@ -9,8 +9,8 @@ import 'settings_state.dart';
 
 class SettingsCubit extends Cubit<SettingsState> {
   SettingsCubit(this._settingsDataSource)
-      : super(const SettingsState(
-          locale: Locale('en'),
+      : super(SettingsState(
+          locale: _systemLocaleOrEnglish(),
           currentSkin: AppSkin.volt,
           isDarkMode: true,
         ),) {
@@ -19,22 +19,38 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   final SettingsDataSource _settingsDataSource;
 
+  static Locale _systemLocaleOrEnglish() {
+    final platformLanguageCode = PlatformDispatcher.instance.locale.languageCode;
+    return _supportedLocaleOrNull(platformLanguageCode) ?? const Locale('en');
+  }
+
+  static Locale? _supportedLocaleOrNull(String languageCode) {
+    final normalizedCode = languageCode.toLowerCase();
+    for (final locale in AppLocalizations.supportedLocales) {
+      if (locale.languageCode.toLowerCase() == normalizedCode) {
+        return locale;
+      }
+    }
+    return null;
+  }
+
+  Locale _resolveInitialLocale(String? savedLanguageCode) {
+    if (savedLanguageCode != null) {
+      final savedSupportedLocale = _supportedLocaleOrNull(savedLanguageCode);
+      if (savedSupportedLocale != null) {
+        return savedSupportedLocale;
+      }
+    }
+
+    return _systemLocaleOrEnglish();
+  }
+
   Future<void> _initialize() async {
     final savedLanguageCode = await _settingsDataSource.getLanguageCode();
     final savedSkinString = await _settingsDataSource.getSkin();
     final savedIsDarkMode = await _settingsDataSource.getIsDarkMode();
 
-    final Locale locale;
-    if (savedLanguageCode != null) {
-      locale = Locale(savedLanguageCode);
-    } else {
-      final platformLocale = PlatformDispatcher.instance.locale;
-      final isSupported = AppLocalizations.supportedLocales.any(
-        (supportedLocale) =>
-            supportedLocale.languageCode == platformLocale.languageCode,
-      );
-      locale = isSupported ? platformLocale : const Locale('en');
-    }
+    final locale = _resolveInitialLocale(savedLanguageCode);
 
     final currentSkin = savedSkinString != null
         ? AppSkinExtension.fromString(savedSkinString)
