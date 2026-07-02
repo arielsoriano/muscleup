@@ -175,25 +175,10 @@ class _RoutinesPageContent extends StatelessWidget {
         ),
         title: Text(context.l10n.routines),
         actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert_rounded),
-            onSelected: (value) {
-              if (value == 'settings') {
-                context.push(AppRoutes.settings);
-              }
-            },
-            itemBuilder: (_) => [
-              PopupMenuItem<String>(
-                value: 'settings',
-                child: Row(
-                  children: [
-                    const Icon(Icons.settings_rounded),
-                    const SizedBox(width: 12),
-                    Text(context.l10n.settings),
-                  ],
-                ),
-              ),
-            ],
+          IconButton(
+            icon: const Icon(Icons.settings_rounded),
+            tooltip: context.l10n.settings,
+            onPressed: () => context.push(AppRoutes.settings),
           ),
         ],
       ),

@@ -493,8 +493,8 @@
   "globalSyncOverlaySubtitle": "Preparing routines and history from the cloud...",
   "routinesSyncingPlaceholder": "Fetching your routines from the cloud...",
   "syncPending": "Sync pending",
-  "synced": "Synced",
-  "syncLocked": "Cloud sync locked",
+  "synced": "Backed up",
+  "syncLocked": "Backup off",
   "lastSync": "Last sync: {date}",
   "@lastSync": {
     "placeholders": {
@@ -504,5 +504,31 @@
     }
   },
   "linkGoogleForSync": "Link your Google account to enable cloud sync",
-  "refreshNow": "Refresh now"
+  "refreshNow": "Refresh now",
+  "lastTimeValue": "Last time: {value}",
+  "@lastTimeValue": {
+    "description": "Reference showing what was performed for this set in the previous session",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exerciseProgressTitle": "Progress",
+  "viewProgress": "View progress",
+  "noProgressYet": "No records yet. Finish a workout with this exercise to see your progress here.",
+  "progressSessionsCount": "{count, plural, =1{1 session} other{{count} sessions}}",
+  "@progressSessionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "helpFeedbackSection": "Help & feedback",
+  "sendFeedback": "Send feedback",
+  "sendFeedbackSubtitle": "Suggestions, ideas or report a problem",
+  "feedbackEmailSubject": "Muscleup — Feedback",
+  "feedbackEmailBody": "Write your feedback, idea or problem here:",
+  "emailCopiedToClipboard": "Couldn't open your email app. The address was copied to your clipboard."
 }

@@ -989,13 +989,13 @@ abstract class AppLocalizations {
   /// No description provided for @synced.
   ///
   /// In en, this message translates to:
-  /// **'Synced'**
+  /// **'Backed up'**
   String get synced;
 
   /// No description provided for @syncLocked.
   ///
   /// In en, this message translates to:
-  /// **'Cloud sync locked'**
+  /// **'Backup off'**
   String get syncLocked;
 
   /// No description provided for @lastSync.
@@ -1015,6 +1015,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Refresh now'**
   String get refreshNow;
+
+  /// Reference showing what was performed for this set in the previous session
+  ///
+  /// In en, this message translates to:
+  /// **'Last time: {value}'**
+  String lastTimeValue(String value);
+
+  /// No description provided for @exerciseProgressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress'**
+  String get exerciseProgressTitle;
+
+  /// No description provided for @viewProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'View progress'**
+  String get viewProgress;
+
+  /// No description provided for @noProgressYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No records yet. Finish a workout with this exercise to see your progress here.'**
+  String get noProgressYet;
+
+  /// No description provided for @progressSessionsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 session} other{{count} sessions}}'**
+  String progressSessionsCount(int count);
+
+  /// No description provided for @helpFeedbackSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & feedback'**
+  String get helpFeedbackSection;
+
+  /// No description provided for @sendFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Send feedback'**
+  String get sendFeedback;
+
+  /// No description provided for @sendFeedbackSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestions, ideas or report a problem'**
+  String get sendFeedbackSubtitle;
+
+  /// No description provided for @feedbackEmailSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Muscleup — Feedback'**
+  String get feedbackEmailSubject;
+
+  /// No description provided for @feedbackEmailBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Write your feedback, idea or problem here:'**
+  String get feedbackEmailBody;
+
+  /// No description provided for @emailCopiedToClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open your email app. The address was copied to your clipboard.'**
+  String get emailCopiedToClipboard;
 }
 
 class _AppLocalizationsDelegate

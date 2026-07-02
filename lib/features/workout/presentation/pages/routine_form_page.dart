@@ -723,6 +723,7 @@ class _SetFormRowState extends State<_SetFormRow> {
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           decoration: InputDecoration(
             isDense: true,
+            labelText: isNoneUnit ? null : _formatUnit(unit ?? WorkoutUnit.none),
             hintText: isNoneUnit ? '' : '0',
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 8,

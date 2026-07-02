@@ -471,4 +471,50 @@ class _ProgrammableWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   Future<Map<String, dynamic>?> fetchTrainingDefaults(String uid) async {
     return null;
   }
+
+  @override
+  Future<void> commitBatch(String uid, List<RemoteWriteOp> operations) async {
+    // Emulate an atomic batched write: if any op would fail, throw before
+    // applying anything so a fallback retry doesn't double-apply side effects.
+    for (final op in operations) {
+      if (op is UpsertRoutineOp && failForRoutineId == op.routine.id) {
+        if (failWithPermanentError) {
+          throw Exception('permission-denied forced routine push failure');
+        }
+        throw Exception('Forced routine push failure');
+      }
+    }
+
+    for (final op in operations) {
+      switch (op) {
+        case UpsertRoutineOp(:final routine):
+          await upsertRoutine(uid, routine);
+        case UpsertExerciseOp(:final exercise, :final routineId):
+          await upsertExercise(uid, exercise, routineId);
+        case UpsertSetOp(:final workoutSet, :final exerciseId):
+          await upsertSet(uid, workoutSet, exerciseId);
+        case UpsertSessionOp(:final session):
+          await upsertSession(uid, session);
+        case UpsertSetLogOp(:final setLog):
+          await upsertSetLog(uid, setLog);
+        case UpsertLibraryExerciseOp(:final libraryExercise):
+          await upsertLibraryExercise(uid, libraryExercise);
+        case DeleteRemoteOp(:final entityType, :final entityId):
+          switch (entityType) {
+            case 'routine':
+              await markRoutineDeleted(uid, entityId);
+            case 'exercise':
+              await markExerciseDeleted(uid, entityId);
+            case 'set':
+              await markSetDeleted(uid, entityId);
+            case 'session':
+              await markSessionDeleted(uid, entityId);
+            case 'setLog':
+              await markSetLogDeleted(uid, entityId);
+            case 'libraryExercise':
+              await markLibraryExerciseDeleted(uid, entityId);
+          }
+      }
+    }
+  }
 }

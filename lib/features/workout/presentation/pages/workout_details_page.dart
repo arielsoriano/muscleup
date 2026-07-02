@@ -325,6 +325,31 @@ class WorkoutDetailsPage extends StatelessWidget {
                                         }).toList(),
                                       ),
                                     ),
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                      16,
+                                      8,
+                                      16,
+                                      0,
+                                    ),
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: TextButton.icon(
+                                        onPressed: () => context.push(
+                                          AppRoutes.exerciseProgress,
+                                          extra: {
+                                            'workoutExerciseId': exercise.id,
+                                            'exerciseName': exercise.name,
+                                          },
+                                        ),
+                                        icon: const Icon(
+                                          Icons.show_chart_rounded,
+                                          size: 18,
+                                        ),
+                                        label: Text(context.l10n.viewProgress),
+                                      ),
+                                    ),
+                                  ),
                                   const SizedBox(height: 16),
                                 ],
                               ),

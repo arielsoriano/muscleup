@@ -33,6 +33,20 @@ abstract class WorkoutRepository {
 
   Future<Either<Failure, List<SetLog>>> getLogsForSession(String sessionId);
 
+  /// Returns the set logs from the most recent completed session of [routineId],
+  /// excluding [excludeSessionId] (the session currently in progress).
+  /// Used to show the "last time" reference during a workout.
+  Future<Either<Failure, List<SetLog>>> getLastCompletedLogsForRoutine(
+    String routineId, {
+    required String excludeSessionId,
+  });
+
+  /// Returns the performance history for a given routine exercise across all
+  /// completed sessions, most recent first. Used for the progression view.
+  Future<Either<Failure, List<ExerciseHistoryEntry>>> getExerciseHistory(
+    String workoutExerciseId,
+  );
+
   Future<Either<Failure, List<LibraryExerciseEntity>>> getLibraryExercises();
 
   Future<Either<Failure, void>> saveLibraryExercise(String name, {String? nameEn, String? nameEs});
@@ -47,6 +61,21 @@ abstract class WorkoutRepository {
   Future<Either<Failure, void>> deleteLibraryExercise(String id);
 
   Future<Either<Failure, List<LibraryExerciseEntity>>> searchLibraryExercises(String query, String languageCode);
+}
+
+/// One completed session's performance for a specific exercise.
+class ExerciseHistoryEntry {
+  ExerciseHistoryEntry({
+    required this.sessionId,
+    required this.date,
+    required this.sets,
+  });
+
+  final String sessionId;
+  final DateTime date;
+
+  /// Logged sets for this exercise in this session, ordered by set number.
+  final List<SetLog> sets;
 }
 
 class LibraryExerciseEntity {

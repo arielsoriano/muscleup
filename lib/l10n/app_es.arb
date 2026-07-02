@@ -148,9 +148,20 @@
   "globalSyncOverlaySubtitle": "Preparando rutinas e historial desde la nube...",
   "routinesSyncingPlaceholder": "Cargando tus rutinas desde la nube...",
   "syncPending": "Sincronización pendiente",
-  "synced": "Sincronizado",
-  "syncLocked": "Sincronización bloqueada",
+  "synced": "Copia de seguridad al día",
+  "syncLocked": "Copia de seguridad desactivada",
   "lastSync": "Última sincronización: {date}",
   "linkGoogleForSync": "Vincula tu cuenta de Google para habilitar la sincronización en la nube",
-  "refreshNow": "Actualizar ahora"
+  "refreshNow": "Actualizar ahora",
+  "lastTimeValue": "La vez pasada: {value}",
+  "exerciseProgressTitle": "Progreso",
+  "viewProgress": "Ver progreso",
+  "noProgressYet": "Todavía no hay registros. Terminá un entrenamiento con este ejercicio para ver tu progreso acá.",
+  "progressSessionsCount": "{count, plural, =1{1 sesión} other{{count} sesiones}}",
+  "helpFeedbackSection": "Ayuda y feedback",
+  "sendFeedback": "Enviar feedback",
+  "sendFeedbackSubtitle": "Sugerencias, ideas o reportar un problema",
+  "feedbackEmailSubject": "Muscleup — Feedback",
+  "feedbackEmailBody": "Escribí tu feedback, idea o problema acá:",
+  "emailCopiedToClipboard": "No pudimos abrir tu app de correo. Copiamos la dirección al portapapeles."
 }

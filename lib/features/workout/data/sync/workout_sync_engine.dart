@@ -57,6 +57,11 @@ class WorkoutSyncEngine implements SyncEngine {
   final int _pushBatchSize;
   final int _maxRetryCount;
   final SyncSleep _syncSleep;
+
+  /// How many pending outbox rows to pull (and batch-commit) per push loop.
+  /// Kept under Firestore's 500-writes-per-batch limit.
+  static const int _pushCommitChunkSize = 450;
+
   final StreamController<SyncRunState> _stateController =
       StreamController<SyncRunState>.broadcast();
 
@@ -170,272 +175,329 @@ class WorkoutSyncEngine implements SyncEngine {
       final pendingChanges = await (_database.select(_database.outboxChanges)
             ..where((tbl) => tbl.retryCount.isSmallerThanValue(_maxRetryCount))
             ..orderBy([(tbl) => OrderingTerm.asc(tbl.createdAt)])
-            ..limit(_pushBatchSize))
+            ..limit(_pushCommitChunkSize))
           .get();
 
       if (pendingChanges.isEmpty) {
         return;
       }
 
-      bool shouldStopCurrentCycle = false;
-
-      for (final change in pendingChanges) {
-        try {
-          _ensureOutboxOwner(uid, change);
-          await _processOutboxChange(uid, change);
-          await _markEntitySynced(entityType: change.entityType, entityId: change.entityId);
-          await (_database.delete(_database.outboxChanges)
-                ..where((tbl) => tbl.id.equals(change.id)))
-              .go();
-          mutableMetrics.pushedCount += 1;
-        } catch (error) {
-          mutableMetrics.failedCount += 1;
-          final nextRetryCount = change.retryCount + 1;
-          final failureKind = _classifySyncFailure(error);
-          final cappedRetryCount = failureKind == _SyncFailureKind.permanent
-              ? _maxRetryCount
-              : nextRetryCount;
-
-          await (_database.update(_database.outboxChanges)
-                ..where((tbl) => tbl.id.equals(change.id)))
-              .write(
-            OutboxChangesCompanion(
-              retryCount: Value(cappedRetryCount),
-              lastError: Value(error.toString()),
-            ),
-          );
-
-          if (failureKind == _SyncFailureKind.transient && cappedRetryCount < _maxRetryCount) {
-            final backoff = _computeBackoff(cappedRetryCount);
-            await _syncSleep(backoff);
-            shouldStopCurrentCycle = true;
-            break;
-          }
-        }
+      // Fast path: push the whole page in a single batched commit.
+      final committedAsBatch =
+          await _tryCommitBatch(uid, pendingChanges, mutableMetrics);
+      if (committedAsBatch) {
+        continue;
       }
 
+      // Fallback: the batch failed, so process each change on its own to keep
+      // per-item retry/backoff and permanent-failure handling intact.
+      final shouldStopCurrentCycle =
+          await _pushChangesIndividually(uid, pendingChanges, mutableMetrics);
       if (shouldStopCurrentCycle) {
         return;
       }
     }
   }
 
-  Future<void> _processOutboxChange(String uid, OutboxChangeData change) async {
-    switch (change.entityType) {
-      case 'routine':
-        await _processRoutineOutbox(uid, change);
-        return;
-      case 'exercise':
-        await _processExerciseOutbox(uid, change);
-        return;
-      case 'set':
-        await _processSetOutbox(uid, change);
-        return;
-      case 'session':
-        await _processSessionOutbox(uid, change);
-        return;
-      case 'setLog':
-        await _processSetLogOutbox(uid, change);
-        return;
-      case 'libraryExercise':
-        await _processLibraryExerciseOutbox(uid, change);
-        return;
-      default:
-        return;
+  /// Attempts to push [pendingChanges] in one batched commit. Returns true if
+  /// the batch committed and the outbox was cleaned; false if the caller should
+  /// fall back to per-item processing.
+  Future<bool> _tryCommitBatch(
+    String uid,
+    List<OutboxChangeData> pendingChanges,
+    _MutableSyncMetrics mutableMetrics,
+  ) async {
+    try {
+      final operations = <RemoteWriteOp>[];
+      for (final change in pendingChanges) {
+        _ensureOutboxOwner(uid, change);
+        final op = await _buildRemoteOp(change);
+        if (op != null) {
+          operations.add(op);
+        }
+      }
+
+      if (operations.isNotEmpty) {
+        _ensureUidStable(uid);
+        await _workoutRemoteDataSource.commitBatch(uid, operations);
+      }
+
+      await _database.transaction(() async {
+        for (final change in pendingChanges) {
+          await _markEntitySynced(
+            entityType: change.entityType,
+            entityId: change.entityId,
+          );
+          await (_database.delete(_database.outboxChanges)
+                ..where((tbl) => tbl.id.equals(change.id)))
+              .go();
+        }
+      });
+
+      mutableMetrics.pushedCount += operations.length;
+      return true;
+    } catch (_) {
+      return false;
     }
   }
 
-  Future<void> _processRoutineOutbox(String uid, OutboxChangeData change) async {
+  /// Processes [pendingChanges] one at a time. Returns true if the current sync
+  /// cycle should stop (a transient failure triggered a backoff).
+  Future<bool> _pushChangesIndividually(
+    String uid,
+    List<OutboxChangeData> pendingChanges,
+    _MutableSyncMetrics mutableMetrics,
+  ) async {
+    for (final change in pendingChanges) {
+      try {
+        _ensureOutboxOwner(uid, change);
+        await _processOutboxChange(uid, change);
+        await _markEntitySynced(entityType: change.entityType, entityId: change.entityId);
+        await (_database.delete(_database.outboxChanges)
+              ..where((tbl) => tbl.id.equals(change.id)))
+            .go();
+        mutableMetrics.pushedCount += 1;
+      } catch (error) {
+        mutableMetrics.failedCount += 1;
+        final nextRetryCount = change.retryCount + 1;
+        final failureKind = _classifySyncFailure(error);
+        final cappedRetryCount = failureKind == _SyncFailureKind.permanent
+            ? _maxRetryCount
+            : nextRetryCount;
+
+        await (_database.update(_database.outboxChanges)
+              ..where((tbl) => tbl.id.equals(change.id)))
+            .write(
+          OutboxChangesCompanion(
+            retryCount: Value(cappedRetryCount),
+            lastError: Value(error.toString()),
+          ),
+        );
+
+        if (failureKind == _SyncFailureKind.transient && cappedRetryCount < _maxRetryCount) {
+          final backoff = _computeBackoff(cappedRetryCount);
+          await _syncSleep(backoff);
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  Future<void> _processOutboxChange(String uid, OutboxChangeData change) async {
+    final op = await _buildRemoteOp(change);
+    if (op != null) {
+      await _workoutRemoteDataSource.commitBatch(uid, [op]);
+    }
+  }
+
+  Future<RemoteWriteOp?> _buildRemoteOp(OutboxChangeData change) async {
+    switch (change.entityType) {
+      case 'routine':
+        return _buildRoutineOp(change);
+      case 'exercise':
+        return _buildExerciseOp(change);
+      case 'set':
+        return _buildSetOp(change);
+      case 'session':
+        return _buildSessionOp(change);
+      case 'setLog':
+        return _buildSetLogOp(change);
+      case 'libraryExercise':
+        return _buildLibraryExerciseOp(change);
+      default:
+        return null;
+    }
+  }
+
+  Future<RemoteWriteOp?> _buildRoutineOp(OutboxChangeData change) async {
     final localRow = await (_database.select(_database.routines)
           ..where((tbl) => tbl.id.equals(change.entityId)))
         .getSingleOrNull();
 
     if (change.operation == 'delete' || localRow?.deletedAt != null || localRow?.isDeleted == true) {
-      await _workoutRemoteDataSource.markRoutineDeleted(uid, change.entityId);
-      return;
+      return DeleteRemoteOp(entityType: 'routine', entityId: change.entityId);
     }
 
     if (localRow == null) {
-      return;
+      return null;
     }
 
-    final localEntity = WorkoutRoutine(
-      id: localRow.id,
-      name: localRow.name,
-      sortOrder: localRow.sortOrder,
-      exercises: const <WorkoutExercise>[],
-      syncMetadata: SyncMetadata(
-        updatedAt: localRow.updatedAt,
-        deletedAt: localRow.deletedAt,
-        syncStatus: localRow.syncStatus.name,
-        remoteVersion: localRow.remoteVersion,
+    return UpsertRoutineOp(
+      WorkoutRoutine(
+        id: localRow.id,
+        name: localRow.name,
+        sortOrder: localRow.sortOrder,
+        exercises: const <WorkoutExercise>[],
+        syncMetadata: SyncMetadata(
+          updatedAt: localRow.updatedAt,
+          deletedAt: localRow.deletedAt,
+          syncStatus: localRow.syncStatus.name,
+          remoteVersion: localRow.remoteVersion,
+        ),
       ),
     );
-
-    await _workoutRemoteDataSource.upsertRoutine(uid, localEntity);
   }
 
-  Future<void> _processExerciseOutbox(String uid, OutboxChangeData change) async {
+  Future<RemoteWriteOp?> _buildExerciseOp(OutboxChangeData change) async {
     final localRow = await (_database.select(_database.exercises)
           ..where((tbl) => tbl.id.equals(change.entityId)))
         .getSingleOrNull();
 
     if (change.operation == 'delete' || localRow?.deletedAt != null) {
-      await _workoutRemoteDataSource.markExerciseDeleted(uid, change.entityId);
-      return;
+      return DeleteRemoteOp(entityType: 'exercise', entityId: change.entityId);
     }
 
     if (localRow == null) {
-      return;
+      return null;
     }
 
-    final localEntity = WorkoutExercise(
-      id: localRow.id,
-      name: localRow.name,
-      sortOrder: localRow.sortOrder,
-      notes: localRow.notes,
-      restTimeSeconds: localRow.restTimeSeconds,
-      templateSets: const <WorkoutSet>[],
-      syncMetadata: SyncMetadata(
-        updatedAt: localRow.updatedAt,
-        deletedAt: localRow.deletedAt,
-        syncStatus: localRow.syncStatus.name,
-        remoteVersion: localRow.remoteVersion,
+    return UpsertExerciseOp(
+      WorkoutExercise(
+        id: localRow.id,
+        name: localRow.name,
+        sortOrder: localRow.sortOrder,
+        notes: localRow.notes,
+        restTimeSeconds: localRow.restTimeSeconds,
+        templateSets: const <WorkoutSet>[],
+        syncMetadata: SyncMetadata(
+          updatedAt: localRow.updatedAt,
+          deletedAt: localRow.deletedAt,
+          syncStatus: localRow.syncStatus.name,
+          remoteVersion: localRow.remoteVersion,
+        ),
       ),
+      localRow.routineId,
     );
-
-    await _workoutRemoteDataSource.upsertExercise(uid, localEntity, localRow.routineId);
   }
 
-  Future<void> _processSetOutbox(String uid, OutboxChangeData change) async {
+  Future<RemoteWriteOp?> _buildSetOp(OutboxChangeData change) async {
     final localRow = await (_database.select(_database.sets)
           ..where((tbl) => tbl.id.equals(change.entityId)))
         .getSingleOrNull();
 
     if (change.operation == 'delete' || localRow?.deletedAt != null) {
-      await _workoutRemoteDataSource.markSetDeleted(uid, change.entityId);
-      return;
+      return DeleteRemoteOp(entityType: 'set', entityId: change.entityId);
     }
 
     if (localRow == null) {
-      return;
+      return null;
     }
 
-    final localEntity = WorkoutSet(
-      id: localRow.id,
-      sortOrder: localRow.sortOrder,
-      targetValue1: localRow.targetValue1,
-      targetValue2: localRow.targetValue2,
-      unit1: localRow.unit1,
-      unit2: localRow.unit2,
-      syncMetadata: SyncMetadata(
-        updatedAt: localRow.updatedAt,
-        deletedAt: localRow.deletedAt,
-        syncStatus: localRow.syncStatus.name,
-        remoteVersion: localRow.remoteVersion,
+    return UpsertSetOp(
+      WorkoutSet(
+        id: localRow.id,
+        sortOrder: localRow.sortOrder,
+        targetValue1: localRow.targetValue1,
+        targetValue2: localRow.targetValue2,
+        unit1: localRow.unit1,
+        unit2: localRow.unit2,
+        syncMetadata: SyncMetadata(
+          updatedAt: localRow.updatedAt,
+          deletedAt: localRow.deletedAt,
+          syncStatus: localRow.syncStatus.name,
+          remoteVersion: localRow.remoteVersion,
+        ),
       ),
+      localRow.exerciseId,
     );
-
-    await _workoutRemoteDataSource.upsertSet(uid, localEntity, localRow.exerciseId);
   }
 
-  Future<void> _processSessionOutbox(String uid, OutboxChangeData change) async {
+  Future<RemoteWriteOp?> _buildSessionOp(OutboxChangeData change) async {
     final localRow = await (_database.select(_database.sessions)
           ..where((tbl) => tbl.id.equals(change.entityId)))
         .getSingleOrNull();
 
     if (change.operation == 'delete' || localRow?.deletedAt != null) {
-      await _workoutRemoteDataSource.markSessionDeleted(uid, change.entityId);
-      return;
+      return DeleteRemoteOp(entityType: 'session', entityId: change.entityId);
     }
 
     if (localRow == null) {
-      return;
+      return null;
     }
 
-    final localEntity = WorkoutSession(
-      id: localRow.id,
-      routineId: localRow.routineId,
-      routineName: localRow.routineName,
-      createdAt: localRow.createdAt,
-      notes: localRow.notes,
-      isCompleted: localRow.isCompleted,
-      syncMetadata: SyncMetadata(
-        updatedAt: localRow.updatedAt,
-        deletedAt: localRow.deletedAt,
-        syncStatus: localRow.syncStatus.name,
-        remoteVersion: localRow.remoteVersion,
+    return UpsertSessionOp(
+      WorkoutSession(
+        id: localRow.id,
+        routineId: localRow.routineId,
+        routineName: localRow.routineName,
+        createdAt: localRow.createdAt,
+        notes: localRow.notes,
+        isCompleted: localRow.isCompleted,
+        syncMetadata: SyncMetadata(
+          updatedAt: localRow.updatedAt,
+          deletedAt: localRow.deletedAt,
+          syncStatus: localRow.syncStatus.name,
+          remoteVersion: localRow.remoteVersion,
+        ),
       ),
     );
-
-    await _workoutRemoteDataSource.upsertSession(uid, localEntity);
   }
 
-  Future<void> _processSetLogOutbox(String uid, OutboxChangeData change) async {
+  Future<RemoteWriteOp?> _buildSetLogOp(OutboxChangeData change) async {
     final localRow = await (_database.select(_database.setLogs)
           ..where((tbl) => tbl.id.equals(change.entityId)))
         .getSingleOrNull();
 
     if (change.operation == 'delete' || localRow?.deletedAt != null) {
-      await _workoutRemoteDataSource.markSetLogDeleted(uid, change.entityId);
-      return;
+      return DeleteRemoteOp(entityType: 'setLog', entityId: change.entityId);
     }
 
     if (localRow == null) {
-      return;
+      return null;
     }
 
-    final localEntity = SetLog(
-      id: localRow.id,
-      sessionId: localRow.sessionId,
-      workoutExerciseId: localRow.workoutExerciseId,
-      setNumber: localRow.setNumber,
-      actualValue1: localRow.actualValue1,
-      actualValue2: localRow.actualValue2,
-      unit1: localRow.unit1,
-      unit2: localRow.unit2,
-      isCompleted: localRow.isCompleted,
-      timestamp: localRow.timestamp,
-      syncMetadata: SyncMetadata(
-        updatedAt: localRow.updatedAt,
-        deletedAt: localRow.deletedAt,
-        syncStatus: localRow.syncStatus.name,
-        remoteVersion: localRow.remoteVersion,
+    return UpsertSetLogOp(
+      SetLog(
+        id: localRow.id,
+        sessionId: localRow.sessionId,
+        workoutExerciseId: localRow.workoutExerciseId,
+        setNumber: localRow.setNumber,
+        actualValue1: localRow.actualValue1,
+        actualValue2: localRow.actualValue2,
+        unit1: localRow.unit1,
+        unit2: localRow.unit2,
+        isCompleted: localRow.isCompleted,
+        timestamp: localRow.timestamp,
+        syncMetadata: SyncMetadata(
+          updatedAt: localRow.updatedAt,
+          deletedAt: localRow.deletedAt,
+          syncStatus: localRow.syncStatus.name,
+          remoteVersion: localRow.remoteVersion,
+        ),
       ),
     );
-
-    await _workoutRemoteDataSource.upsertSetLog(uid, localEntity);
   }
 
-  Future<void> _processLibraryExerciseOutbox(String uid, OutboxChangeData change) async {
+  Future<RemoteWriteOp?> _buildLibraryExerciseOp(OutboxChangeData change) async {
     final localRow = await (_database.select(_database.libraryExercises)
           ..where((tbl) => tbl.id.equals(change.entityId)))
         .getSingleOrNull();
 
     if (change.operation == 'delete' || localRow?.deletedAt != null) {
-      await _workoutRemoteDataSource.markLibraryExerciseDeleted(uid, change.entityId);
-      return;
+      return DeleteRemoteOp(entityType: 'libraryExercise', entityId: change.entityId);
     }
 
     if (localRow == null) {
-      return;
+      return null;
     }
 
-    final localEntity = LibraryExerciseEntity(
-      id: localRow.id,
-      name: localRow.name,
-      nameEn: localRow.nameEn,
-      nameEs: localRow.nameEs,
-      isCustom: localRow.isCustom,
-      syncMetadata: SyncMetadata(
-        updatedAt: localRow.updatedAt,
-        deletedAt: localRow.deletedAt,
-        syncStatus: localRow.syncStatus.name,
-        remoteVersion: localRow.remoteVersion,
+    return UpsertLibraryExerciseOp(
+      LibraryExerciseEntity(
+        id: localRow.id,
+        name: localRow.name,
+        nameEn: localRow.nameEn,
+        nameEs: localRow.nameEs,
+        isCustom: localRow.isCustom,
+        syncMetadata: SyncMetadata(
+          updatedAt: localRow.updatedAt,
+          deletedAt: localRow.deletedAt,
+          syncStatus: localRow.syncStatus.name,
+          remoteVersion: localRow.remoteVersion,
+        ),
       ),
     );
-
-    await _workoutRemoteDataSource.upsertLibraryExercise(uid, localEntity);
   }
 
   Future<void> _markEntitySynced({

@@ -698,6 +698,100 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                     }
                   }
 
+                  @override
+                  Future<Either<Failure, List<SetLog>>> getLastCompletedLogsForRoutine(
+                    String routineId, {
+                    required String excludeSessionId,
+                  }) async {
+                    try {
+                      final lastSession = await (database.select(database.sessions)
+                            ..where((session) => session.routineId.equals(routineId))
+                            ..where((session) => session.deletedAt.isNull())
+                            ..where((session) => session.isCompleted.equals(true))
+                            ..where((session) => session.id.equals(excludeSessionId).not())
+                            ..orderBy([(session) => OrderingTerm.desc(session.createdAt)])
+                            ..limit(1))
+                          .getSingleOrNull();
+
+                      if (lastSession == null) {
+                        return const Either<Failure, List<SetLog>>.right(<SetLog>[]);
+                      }
+
+                      return getLogsForSession(lastSession.id);
+                    } catch (e) {
+                      return Either<Failure, List<SetLog>>.left(DatabaseFailure(e.toString()));
+                    }
+                  }
+
+                  @override
+                  Future<Either<Failure, List<ExerciseHistoryEntry>>> getExerciseHistory(
+                    String workoutExerciseId,
+                  ) async {
+                    try {
+                      final logDataList = await (database.select(database.setLogs)
+                            ..where((log) => log.workoutExerciseId.equals(workoutExerciseId))
+                            ..where((log) => log.deletedAt.isNull()))
+                          .get();
+
+                      if (logDataList.isEmpty) {
+                        return const Either<Failure, List<ExerciseHistoryEntry>>.right(
+                          <ExerciseHistoryEntry>[],
+                        );
+                      }
+
+                      final sessionIds =
+                          logDataList.map((log) => log.sessionId).toSet().toList();
+
+                      final sessionRows = await (database.select(database.sessions)
+                            ..where((session) => session.id.isIn(sessionIds))
+                            ..where((session) => session.deletedAt.isNull())
+                            ..where((session) => session.isCompleted.equals(true)))
+                          .get();
+
+                      final sessionDateById = {
+                        for (final session in sessionRows) session.id: session.createdAt,
+                      };
+
+                      // Group logs by session, keeping only completed sessions.
+                      final logsBySession = <String, List<SetLogData>>{};
+                      for (final log in logDataList) {
+                        if (!sessionDateById.containsKey(log.sessionId)) {
+                          continue;
+                        }
+                        logsBySession.putIfAbsent(log.sessionId, () => []).add(log);
+                      }
+
+                      final entries = <ExerciseHistoryEntry>[];
+                      logsBySession.forEach((sessionId, logs) {
+                        // Deduplicate by set number, then order.
+                        final seen = <int, SetLogData>{};
+                        for (final log in logs) {
+                          seen.putIfAbsent(log.setNumber, () => log);
+                        }
+                        final orderedSets = seen.values.toList()
+                          ..sort((a, b) => a.setNumber.compareTo(b.setNumber));
+
+                        entries.add(
+                          ExerciseHistoryEntry(
+                            sessionId: sessionId,
+                            date: sessionDateById[sessionId]!,
+                            sets: orderedSets
+                                .map((log) => _mapSetLogDataToEntity(log))
+                                .toList(),
+                          ),
+                        );
+                      });
+
+                      entries.sort((a, b) => b.date.compareTo(a.date));
+
+                      return Either<Failure, List<ExerciseHistoryEntry>>.right(entries);
+                    } catch (e) {
+                      return Either<Failure, List<ExerciseHistoryEntry>>.left(
+                        DatabaseFailure(e.toString()),
+                      );
+                    }
+                  }
+
                   Future<List<WorkoutExercise>> _fetchExercisesForRoutine(
                     String routineId,
                   ) async {

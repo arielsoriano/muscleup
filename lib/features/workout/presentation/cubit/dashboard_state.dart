@@ -11,6 +11,7 @@ class DashboardState with _$DashboardState {
     @Default([]) List<WorkoutSession> sessions,
     @Default([]) List<WorkoutSession> activeSessions,
     @Default([]) List<WorkoutSession> completedSessions,
+    @Default([]) List<WorkoutSession> allCompletedSessions,
     @Default([]) List<WorkoutRoutine> routines,
   }) = DashboardStateInitial;
 
@@ -19,6 +20,7 @@ class DashboardState with _$DashboardState {
     @Default([]) List<WorkoutSession> sessions,
     @Default([]) List<WorkoutSession> activeSessions,
     @Default([]) List<WorkoutSession> completedSessions,
+    @Default([]) List<WorkoutSession> allCompletedSessions,
     @Default([]) List<WorkoutRoutine> routines,
   }) = DashboardStateLoading;
 
@@ -27,6 +29,7 @@ class DashboardState with _$DashboardState {
     required List<WorkoutSession> sessions,
     @Default([]) List<WorkoutSession> activeSessions,
     @Default([]) List<WorkoutSession> completedSessions,
+    @Default([]) List<WorkoutSession> allCompletedSessions,
     @Default([]) List<WorkoutRoutine> routines,
   }) = DashboardStateSuccess;
 
@@ -36,6 +39,7 @@ class DashboardState with _$DashboardState {
     @Default([]) List<WorkoutSession> sessions,
     @Default([]) List<WorkoutSession> activeSessions,
     @Default([]) List<WorkoutSession> completedSessions,
+    @Default([]) List<WorkoutSession> allCompletedSessions,
     @Default([]) List<WorkoutRoutine> routines,
   }) = DashboardStateError;
 }

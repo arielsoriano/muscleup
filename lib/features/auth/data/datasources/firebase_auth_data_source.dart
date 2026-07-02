@@ -22,6 +22,15 @@ class FirebaseAuthDataSource {
   }
 
   Future<CloudUser> signInAnonymously() async {
+    // Never create a new anonymous account if a session already exists.
+    // On cold start Firebase may briefly report no user before restoring the
+    // persisted (possibly Google-linked) session; signing in anonymously here
+    // would clobber that session and log the user out on every restart.
+    final existing = _firebaseAuth.currentUser;
+    if (existing != null) {
+      return _mapFirebaseUser(existing)!;
+    }
+
     final result = await _firebaseAuth.signInAnonymously();
     return _mapFirebaseUser(result.user)!;
   }
@@ -69,12 +78,36 @@ class FirebaseAuthDataSource {
 
   CloudUser? _mapFirebaseUser(User? user) {
     if (user == null) return null;
+
+    // On a restored session the top-level email/displayName can be empty even
+    // though the Google provider still carries them, so fall back to the
+    // provider profile to avoid showing a linked account with no email.
+    var email = _nullIfEmpty(user.email);
+    var displayName = _nullIfEmpty(user.displayName);
+    var photoUrl = _nullIfEmpty(user.photoURL);
+
+    if (email == null || displayName == null || photoUrl == null) {
+      for (final profile in user.providerData) {
+        if (profile.providerId == 'google.com') {
+          email ??= _nullIfEmpty(profile.email);
+          displayName ??= _nullIfEmpty(profile.displayName);
+          photoUrl ??= _nullIfEmpty(profile.photoURL);
+          break;
+        }
+      }
+    }
+
     return CloudUser(
       uid: user.uid,
       isAnonymous: user.isAnonymous,
-      email: user.email,
-      displayName: user.displayName,
-      photoUrl: user.photoURL,
+      email: email,
+      displayName: displayName,
+      photoUrl: photoUrl,
     );
+  }
+
+  String? _nullIfEmpty(String? value) {
+    if (value == null || value.isEmpty) return null;
+    return value;
   }
 }

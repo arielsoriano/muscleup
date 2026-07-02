@@ -61,6 +61,7 @@ class DashboardCubit extends Cubit<DashboardState> {
                 sessions: state.sessions,
                 activeSessions: state.activeSessions,
                 completedSessions: state.completedSessions,
+                allCompletedSessions: state.allCompletedSessions,
                 routines: routines,
               ),
             );
@@ -91,13 +92,18 @@ class DashboardCubit extends Cubit<DashboardState> {
                 .toList();
             final filteredSessions = _filterSessionsByDate(state.selectedDate);
             final completedSessions = _filterCompletedSessionsByDate(state.selectedDate);
-            
+            final allCompletedSessions = sessions
+                .where((s) => s.isCompleted)
+                .toList()
+              ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
             emit(
               DashboardState.success(
                 selectedDate: state.selectedDate,
                 sessions: filteredSessions,
                 activeSessions: activeSessions,
                 completedSessions: completedSessions,
+                allCompletedSessions: allCompletedSessions,
                 routines: state.routines,
               ),
             );
@@ -118,6 +124,7 @@ class DashboardCubit extends Cubit<DashboardState> {
         sessions: filteredSessions,
         activeSessions: state.activeSessions,
         completedSessions: completedSessions,
+        allCompletedSessions: state.allCompletedSessions,
         routines: state.routines,
       ),
     );

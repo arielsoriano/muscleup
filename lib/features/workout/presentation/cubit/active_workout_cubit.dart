@@ -51,6 +51,17 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
   final _uuid = const Uuid();
   late final String _sessionId;
 
+  /// Actual values from the most recent completed session of this routine,
+  /// keyed by '<workoutExerciseId>:<setNumber>'. Used to show the "last time"
+  /// reference next to each set. Loaded once during [loadInitialData].
+  final Map<String, SetLog> _previousLogsByKey = {};
+
+  /// Returns what was actually done for a given set in the previous session,
+  /// or null if there is no previous record.
+  SetLog? previousLogFor(String workoutExerciseId, int setNumber) {
+    return _previousLogsByKey['$workoutExerciseId:$setNumber'];
+  }
+
   Future<void> loadInitialData() async {
     
     emit(ActiveWorkoutState.loading(routine: state.routine));
@@ -184,6 +195,8 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
 
         final updatedRoutine = routine.copyWith(exercises: updatedExercises);
 
+        await _loadPreviousLogs(routine.id);
+
         emit(
           ActiveWorkoutState.tracking(
             routine: updatedRoutine,
@@ -192,6 +205,25 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
             isViewingHistory: historicalSession.isCompleted,
           ),
         );
+      },
+    );
+  }
+
+  Future<void> _loadPreviousLogs(String routineId) async {
+    final result = await _repository.getLastCompletedLogsForRoutine(
+      routineId,
+      excludeSessionId: _sessionId,
+    );
+
+    result.fold(
+      (_) {},
+      (logs) {
+        _previousLogsByKey.clear();
+        for (final log in logs) {
+          // Only surface sets that were actually performed last time.
+          if (!log.isCompleted) continue;
+          _previousLogsByKey['${log.workoutExerciseId}:${log.setNumber}'] = log;
+        }
       },
     );
   }
@@ -324,6 +356,8 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
       );
       return;
     }
+
+    await _loadPreviousLogs(routine.id);
 
     emit(
       ActiveWorkoutState.tracking(

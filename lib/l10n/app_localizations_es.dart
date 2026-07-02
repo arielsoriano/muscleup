@@ -480,10 +480,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get syncPending => 'Sincronización pendiente';
 
   @override
-  String get synced => 'Sincronizado';
+  String get synced => 'Copia de seguridad al día';
 
   @override
-  String get syncLocked => 'Sincronización bloqueada';
+  String get syncLocked => 'Copia de seguridad desactivada';
 
   @override
   String lastSync(String date) {
@@ -496,4 +496,50 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get refreshNow => 'Actualizar ahora';
+
+  @override
+  String lastTimeValue(String value) {
+    return 'La vez pasada: $value';
+  }
+
+  @override
+  String get exerciseProgressTitle => 'Progreso';
+
+  @override
+  String get viewProgress => 'Ver progreso';
+
+  @override
+  String get noProgressYet =>
+      'Todavía no hay registros. Terminá un entrenamiento con este ejercicio para ver tu progreso acá.';
+
+  @override
+  String progressSessionsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sesiones',
+      one: '1 sesión',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpFeedbackSection => 'Ayuda y feedback';
+
+  @override
+  String get sendFeedback => 'Enviar feedback';
+
+  @override
+  String get sendFeedbackSubtitle =>
+      'Sugerencias, ideas o reportar un problema';
+
+  @override
+  String get feedbackEmailSubject => 'Muscleup — Feedback';
+
+  @override
+  String get feedbackEmailBody => 'Escribí tu feedback, idea o problema acá:';
+
+  @override
+  String get emailCopiedToClipboard =>
+      'No pudimos abrir tu app de correo. Copiamos la dirección al portapapeles.';
 }

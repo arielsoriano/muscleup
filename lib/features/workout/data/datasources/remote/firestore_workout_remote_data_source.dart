@@ -258,6 +258,125 @@ class FirestoreWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
     }
   }
 
+  @override
+  Future<void> commitBatch(String uid, List<RemoteWriteOp> operations) async {
+    if (operations.isEmpty) {
+      return;
+    }
+
+    // Firestore allows up to 500 writes per batch; stay comfortably under it.
+    const chunkSize = 450;
+
+    try {
+      for (var start = 0; start < operations.length; start += chunkSize) {
+        final end = start + chunkSize < operations.length
+            ? start + chunkSize
+            : operations.length;
+        final batch = _firestore.batch();
+
+        for (final op in operations.sublist(start, end)) {
+          final resolved = _resolveWriteOp(op);
+          batch.set(
+            _collection(uid, resolved.collection).doc(resolved.docId),
+            resolved.data,
+            SetOptions(merge: true),
+          );
+        }
+
+        await batch.commit().timeout(_operationTimeout);
+      }
+    } on FirebaseException catch (error) {
+      _logFirebaseError('commitBatch', 'batch', error);
+      throw DatabaseException(_firebaseErrorMessage(error, 'batch'));
+    } on TimeoutException {
+      throw const DatabaseException('Firestore timeout during batch commit');
+    } catch (error) {
+      if (kDebugMode) {
+        developer.log(
+          'Unexpected Firestore batch commit error: $error',
+          name: 'workout.remote',
+        );
+      }
+      throw const DatabaseException('Unexpected Firestore error during batch commit');
+    }
+  }
+
+  _ResolvedWrite _resolveWriteOp(RemoteWriteOp op) {
+    switch (op) {
+      case UpsertRoutineOp(:final routine):
+        return _ResolvedWrite(
+          'routines',
+          routine.id,
+          RoutineRemoteDto.fromDomain(routine).toFirestore(),
+        );
+      case UpsertExerciseOp(:final exercise, :final routineId):
+        return _ResolvedWrite(
+          'exercises',
+          exercise.id,
+          ExerciseRemoteDto.fromDomain(exercise, routineId).toFirestore(),
+        );
+      case UpsertSetOp(:final workoutSet, :final exerciseId):
+        return _ResolvedWrite(
+          'sets',
+          workoutSet.id,
+          SetRemoteDto.fromDomain(workoutSet, exerciseId).toFirestore(),
+        );
+      case UpsertSessionOp(:final session):
+        return _ResolvedWrite(
+          'sessions',
+          session.id,
+          SessionRemoteDto.fromDomain(session).toFirestore(),
+        );
+      case UpsertSetLogOp(:final setLog):
+        return _ResolvedWrite(
+          'setLogs',
+          setLog.id,
+          SetLogRemoteDto.fromDomain(setLog).toFirestore(),
+        );
+      case UpsertLibraryExerciseOp(:final libraryExercise):
+        return _ResolvedWrite(
+          'libraryExercises',
+          libraryExercise.id,
+          LibraryExerciseRemoteDto.fromDomain(libraryExercise).toFirestore(),
+        );
+      case DeleteRemoteOp(:final entityType, :final entityId):
+        return _ResolvedWrite(
+          _collectionForEntityType(entityType),
+          entityId,
+          _deleteMarkerData(),
+        );
+    }
+  }
+
+  String _collectionForEntityType(String entityType) {
+    switch (entityType) {
+      case 'routine':
+        return 'routines';
+      case 'exercise':
+        return 'exercises';
+      case 'set':
+        return 'sets';
+      case 'session':
+        return 'sessions';
+      case 'setLog':
+        return 'setLogs';
+      case 'libraryExercise':
+        return 'libraryExercises';
+      default:
+        return entityType;
+    }
+  }
+
+  Map<String, dynamic> _deleteMarkerData() {
+    final now = DateTime.now();
+    return <String, dynamic>{
+      'updatedAt': Timestamp.fromDate(now),
+      'deletedAt': Timestamp.fromDate(now),
+      'syncStatus': 'synced',
+      'remoteVersion': FieldValue.increment(1),
+    };
+  }
+
   Future<void> _upsert(
     String uid,
     String collection,
@@ -369,7 +488,19 @@ class FirestoreWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   }
 }
 
+class _ResolvedWrite {
+  const _ResolvedWrite(this.collection, this.docId, this.data);
+
+  final String collection;
+  final String docId;
+  final Map<String, dynamic> data;
+}
+
 class NoopWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
+  @override
+  Future<void> commitBatch(String uid, List<RemoteWriteOp> operations) =>
+      _notConfigured();
+
   @override
   Future<void> upsertRoutine(String uid, WorkoutRoutine routine) => _notConfigured();
 

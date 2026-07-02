@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/router/app_router.dart';
@@ -56,6 +60,8 @@ class _SettingsView extends StatelessWidget {
           _ExerciseLibrarySection(),
           _DividerSection(),
           _LanguageSection(),
+          _DividerSection(),
+          _FeedbackSection(),
           _DividerSection(),
           _AppInfoSection(),
         ],
@@ -301,27 +307,23 @@ class _SyncSection extends StatelessWidget {
         return BlocBuilder<SyncStatusCubit, SyncStatusState>(
           builder: (context, syncStatusState) {
             final lastRunMetrics = syncStatusState.lastRunMetrics;
-            final now = DateTime.now();
-            final isStaleSync = lastRunMetrics == null
-                ? true
-                : now.difference(lastRunMetrics.endedAt) >
-                    const Duration(minutes: 15);
-            
+
             final lastSyncLabel = lastRunMetrics == null
-                ? context.l10n.neverSynced
-                : DateFormat(
-                    'yyyy-MM-dd HH:mm:ss',
-                    locale,
-                  ).format(lastRunMetrics.endedAt);
+                ? null
+                : DateFormat.yMMMd(locale)
+                    .add_jm()
+                    .format(lastRunMetrics.endedAt);
 
             final title = syncStatusState.isSyncing
                 ? context.l10n.syncing
                 : cloudSyncEnabled
-                    ? (isStaleSync ? context.l10n.syncPending : context.l10n.synced)
+                    ? context.l10n.synced
                     : context.l10n.syncLocked;
 
             final subtitle = cloudSyncEnabled
-                ? context.l10n.lastSync(lastSyncLabel)
+                ? (lastSyncLabel == null
+                    ? null
+                    : context.l10n.lastSync(lastSyncLabel))
                 : context.l10n.linkGoogleForSync;
 
             return Column(
@@ -337,7 +339,7 @@ class _SyncSection extends StatelessWidget {
                             : Icons.cloud_off_rounded),
                   ),
                   title: Text(title),
-                  subtitle: Text(subtitle),
+                  subtitle: subtitle == null ? null : Text(subtitle),
                 ),
                 if (syncStatusState.isSyncing)
                   const Padding(
@@ -901,6 +903,92 @@ class _ExerciseLibrarySection extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+class _FeedbackSection extends StatelessWidget {
+  const _FeedbackSection();
+
+  static const String _contactEmail = 'lrarielsoriano@gmail.com';
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionHeader(context.l10n.helpFeedbackSection),
+        ListTile(
+          leading: const Icon(Icons.feedback_outlined),
+          title: Text(context.l10n.sendFeedback),
+          subtitle: const Text(_contactEmail),
+          trailing: const Icon(Icons.chevron_right_rounded),
+          onTap: () => _sendFeedback(context),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _sendFeedback(BuildContext context) async {
+    final subject = context.l10n.feedbackEmailSubject;
+    final bodyIntro = context.l10n.feedbackEmailBody;
+    final copiedMessage = context.l10n.emailCopiedToClipboard;
+
+    String version = '';
+    String build = '';
+    try {
+      final info = await PackageInfo.fromPlatform();
+      version = info.version;
+      build = info.buildNumber;
+    } catch (_) {
+      // Version info is best-effort; ignore if unavailable.
+    }
+
+    final platform = Platform.isAndroid
+        ? 'Android'
+        : Platform.isIOS
+            ? 'iOS'
+            : 'Other';
+
+    final body = '$bodyIntro\n\n\n\n'
+        '-------------------\n'
+        'Muscleup v$version ($build) · $platform';
+
+    final uri = Uri(
+      scheme: 'mailto',
+      path: _contactEmail,
+      query: _encodeQueryParameters({'subject': subject, 'body': body}),
+    );
+
+    var launched = false;
+    try {
+      launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      launched = false;
+    }
+
+    if (launched || !context.mounted) {
+      return;
+    }
+
+    // Fallback: no email client available — copy the address so the user can
+    // still reach out.
+    await Clipboard.setData(const ClipboardData(text: _contactEmail));
+    if (!context.mounted) {
+      return;
+    }
+    context.showAppSnackBar(
+      message: copiedMessage,
+      type: SnackBarType.info,
+    );
+  }
+
+  String _encodeQueryParameters(Map<String, String> params) {
+    return params.entries
+        .map(
+          (entry) =>
+              '${Uri.encodeComponent(entry.key)}=${Uri.encodeComponent(entry.value)}',
+        )
+        .join('&');
   }
 }
 

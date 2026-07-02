@@ -6,6 +6,7 @@ import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../features/workout/domain/entities/workout_entities.dart';
 import '../../features/workout/presentation/pages/active_workout_page.dart';
 import '../../features/workout/presentation/pages/dashboard_page.dart';
+import '../../features/workout/presentation/pages/exercise_progress_page.dart';
 import '../../features/workout/presentation/pages/routine_form_page.dart';
 import '../../features/workout/presentation/pages/routines_page.dart';
 import '../../features/workout/presentation/pages/workout_details_page.dart';
@@ -19,6 +20,7 @@ class AppRoutes {
   static const String editRoutine = '/edit-routine/:id';
   static const String settings = '/settings';
   static const String exerciseLibrary = '/exercise-library';
+  static const String exerciseProgress = '/exercise-progress';
 
   static String routineDetailsPath(String id) => '/routine/$id';
   static String editRoutinePath(String id) => '/edit-routine/$id';
@@ -102,6 +104,20 @@ GoRouter createAppRouter() {
             context: context,
             state: state,
             child: const ExerciseLibraryPage(),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.exerciseProgress,
+        pageBuilder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return _buildFadeTransitionPage(
+            context: context,
+            state: state,
+            child: ExerciseProgressPage(
+              workoutExerciseId: extra?['workoutExerciseId'] as String? ?? '',
+              exerciseName: extra?['exerciseName'] as String? ?? '',
+            ),
           );
         },
       ),

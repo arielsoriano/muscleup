@@ -758,6 +758,8 @@ class _ActiveWorkoutPageContentState extends State<_ActiveWorkoutPageContent> {
                     color: colorScheme.onSurfaceVariant,
                   ),
                 ),
+                if (!isViewingHistory)
+                  _buildPreviousHint(context, log, templateSet),
                 const SizedBox(height: 8),
                 Row(
                   children: [
@@ -821,6 +823,81 @@ class _ActiveWorkoutPageContentState extends State<_ActiveWorkoutPageContent> {
         ],
       ),
     );
+  }
+
+  Widget _buildPreviousHint(
+    BuildContext context,
+    SetLog log,
+    WorkoutSet? templateSet,
+  ) {
+    final previous = context
+        .read<ActiveWorkoutCubit>()
+        .previousLogFor(log.workoutExerciseId, log.setNumber);
+    if (previous == null) {
+      return const SizedBox.shrink();
+    }
+
+    // Only surface "last time" when it differs from the current target;
+    // otherwise it is redundant noise.
+    final targetValue1 = templateSet?.targetValue1 ?? log.actualValue1;
+    final targetValue2 = templateSet?.targetValue2 ?? log.actualValue2;
+    if (previous.actualValue1 == targetValue1 &&
+        previous.actualValue2 == targetValue2) {
+      return const SizedBox.shrink();
+    }
+
+    final formatted = _formatPerformedValues(previous);
+    if (formatted.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 3),
+      child: Row(
+        children: [
+          Icon(
+            Icons.history_rounded,
+            size: 13,
+            color: colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              context.l10n.lastTimeValue(formatted),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatPerformedValues(SetLog log) {
+    final parts = <String>[];
+
+    if (log.unit1 != null && log.unit1 != WorkoutUnit.none) {
+      final value = log.actualValue1?.formatClean();
+      if (value != null) {
+        parts.add('$value${_formatUnit(log.unit1)}');
+      }
+    }
+
+    if (log.unit2 != null && log.unit2 != WorkoutUnit.none) {
+      final value = log.actualValue2?.formatClean();
+      if (value != null) {
+        parts.add('$value${_formatUnit(log.unit2)}');
+      }
+    }
+
+    return parts.join(' × ');
   }
 
   Widget _buildValueInput(
@@ -928,20 +1005,33 @@ class _ActiveWorkoutPageContentState extends State<_ActiveWorkoutPageContent> {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     var draftValueText = initialValue?.formatClean() ?? '';
+    var updateTarget = false;
 
     final result = await showModalBottomSheet<_SetEditorResult>(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
       builder: (sheetContext) {
-        return Padding(
-          padding: EdgeInsets.fromLTRB(
-            16,
-            8,
-            16,
-            MediaQuery.of(sheetContext).viewInsets.bottom + 16,
-          ),
-          child: Column(
+        return StatefulBuilder(
+          builder: (sheetContext, setSheetState) {
+            void submit() {
+              final parsed = _parseSetValue(draftValueText);
+              Navigator.of(sheetContext).pop(
+                _SetEditorResult(
+                  value: parsed,
+                  saveAsTarget: updateTarget,
+                ),
+              );
+            }
+
+            return Padding(
+              padding: EdgeInsets.fromLTRB(
+                16,
+                8,
+                16,
+                MediaQuery.of(sheetContext).viewInsets.bottom + 16,
+              ),
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -973,50 +1063,33 @@ class _ActiveWorkoutPageContentState extends State<_ActiveWorkoutPageContent> {
                     onChanged: (value) {
                       draftValueText = value;
                     },
+                    onFieldSubmitted: (_) => submit(),
                   ),
-                  const SizedBox(height: 16),
-                  const Divider(height: 1),
-                  ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-                    leading: Icon(
-                      Icons.check_circle_outline,
-                      color: colorScheme.primary,
-                    ),
-                    title: Text(context.l10n.saveForToday),
-                    subtitle: Text(context.l10n.saveForTodayDetail),
-                    onTap: () {
-                      final parsed = _parseSetValue(draftValueText);
-                      Navigator.of(sheetContext).pop(
-                        _SetEditorResult(
-                          value: parsed,
-                          saveAsTarget: false,
-                        ),
-                      );
+                  const SizedBox(height: 8),
+                  CheckboxListTile(
+                    contentPadding: EdgeInsets.zero,
+                    controlAffinity: ListTileControlAffinity.leading,
+                    dense: true,
+                    value: updateTarget,
+                    onChanged: (value) {
+                      setSheetState(() => updateTarget = value ?? false);
                     },
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-                    leading: Icon(
-                      Icons.flag_outlined,
-                      color: colorScheme.tertiary,
-                    ),
                     title: Text(context.l10n.updateRoutineTarget),
                     subtitle: Text(context.l10n.updateRoutineTargetDetail),
-                    onTap: () {
-                      final parsed = _parseSetValue(draftValueText);
-                      Navigator.of(sheetContext).pop(
-                        _SetEditorResult(
-                          value: parsed,
-                          saveAsTarget: true,
-                        ),
-                      );
-                    },
                   ),
-                  const Divider(height: 1),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: submit,
+                      child: Text(context.l10n.save),
+                    ),
+                  ),
                 ],
               ),
             );
+          },
+        );
       },
     );
     return result;

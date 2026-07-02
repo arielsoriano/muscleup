@@ -477,10 +477,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get syncPending => 'Sync pending';
 
   @override
-  String get synced => 'Synced';
+  String get synced => 'Backed up';
 
   @override
-  String get syncLocked => 'Cloud sync locked';
+  String get syncLocked => 'Backup off';
 
   @override
   String lastSync(String date) {
@@ -493,4 +493,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get refreshNow => 'Refresh now';
+
+  @override
+  String lastTimeValue(String value) {
+    return 'Last time: $value';
+  }
+
+  @override
+  String get exerciseProgressTitle => 'Progress';
+
+  @override
+  String get viewProgress => 'View progress';
+
+  @override
+  String get noProgressYet =>
+      'No records yet. Finish a workout with this exercise to see your progress here.';
+
+  @override
+  String progressSessionsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sessions',
+      one: '1 session',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpFeedbackSection => 'Help & feedback';
+
+  @override
+  String get sendFeedback => 'Send feedback';
+
+  @override
+  String get sendFeedbackSubtitle => 'Suggestions, ideas or report a problem';
+
+  @override
+  String get feedbackEmailSubject => 'Muscleup — Feedback';
+
+  @override
+  String get feedbackEmailBody => 'Write your feedback, idea or problem here:';
+
+  @override
+  String get emailCopiedToClipboard =>
+      'Couldn\'t open your email app. The address was copied to your clipboard.';
 }

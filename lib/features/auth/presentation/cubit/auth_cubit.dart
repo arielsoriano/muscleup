@@ -29,8 +29,14 @@ class AuthCubit extends Cubit<AuthState> {
   final SignOutCloudUseCase _signOutCloud;
 
   StreamSubscription<CloudUser?>? _authSubscription;
+  Timer? _anonymousSignInTimer;
   static const Duration _anonymousAuthTimeout = Duration(seconds: 15);
   static const Duration _googleLinkTimeout = Duration(seconds: 45);
+
+  // On cold start Firebase can briefly report "no user" before it finishes
+  // restoring the persisted session. Wait this long before creating an
+  // anonymous account, so we don't clobber a session that is still loading.
+  static const Duration _restoreGracePeriod = Duration(seconds: 2);
 
   void _bootstrap() {
     try {
@@ -46,14 +52,23 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   void _onAuthStateChanged(CloudUser? user) {
-    if (state is AuthLoading) return;
-
-    if (user == null) {
-      _signInAnonymouslyNow();
+    if (user != null) {
+      // A real session arrived (restored or freshly linked); cancel any pending
+      // anonymous sign-in so it can't overwrite this session.
+      _anonymousSignInTimer?.cancel();
+      if (state is AuthLoading) return;
+      _emitUserState(user);
       return;
     }
 
-    _emitUserState(user);
+    if (state is AuthLoading) return;
+
+    // Defer the anonymous sign-in: if a persisted session is still being
+    // restored it will arrive within the grace period and cancel this.
+    _anonymousSignInTimer?.cancel();
+    _anonymousSignInTimer = Timer(_restoreGracePeriod, () {
+      if (!isClosed) _signInAnonymouslyNow();
+    });
   }
 
   Future<void> _signInAnonymouslyNow() async {
@@ -62,7 +77,10 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       emit(const AuthLoading());
       final user = await _signInAnonymously().timeout(_anonymousAuthTimeout);
-      if (!isClosed) emit(AuthAnonymous(user));
+      // The data source may return an already-restored (possibly Google-linked)
+      // session instead of creating a new anonymous one, so emit the state that
+      // matches the actual user rather than assuming anonymous.
+      if (!isClosed) _emitUserState(user);
     } catch (_) {
       if (!isClosed) emit(const AuthUnavailable());
     }
@@ -150,6 +168,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   @override
   Future<void> close() {
+    _anonymousSignInTimer?.cancel();
     _authSubscription?.cancel();
     return super.close();
   }

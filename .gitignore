@@ -120,4 +120,5 @@ app.*.symbols
 
 # Firebase & Credentials - NEVER commit
 android/app/google-services.json
+android/google-services.json
 ios/GoogleService-Info.plist

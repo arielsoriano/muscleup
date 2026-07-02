@@ -10,6 +10,7 @@ import '../../../../core/utils/ui_helpers.dart';
 import '../../../../core/widgets/app_logo.dart';
 import '../../../settings/presentation/cubit/sync_status_cubit.dart';
 import '../../domain/entities/workout_entities.dart';
+import '../../domain/repositories/workout_repository.dart';
 import '../cubit/dashboard_cubit.dart';
 import '../cubit/dashboard_state.dart';
 import 'routines_page.dart';
@@ -38,13 +39,6 @@ class _DashboardPageState extends State<DashboardPage> {
       if (index != 1) {
         _returnToTodayAfterRoutineDetails = false;
       }
-    });
-  }
-
-  void _handleGoToRoutinesFromToday() {
-    setState(() {
-      _currentIndex = 1;
-      _returnToTodayAfterRoutineDetails = true;
     });
   }
 
@@ -97,7 +91,6 @@ class _DashboardPageState extends State<DashboardPage> {
         currentIndex: _currentIndex,
         onTabSelected: _handleTabSelected,
         onGoToToday: _handleGoToToday,
-        onGoToRoutinesFromToday: _handleGoToRoutinesFromToday,
         onOpenRoutineDetails: _handleOpenRoutineDetails,
         onStartRoutineFromList: _handleStartRoutineFromRoutinesList,
         returnToTodayAfterRoutineDetails: _returnToTodayAfterRoutineDetails,
@@ -111,7 +104,6 @@ class _ShellContent extends StatelessWidget {
     required this.currentIndex,
     required this.onTabSelected,
     required this.onGoToToday,
-    required this.onGoToRoutinesFromToday,
     required this.onOpenRoutineDetails,
     required this.onStartRoutineFromList,
     required this.returnToTodayAfterRoutineDetails,
@@ -120,7 +112,6 @@ class _ShellContent extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTabSelected;
   final VoidCallback onGoToToday;
-  final VoidCallback onGoToRoutinesFromToday;
   final Future<void> Function(BuildContext context, String routineId)
       onOpenRoutineDetails;
   final Future<void> Function(
@@ -155,25 +146,20 @@ class _ShellContent extends StatelessWidget {
         }),
       ),
       child: Scaffold(
-        body: Stack(
+        body: IndexedStack(
+          index: currentIndex,
           children: [
-            IndexedStack(
-              index: currentIndex,
-              children: [
-                _TodayTab(
-                  onGoToToday: onGoToToday,
-                  onGoToRoutines: onGoToRoutinesFromToday,
-                ),
-                RoutinesPage(
-                  onGoToToday: onGoToToday,
-                  onOpenRoutineDetails: onOpenRoutineDetails,
-                  onStartRoutine: onStartRoutineFromList,
-                  returnToToday: returnToTodayAfterRoutineDetails,
-                ),
-                _HistoryTab(onGoToToday: onGoToToday),
-              ],
+            _TodayTab(
+              onGoToToday: onGoToToday,
+              onStartRoutine: onStartRoutineFromList,
             ),
-            const _InitialSyncOverlay(),
+            RoutinesPage(
+              onGoToToday: onGoToToday,
+              onOpenRoutineDetails: onOpenRoutineDetails,
+              onStartRoutine: onStartRoutineFromList,
+              returnToToday: returnToTodayAfterRoutineDetails,
+            ),
+            _HistoryTab(onGoToToday: onGoToToday),
           ],
         ),
         bottomNavigationBar: NavigationBar(
@@ -203,89 +189,15 @@ class _ShellContent extends StatelessWidget {
   }
 }
 
-class _InitialSyncOverlay extends StatelessWidget {
-  const _InitialSyncOverlay();
+class _SettingsButton extends StatelessWidget {
+  const _SettingsButton();
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SyncStatusCubit, SyncStatusState>(
-      builder: (context, syncState) {
-        final showOverlay = syncState.isSyncing && syncState.lastRunMetrics == null;
-        if (!showOverlay) {
-          return const SizedBox.shrink();
-        }
-
-        return Positioned.fill(
-          child: AbsorbPointer(
-            child: ColoredBox(
-              color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.92),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 320),
-                  child: Card(
-                    elevation: 0,
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const SizedBox(
-                            width: 28,
-                            height: 28,
-                            child: CircularProgressIndicator(strokeWidth: 2.5),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            context.l10n.globalSyncOverlayTitle,
-                            style: Theme.of(context).textTheme.titleMedium,
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            context.l10n.globalSyncOverlaySubtitle,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _DashboardTopMenu extends StatelessWidget {
-  const _DashboardTopMenu();
-
-  @override
-  Widget build(BuildContext context) {
-    return PopupMenuButton<String>(
-      icon: const Icon(Icons.more_vert_rounded),
-      onSelected: (value) {
-        if (value == 'settings') {
-          context.push(AppRoutes.settings);
-        }
-      },
-      itemBuilder: (_) => [
-        PopupMenuItem<String>(
-          value: 'settings',
-          child: Row(
-            children: [
-              const Icon(Icons.settings_rounded),
-              const SizedBox(width: 12),
-              Text(context.l10n.settings),
-            ],
-          ),
-        ),
-      ],
+    return IconButton(
+      icon: const Icon(Icons.settings_rounded),
+      tooltip: context.l10n.settings,
+      onPressed: () => context.push(AppRoutes.settings),
     );
   }
 }
@@ -293,11 +205,44 @@ class _DashboardTopMenu extends StatelessWidget {
 class _TodayTab extends StatelessWidget {
   const _TodayTab({
     required this.onGoToToday,
-    required this.onGoToRoutines,
+    required this.onStartRoutine,
   });
 
   final VoidCallback onGoToToday;
-  final VoidCallback onGoToRoutines;
+  final Future<void> Function(
+    BuildContext context,
+    WorkoutRoutine routine, {
+    String? sessionId,
+  }) onStartRoutine;
+
+  Future<void> _startRoutine(
+    BuildContext context,
+    WorkoutRoutine routine,
+  ) async {
+    if (routine.exercises.isEmpty) {
+      context.showAppSnackBar(
+        message: context.l10n.addExercisesFirst,
+        type: SnackBarType.info,
+      );
+      return;
+    }
+
+    final result = await serviceLocator<WorkoutRepository>()
+        .getLatestActiveSessionForRoutine(routine.id);
+
+    if (!context.mounted) return;
+
+    result.fold(
+      (_) => onStartRoutine(context, routine),
+      (activeSession) {
+        if (activeSession != null) {
+          onStartRoutine(context, routine, sessionId: activeSession.id);
+        } else {
+          onStartRoutine(context, routine);
+        }
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -308,14 +253,14 @@ class _TodayTab extends StatelessWidget {
           child: _AppLogoLeadingButton(onTap: onGoToToday),
         ),
         title: Text(context.l10n.today),
-        actions: const [_DashboardTopMenu()],
+        actions: const [_SettingsButton()],
       ),
       body: BlocBuilder<DashboardCubit, DashboardState>(
         builder: (context, state) {
           return state.map(
             initial: (_) => const Center(child: CircularProgressIndicator()),
             loading: (_) => const Center(child: CircularProgressIndicator()),
-            success: (s) => _buildBody(context, s.activeSessions),
+            success: (s) => _buildBody(context, s.activeSessions, s.routines),
             error: (s) => Center(
               child: Text(
                 s.message,
@@ -327,48 +272,65 @@ class _TodayTab extends StatelessWidget {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: const ValueKey('fab-today'),
-        onPressed: onGoToRoutines,
-        icon: const Icon(Icons.play_arrow_rounded),
-        label: Text(context.l10n.startWorkout),
-      ),
     );
   }
 
-  Widget _buildBody(BuildContext context, List<WorkoutSession> activeSessions) {
+  Widget _buildBody(
+    BuildContext context,
+    List<WorkoutSession> activeSessions,
+    List<WorkoutRoutine> routines,
+  ) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    if (activeSessions.isEmpty) {
+    if (activeSessions.isEmpty && routines.isEmpty) {
+      final isSyncing =
+          context.select((SyncStatusCubit cubit) => cubit.state.isSyncing);
+
       return LayoutBuilder(
         builder: (context, constraints) {
-          const fabClearance = 112.0;
-
           return SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, fabClearance),
+            padding: const EdgeInsets.all(24),
             child: ConstrainedBox(
               constraints: BoxConstraints(
-                minHeight: constraints.maxHeight - fabClearance,
+                minHeight: constraints.maxHeight - 48,
               ),
               child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.fitness_center_rounded,
-                      size: 80,
-                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.35),
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      context.l10n.noWorkoutToday,
-                      style: textTheme.titleMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
+                  children: isSyncing
+                      ? [
+                          const SizedBox(
+                            width: 28,
+                            height: 28,
+                            child:
+                                CircularProgressIndicator(strokeWidth: 2.5),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            context.l10n.syncing,
+                            style: textTheme.titleMedium?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ]
+                      : [
+                          Icon(
+                            Icons.fitness_center_rounded,
+                            size: 80,
+                            color: colorScheme.onSurfaceVariant
+                                .withValues(alpha: 0.35),
+                          ),
+                          const SizedBox(height: 24),
+                          Text(
+                            context.l10n.noRoutines,
+                            style: textTheme.titleMedium?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                 ),
               ),
             ),
@@ -377,15 +339,138 @@ class _TodayTab extends StatelessWidget {
       );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-      itemCount: activeSessions.length,
-      itemBuilder: (context, index) {
-        return _ActiveSessionCard(session: activeSessions[index]);
-      },
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      children: [
+        if (activeSessions.isNotEmpty) ...[
+          _TodaySectionHeader(
+            icon: Icons.play_circle_outline_rounded,
+            label: context.l10n.inProgress,
+          ),
+          const SizedBox(height: 8),
+          ...activeSessions.map(
+            (session) => _ActiveSessionCard(session: session),
+          ),
+          const SizedBox(height: 16),
+        ],
+        if (routines.isNotEmpty) ...[
+          _TodaySectionHeader(
+            icon: Icons.fitness_center_rounded,
+            label: context.l10n.startWorkout,
+          ),
+          const SizedBox(height: 8),
+          ...routines.map(
+            (routine) => _StartRoutineCard(
+              routine: routine,
+              onTap: () => _startRoutine(context, routine),
+            ),
+          ),
+        ],
+      ],
     );
   }
+}
 
+class _TodaySectionHeader extends StatelessWidget {
+  const _TodaySectionHeader({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: colorScheme.onSurfaceVariant),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: textTheme.titleSmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _StartRoutineCard extends StatelessWidget {
+  const _StartRoutineCard({required this.routine, required this.onTap});
+
+  final WorkoutRoutine routine;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final isEmptyRoutine = routine.exercises.isEmpty;
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: colorScheme.outlineVariant),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: isEmptyRoutine
+                      ? colorScheme.surfaceContainerHighest
+                      : colorScheme.primary,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.play_arrow_rounded,
+                  color: isEmptyRoutine
+                      ? colorScheme.onSurfaceVariant
+                      : colorScheme.onPrimary,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      routine.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      isEmptyRoutine
+                          ? context.l10n.emptyRoutine
+                          : '${routine.exercises.length} ${context.l10n.exercises}',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _ActiveSessionCard extends StatelessWidget {
@@ -528,7 +613,7 @@ class _HistoryTab extends StatelessWidget {
           child: _AppLogoLeadingButton(onTap: onGoToToday),
         ),
         title: Text(context.l10n.history),
-        actions: const [_DashboardTopMenu()],
+        actions: const [_SettingsButton()],
       ),
       body: BlocBuilder<DashboardCubit, DashboardState>(
         builder: (context, state) {
@@ -537,8 +622,7 @@ class _HistoryTab extends StatelessWidget {
             loading: (_) => const Center(child: CircularProgressIndicator()),
             success: (s) => _buildHistory(
               context,
-              selectedDate: s.selectedDate,
-              completedSessions: s.completedSessions,
+              completedSessions: s.allCompletedSessions,
             ),
             error: (s) => Center(
               child: Text(
@@ -556,31 +640,53 @@ class _HistoryTab extends StatelessWidget {
 
   Widget _buildHistory(
     BuildContext context, {
-    required DateTime selectedDate,
     required List<WorkoutSession> completedSessions,
   }) {
-    final sessionsForDay = completedSessions
-        .where((session) => _isSameDay(session.createdAt, selectedDate))
-        .toList()
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    if (completedSessions.isEmpty) {
+      return _buildEmptyState(context);
+    }
 
-    return Column(
-      children: [
-        _WeeklyCalendarStrip(selectedDate: selectedDate),
-        const Divider(height: 1),
-        Expanded(
-          child: sessionsForDay.isEmpty
-              ? _buildEmptyState(context)
-              : ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: sessionsForDay.length,
-                  itemBuilder: (context, index) {
-                    final session = sessionsForDay[index];
-                    return _buildSessionCard(context, session);
-                  },
-                ),
+    // completedSessions arrive sorted by date descending. Build a flat list
+    // with a lightweight date header whenever the day changes, so the user
+    // can scroll back through their whole training history.
+    final locale = Localizations.localeOf(context).languageCode;
+    final items = <Widget>[];
+    DateTime? lastHeaderDay;
+
+    for (final session in completedSessions) {
+      final day = DateTime(
+        session.createdAt.year,
+        session.createdAt.month,
+        session.createdAt.day,
+      );
+
+      if (lastHeaderDay == null || !_isSameDay(day, lastHeaderDay)) {
+        items.add(_buildDayHeader(context, day, locale));
+        lastHeaderDay = day;
+      }
+
+      items.add(_buildSessionCard(context, session));
+    }
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+      children: items,
+    );
+  }
+
+  Widget _buildDayHeader(BuildContext context, DateTime day, String locale) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 12, 4, 8),
+      child: Text(
+        DateFormat.yMMMMEEEEd(locale).format(day),
+        style: textTheme.labelLarge?.copyWith(
+          color: colorScheme.primary,
+          fontWeight: FontWeight.w700,
         ),
-      ],
+      ),
     );
   }
 
@@ -732,124 +838,5 @@ class _AppLogoLeadingButton extends StatelessWidget {
       onPressed: onTap,
       icon: const AppLogo(),
     );
-  }
-}
-
-class _WeeklyCalendarStrip extends StatelessWidget {
-  const _WeeklyCalendarStrip({required this.selectedDate});
-
-  final DateTime selectedDate;
-
-  @override
-  Widget build(BuildContext context) {
-    final days = _weekDaysFor(selectedDate);
-    final today = DateTime.now();
-    final normalizedToday = DateTime(today.year, today.month, today.day);
-
-    return SizedBox(
-      height: 96,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        itemCount: days.length,
-        itemBuilder: (context, index) {
-          final day = days[index];
-          final isSelected = _isSameDay(day, selectedDate);
-          final isToday = _isSameDay(day, normalizedToday);
-          final isFuture = day.isAfter(normalizedToday);
-
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(12),
-              onTap: isFuture
-                  ? null
-                  : () => context.read<DashboardCubit>().selectDate(day),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                width: 54,
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? Theme.of(context).colorScheme.primaryContainer
-                      : Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    width: isSelected ? 1.4 : 1,
-                    color: isSelected
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.outlineVariant,
-                  ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      DateFormat.E(Localizations.localeOf(context).languageCode)
-                          .format(day),
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            color: isFuture
-                                ? Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant
-                                    .withValues(alpha: 0.45)
-                                : isSelected
-                                    ? Theme.of(context)
-                                        .colorScheme
-                                        .onPrimaryContainer
-                                    : Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
-                          ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '${day.day}',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: isFuture
-                                ? Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant
-                                    .withValues(alpha: 0.45)
-                                : isSelected
-                                    ? Theme.of(context)
-                                        .colorScheme
-                                        .onPrimaryContainer
-                                    : Theme.of(context).colorScheme.onSurface,
-                          ),
-                    ),
-                    const SizedBox(height: 4),
-                    Container(
-                      width: 5,
-                      height: 5,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: isToday
-                            ? (isSelected
-                                ? Theme.of(context)
-                                    .colorScheme
-                                    .onPrimaryContainer
-                                : Theme.of(context).colorScheme.primary)
-                            : Colors.transparent,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  List<DateTime> _weekDaysFor(DateTime date) {
-    final normalized = DateTime(date.year, date.month, date.day);
-    final firstDay = normalized.subtract(Duration(days: normalized.weekday - 1));
-    return List.generate(7, (index) => firstDay.add(Duration(days: index)));
-  }
-
-  bool _isSameDay(DateTime a, DateTime b) {
-    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 }

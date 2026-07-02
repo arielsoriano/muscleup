@@ -21,6 +21,8 @@ mixin _$DashboardState {
   List<WorkoutSession> get activeSessions => throw _privateConstructorUsedError;
   List<WorkoutSession> get completedSessions =>
       throw _privateConstructorUsedError;
+  List<WorkoutSession> get allCompletedSessions =>
+      throw _privateConstructorUsedError;
   List<WorkoutRoutine> get routines => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
@@ -29,6 +31,7 @@ mixin _$DashboardState {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)
         initial,
     required TResult Function(
@@ -36,6 +39,7 @@ mixin _$DashboardState {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)
         loading,
     required TResult Function(
@@ -43,6 +47,7 @@ mixin _$DashboardState {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)
         success,
     required TResult Function(
@@ -51,6 +56,7 @@ mixin _$DashboardState {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)
         error,
   }) =>
@@ -62,6 +68,7 @@ mixin _$DashboardState {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         initial,
     TResult? Function(
@@ -69,6 +76,7 @@ mixin _$DashboardState {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         loading,
     TResult? Function(
@@ -76,6 +84,7 @@ mixin _$DashboardState {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         success,
     TResult? Function(
@@ -84,6 +93,7 @@ mixin _$DashboardState {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         error,
   }) =>
@@ -95,6 +105,7 @@ mixin _$DashboardState {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         initial,
     TResult Function(
@@ -102,6 +113,7 @@ mixin _$DashboardState {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         loading,
     TResult Function(
@@ -109,6 +121,7 @@ mixin _$DashboardState {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         success,
     TResult Function(
@@ -117,6 +130,7 @@ mixin _$DashboardState {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         error,
     required TResult orElse(),
@@ -166,6 +180,7 @@ abstract class $DashboardStateCopyWith<$Res> {
       List<WorkoutSession> sessions,
       List<WorkoutSession> activeSessions,
       List<WorkoutSession> completedSessions,
+      List<WorkoutSession> allCompletedSessions,
       List<WorkoutRoutine> routines});
 }
 
@@ -188,6 +203,7 @@ class _$DashboardStateCopyWithImpl<$Res, $Val extends DashboardState>
     Object? sessions = null,
     Object? activeSessions = null,
     Object? completedSessions = null,
+    Object? allCompletedSessions = null,
     Object? routines = null,
   }) {
     return _then(_value.copyWith(
@@ -206,6 +222,10 @@ class _$DashboardStateCopyWithImpl<$Res, $Val extends DashboardState>
       completedSessions: null == completedSessions
           ? _value.completedSessions
           : completedSessions // ignore: cast_nullable_to_non_nullable
+              as List<WorkoutSession>,
+      allCompletedSessions: null == allCompletedSessions
+          ? _value.allCompletedSessions
+          : allCompletedSessions // ignore: cast_nullable_to_non_nullable
               as List<WorkoutSession>,
       routines: null == routines
           ? _value.routines
@@ -229,6 +249,7 @@ abstract class _$$DashboardStateInitialImplCopyWith<$Res>
       List<WorkoutSession> sessions,
       List<WorkoutSession> activeSessions,
       List<WorkoutSession> completedSessions,
+      List<WorkoutSession> allCompletedSessions,
       List<WorkoutRoutine> routines});
 }
 
@@ -249,6 +270,7 @@ class __$$DashboardStateInitialImplCopyWithImpl<$Res>
     Object? sessions = null,
     Object? activeSessions = null,
     Object? completedSessions = null,
+    Object? allCompletedSessions = null,
     Object? routines = null,
   }) {
     return _then(_$DashboardStateInitialImpl(
@@ -268,6 +290,10 @@ class __$$DashboardStateInitialImplCopyWithImpl<$Res>
           ? _value._completedSessions
           : completedSessions // ignore: cast_nullable_to_non_nullable
               as List<WorkoutSession>,
+      allCompletedSessions: null == allCompletedSessions
+          ? _value._allCompletedSessions
+          : allCompletedSessions // ignore: cast_nullable_to_non_nullable
+              as List<WorkoutSession>,
       routines: null == routines
           ? _value._routines
           : routines // ignore: cast_nullable_to_non_nullable
@@ -284,10 +310,12 @@ class _$DashboardStateInitialImpl implements DashboardStateInitial {
       final List<WorkoutSession> sessions = const [],
       final List<WorkoutSession> activeSessions = const [],
       final List<WorkoutSession> completedSessions = const [],
+      final List<WorkoutSession> allCompletedSessions = const [],
       final List<WorkoutRoutine> routines = const []})
       : _sessions = sessions,
         _activeSessions = activeSessions,
         _completedSessions = completedSessions,
+        _allCompletedSessions = allCompletedSessions,
         _routines = routines;
 
   @override
@@ -320,6 +348,16 @@ class _$DashboardStateInitialImpl implements DashboardStateInitial {
     return EqualUnmodifiableListView(_completedSessions);
   }
 
+  final List<WorkoutSession> _allCompletedSessions;
+  @override
+  @JsonKey()
+  List<WorkoutSession> get allCompletedSessions {
+    if (_allCompletedSessions is EqualUnmodifiableListView)
+      return _allCompletedSessions;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_allCompletedSessions);
+  }
+
   final List<WorkoutRoutine> _routines;
   @override
   @JsonKey()
@@ -331,7 +369,7 @@ class _$DashboardStateInitialImpl implements DashboardStateInitial {
 
   @override
   String toString() {
-    return 'DashboardState.initial(selectedDate: $selectedDate, sessions: $sessions, activeSessions: $activeSessions, completedSessions: $completedSessions, routines: $routines)';
+    return 'DashboardState.initial(selectedDate: $selectedDate, sessions: $sessions, activeSessions: $activeSessions, completedSessions: $completedSessions, allCompletedSessions: $allCompletedSessions, routines: $routines)';
   }
 
   @override
@@ -346,6 +384,8 @@ class _$DashboardStateInitialImpl implements DashboardStateInitial {
                 .equals(other._activeSessions, _activeSessions) &&
             const DeepCollectionEquality()
                 .equals(other._completedSessions, _completedSessions) &&
+            const DeepCollectionEquality()
+                .equals(other._allCompletedSessions, _allCompletedSessions) &&
             const DeepCollectionEquality().equals(other._routines, _routines));
   }
 
@@ -356,6 +396,7 @@ class _$DashboardStateInitialImpl implements DashboardStateInitial {
       const DeepCollectionEquality().hash(_sessions),
       const DeepCollectionEquality().hash(_activeSessions),
       const DeepCollectionEquality().hash(_completedSessions),
+      const DeepCollectionEquality().hash(_allCompletedSessions),
       const DeepCollectionEquality().hash(_routines));
 
   /// Create a copy of DashboardState
@@ -375,6 +416,7 @@ class _$DashboardStateInitialImpl implements DashboardStateInitial {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)
         initial,
     required TResult Function(
@@ -382,6 +424,7 @@ class _$DashboardStateInitialImpl implements DashboardStateInitial {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)
         loading,
     required TResult Function(
@@ -389,6 +432,7 @@ class _$DashboardStateInitialImpl implements DashboardStateInitial {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)
         success,
     required TResult Function(
@@ -397,11 +441,12 @@ class _$DashboardStateInitialImpl implements DashboardStateInitial {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)
         error,
   }) {
-    return initial(
-        selectedDate, sessions, activeSessions, completedSessions, routines);
+    return initial(selectedDate, sessions, activeSessions, completedSessions,
+        allCompletedSessions, routines);
   }
 
   @override
@@ -412,6 +457,7 @@ class _$DashboardStateInitialImpl implements DashboardStateInitial {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         initial,
     TResult? Function(
@@ -419,6 +465,7 @@ class _$DashboardStateInitialImpl implements DashboardStateInitial {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         loading,
     TResult? Function(
@@ -426,6 +473,7 @@ class _$DashboardStateInitialImpl implements DashboardStateInitial {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         success,
     TResult? Function(
@@ -434,11 +482,12 @@ class _$DashboardStateInitialImpl implements DashboardStateInitial {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         error,
   }) {
-    return initial?.call(
-        selectedDate, sessions, activeSessions, completedSessions, routines);
+    return initial?.call(selectedDate, sessions, activeSessions,
+        completedSessions, allCompletedSessions, routines);
   }
 
   @override
@@ -449,6 +498,7 @@ class _$DashboardStateInitialImpl implements DashboardStateInitial {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         initial,
     TResult Function(
@@ -456,6 +506,7 @@ class _$DashboardStateInitialImpl implements DashboardStateInitial {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         loading,
     TResult Function(
@@ -463,6 +514,7 @@ class _$DashboardStateInitialImpl implements DashboardStateInitial {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         success,
     TResult Function(
@@ -471,13 +523,14 @@ class _$DashboardStateInitialImpl implements DashboardStateInitial {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         error,
     required TResult orElse(),
   }) {
     if (initial != null) {
-      return initial(
-          selectedDate, sessions, activeSessions, completedSessions, routines);
+      return initial(selectedDate, sessions, activeSessions, completedSessions,
+          allCompletedSessions, routines);
     }
     return orElse();
   }
@@ -526,6 +579,7 @@ abstract class DashboardStateInitial implements DashboardState {
       final List<WorkoutSession> sessions,
       final List<WorkoutSession> activeSessions,
       final List<WorkoutSession> completedSessions,
+      final List<WorkoutSession> allCompletedSessions,
       final List<WorkoutRoutine> routines}) = _$DashboardStateInitialImpl;
 
   @override
@@ -536,6 +590,8 @@ abstract class DashboardStateInitial implements DashboardState {
   List<WorkoutSession> get activeSessions;
   @override
   List<WorkoutSession> get completedSessions;
+  @override
+  List<WorkoutSession> get allCompletedSessions;
   @override
   List<WorkoutRoutine> get routines;
 
@@ -561,6 +617,7 @@ abstract class _$$DashboardStateLoadingImplCopyWith<$Res>
       List<WorkoutSession> sessions,
       List<WorkoutSession> activeSessions,
       List<WorkoutSession> completedSessions,
+      List<WorkoutSession> allCompletedSessions,
       List<WorkoutRoutine> routines});
 }
 
@@ -581,6 +638,7 @@ class __$$DashboardStateLoadingImplCopyWithImpl<$Res>
     Object? sessions = null,
     Object? activeSessions = null,
     Object? completedSessions = null,
+    Object? allCompletedSessions = null,
     Object? routines = null,
   }) {
     return _then(_$DashboardStateLoadingImpl(
@@ -600,6 +658,10 @@ class __$$DashboardStateLoadingImplCopyWithImpl<$Res>
           ? _value._completedSessions
           : completedSessions // ignore: cast_nullable_to_non_nullable
               as List<WorkoutSession>,
+      allCompletedSessions: null == allCompletedSessions
+          ? _value._allCompletedSessions
+          : allCompletedSessions // ignore: cast_nullable_to_non_nullable
+              as List<WorkoutSession>,
       routines: null == routines
           ? _value._routines
           : routines // ignore: cast_nullable_to_non_nullable
@@ -616,10 +678,12 @@ class _$DashboardStateLoadingImpl implements DashboardStateLoading {
       final List<WorkoutSession> sessions = const [],
       final List<WorkoutSession> activeSessions = const [],
       final List<WorkoutSession> completedSessions = const [],
+      final List<WorkoutSession> allCompletedSessions = const [],
       final List<WorkoutRoutine> routines = const []})
       : _sessions = sessions,
         _activeSessions = activeSessions,
         _completedSessions = completedSessions,
+        _allCompletedSessions = allCompletedSessions,
         _routines = routines;
 
   @override
@@ -652,6 +716,16 @@ class _$DashboardStateLoadingImpl implements DashboardStateLoading {
     return EqualUnmodifiableListView(_completedSessions);
   }
 
+  final List<WorkoutSession> _allCompletedSessions;
+  @override
+  @JsonKey()
+  List<WorkoutSession> get allCompletedSessions {
+    if (_allCompletedSessions is EqualUnmodifiableListView)
+      return _allCompletedSessions;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_allCompletedSessions);
+  }
+
   final List<WorkoutRoutine> _routines;
   @override
   @JsonKey()
@@ -663,7 +737,7 @@ class _$DashboardStateLoadingImpl implements DashboardStateLoading {
 
   @override
   String toString() {
-    return 'DashboardState.loading(selectedDate: $selectedDate, sessions: $sessions, activeSessions: $activeSessions, completedSessions: $completedSessions, routines: $routines)';
+    return 'DashboardState.loading(selectedDate: $selectedDate, sessions: $sessions, activeSessions: $activeSessions, completedSessions: $completedSessions, allCompletedSessions: $allCompletedSessions, routines: $routines)';
   }
 
   @override
@@ -678,6 +752,8 @@ class _$DashboardStateLoadingImpl implements DashboardStateLoading {
                 .equals(other._activeSessions, _activeSessions) &&
             const DeepCollectionEquality()
                 .equals(other._completedSessions, _completedSessions) &&
+            const DeepCollectionEquality()
+                .equals(other._allCompletedSessions, _allCompletedSessions) &&
             const DeepCollectionEquality().equals(other._routines, _routines));
   }
 
@@ -688,6 +764,7 @@ class _$DashboardStateLoadingImpl implements DashboardStateLoading {
       const DeepCollectionEquality().hash(_sessions),
       const DeepCollectionEquality().hash(_activeSessions),
       const DeepCollectionEquality().hash(_completedSessions),
+      const DeepCollectionEquality().hash(_allCompletedSessions),
       const DeepCollectionEquality().hash(_routines));
 
   /// Create a copy of DashboardState
@@ -707,6 +784,7 @@ class _$DashboardStateLoadingImpl implements DashboardStateLoading {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)
         initial,
     required TResult Function(
@@ -714,6 +792,7 @@ class _$DashboardStateLoadingImpl implements DashboardStateLoading {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)
         loading,
     required TResult Function(
@@ -721,6 +800,7 @@ class _$DashboardStateLoadingImpl implements DashboardStateLoading {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)
         success,
     required TResult Function(
@@ -729,11 +809,12 @@ class _$DashboardStateLoadingImpl implements DashboardStateLoading {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)
         error,
   }) {
-    return loading(
-        selectedDate, sessions, activeSessions, completedSessions, routines);
+    return loading(selectedDate, sessions, activeSessions, completedSessions,
+        allCompletedSessions, routines);
   }
 
   @override
@@ -744,6 +825,7 @@ class _$DashboardStateLoadingImpl implements DashboardStateLoading {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         initial,
     TResult? Function(
@@ -751,6 +833,7 @@ class _$DashboardStateLoadingImpl implements DashboardStateLoading {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         loading,
     TResult? Function(
@@ -758,6 +841,7 @@ class _$DashboardStateLoadingImpl implements DashboardStateLoading {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         success,
     TResult? Function(
@@ -766,11 +850,12 @@ class _$DashboardStateLoadingImpl implements DashboardStateLoading {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         error,
   }) {
-    return loading?.call(
-        selectedDate, sessions, activeSessions, completedSessions, routines);
+    return loading?.call(selectedDate, sessions, activeSessions,
+        completedSessions, allCompletedSessions, routines);
   }
 
   @override
@@ -781,6 +866,7 @@ class _$DashboardStateLoadingImpl implements DashboardStateLoading {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         initial,
     TResult Function(
@@ -788,6 +874,7 @@ class _$DashboardStateLoadingImpl implements DashboardStateLoading {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         loading,
     TResult Function(
@@ -795,6 +882,7 @@ class _$DashboardStateLoadingImpl implements DashboardStateLoading {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         success,
     TResult Function(
@@ -803,13 +891,14 @@ class _$DashboardStateLoadingImpl implements DashboardStateLoading {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         error,
     required TResult orElse(),
   }) {
     if (loading != null) {
-      return loading(
-          selectedDate, sessions, activeSessions, completedSessions, routines);
+      return loading(selectedDate, sessions, activeSessions, completedSessions,
+          allCompletedSessions, routines);
     }
     return orElse();
   }
@@ -858,6 +947,7 @@ abstract class DashboardStateLoading implements DashboardState {
       final List<WorkoutSession> sessions,
       final List<WorkoutSession> activeSessions,
       final List<WorkoutSession> completedSessions,
+      final List<WorkoutSession> allCompletedSessions,
       final List<WorkoutRoutine> routines}) = _$DashboardStateLoadingImpl;
 
   @override
@@ -868,6 +958,8 @@ abstract class DashboardStateLoading implements DashboardState {
   List<WorkoutSession> get activeSessions;
   @override
   List<WorkoutSession> get completedSessions;
+  @override
+  List<WorkoutSession> get allCompletedSessions;
   @override
   List<WorkoutRoutine> get routines;
 
@@ -893,6 +985,7 @@ abstract class _$$DashboardStateSuccessImplCopyWith<$Res>
       List<WorkoutSession> sessions,
       List<WorkoutSession> activeSessions,
       List<WorkoutSession> completedSessions,
+      List<WorkoutSession> allCompletedSessions,
       List<WorkoutRoutine> routines});
 }
 
@@ -913,6 +1006,7 @@ class __$$DashboardStateSuccessImplCopyWithImpl<$Res>
     Object? sessions = null,
     Object? activeSessions = null,
     Object? completedSessions = null,
+    Object? allCompletedSessions = null,
     Object? routines = null,
   }) {
     return _then(_$DashboardStateSuccessImpl(
@@ -932,6 +1026,10 @@ class __$$DashboardStateSuccessImplCopyWithImpl<$Res>
           ? _value._completedSessions
           : completedSessions // ignore: cast_nullable_to_non_nullable
               as List<WorkoutSession>,
+      allCompletedSessions: null == allCompletedSessions
+          ? _value._allCompletedSessions
+          : allCompletedSessions // ignore: cast_nullable_to_non_nullable
+              as List<WorkoutSession>,
       routines: null == routines
           ? _value._routines
           : routines // ignore: cast_nullable_to_non_nullable
@@ -948,10 +1046,12 @@ class _$DashboardStateSuccessImpl implements DashboardStateSuccess {
       required final List<WorkoutSession> sessions,
       final List<WorkoutSession> activeSessions = const [],
       final List<WorkoutSession> completedSessions = const [],
+      final List<WorkoutSession> allCompletedSessions = const [],
       final List<WorkoutRoutine> routines = const []})
       : _sessions = sessions,
         _activeSessions = activeSessions,
         _completedSessions = completedSessions,
+        _allCompletedSessions = allCompletedSessions,
         _routines = routines;
 
   @override
@@ -983,6 +1083,16 @@ class _$DashboardStateSuccessImpl implements DashboardStateSuccess {
     return EqualUnmodifiableListView(_completedSessions);
   }
 
+  final List<WorkoutSession> _allCompletedSessions;
+  @override
+  @JsonKey()
+  List<WorkoutSession> get allCompletedSessions {
+    if (_allCompletedSessions is EqualUnmodifiableListView)
+      return _allCompletedSessions;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_allCompletedSessions);
+  }
+
   final List<WorkoutRoutine> _routines;
   @override
   @JsonKey()
@@ -994,7 +1104,7 @@ class _$DashboardStateSuccessImpl implements DashboardStateSuccess {
 
   @override
   String toString() {
-    return 'DashboardState.success(selectedDate: $selectedDate, sessions: $sessions, activeSessions: $activeSessions, completedSessions: $completedSessions, routines: $routines)';
+    return 'DashboardState.success(selectedDate: $selectedDate, sessions: $sessions, activeSessions: $activeSessions, completedSessions: $completedSessions, allCompletedSessions: $allCompletedSessions, routines: $routines)';
   }
 
   @override
@@ -1009,6 +1119,8 @@ class _$DashboardStateSuccessImpl implements DashboardStateSuccess {
                 .equals(other._activeSessions, _activeSessions) &&
             const DeepCollectionEquality()
                 .equals(other._completedSessions, _completedSessions) &&
+            const DeepCollectionEquality()
+                .equals(other._allCompletedSessions, _allCompletedSessions) &&
             const DeepCollectionEquality().equals(other._routines, _routines));
   }
 
@@ -1019,6 +1131,7 @@ class _$DashboardStateSuccessImpl implements DashboardStateSuccess {
       const DeepCollectionEquality().hash(_sessions),
       const DeepCollectionEquality().hash(_activeSessions),
       const DeepCollectionEquality().hash(_completedSessions),
+      const DeepCollectionEquality().hash(_allCompletedSessions),
       const DeepCollectionEquality().hash(_routines));
 
   /// Create a copy of DashboardState
@@ -1038,6 +1151,7 @@ class _$DashboardStateSuccessImpl implements DashboardStateSuccess {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)
         initial,
     required TResult Function(
@@ -1045,6 +1159,7 @@ class _$DashboardStateSuccessImpl implements DashboardStateSuccess {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)
         loading,
     required TResult Function(
@@ -1052,6 +1167,7 @@ class _$DashboardStateSuccessImpl implements DashboardStateSuccess {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)
         success,
     required TResult Function(
@@ -1060,11 +1176,12 @@ class _$DashboardStateSuccessImpl implements DashboardStateSuccess {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)
         error,
   }) {
-    return success(
-        selectedDate, sessions, activeSessions, completedSessions, routines);
+    return success(selectedDate, sessions, activeSessions, completedSessions,
+        allCompletedSessions, routines);
   }
 
   @override
@@ -1075,6 +1192,7 @@ class _$DashboardStateSuccessImpl implements DashboardStateSuccess {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         initial,
     TResult? Function(
@@ -1082,6 +1200,7 @@ class _$DashboardStateSuccessImpl implements DashboardStateSuccess {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         loading,
     TResult? Function(
@@ -1089,6 +1208,7 @@ class _$DashboardStateSuccessImpl implements DashboardStateSuccess {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         success,
     TResult? Function(
@@ -1097,11 +1217,12 @@ class _$DashboardStateSuccessImpl implements DashboardStateSuccess {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         error,
   }) {
-    return success?.call(
-        selectedDate, sessions, activeSessions, completedSessions, routines);
+    return success?.call(selectedDate, sessions, activeSessions,
+        completedSessions, allCompletedSessions, routines);
   }
 
   @override
@@ -1112,6 +1233,7 @@ class _$DashboardStateSuccessImpl implements DashboardStateSuccess {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         initial,
     TResult Function(
@@ -1119,6 +1241,7 @@ class _$DashboardStateSuccessImpl implements DashboardStateSuccess {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         loading,
     TResult Function(
@@ -1126,6 +1249,7 @@ class _$DashboardStateSuccessImpl implements DashboardStateSuccess {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         success,
     TResult Function(
@@ -1134,13 +1258,14 @@ class _$DashboardStateSuccessImpl implements DashboardStateSuccess {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         error,
     required TResult orElse(),
   }) {
     if (success != null) {
-      return success(
-          selectedDate, sessions, activeSessions, completedSessions, routines);
+      return success(selectedDate, sessions, activeSessions, completedSessions,
+          allCompletedSessions, routines);
     }
     return orElse();
   }
@@ -1189,6 +1314,7 @@ abstract class DashboardStateSuccess implements DashboardState {
       required final List<WorkoutSession> sessions,
       final List<WorkoutSession> activeSessions,
       final List<WorkoutSession> completedSessions,
+      final List<WorkoutSession> allCompletedSessions,
       final List<WorkoutRoutine> routines}) = _$DashboardStateSuccessImpl;
 
   @override
@@ -1199,6 +1325,8 @@ abstract class DashboardStateSuccess implements DashboardState {
   List<WorkoutSession> get activeSessions;
   @override
   List<WorkoutSession> get completedSessions;
+  @override
+  List<WorkoutSession> get allCompletedSessions;
   @override
   List<WorkoutRoutine> get routines;
 
@@ -1224,6 +1352,7 @@ abstract class _$$DashboardStateErrorImplCopyWith<$Res>
       List<WorkoutSession> sessions,
       List<WorkoutSession> activeSessions,
       List<WorkoutSession> completedSessions,
+      List<WorkoutSession> allCompletedSessions,
       List<WorkoutRoutine> routines});
 }
 
@@ -1245,6 +1374,7 @@ class __$$DashboardStateErrorImplCopyWithImpl<$Res>
     Object? sessions = null,
     Object? activeSessions = null,
     Object? completedSessions = null,
+    Object? allCompletedSessions = null,
     Object? routines = null,
   }) {
     return _then(_$DashboardStateErrorImpl(
@@ -1268,6 +1398,10 @@ class __$$DashboardStateErrorImplCopyWithImpl<$Res>
           ? _value._completedSessions
           : completedSessions // ignore: cast_nullable_to_non_nullable
               as List<WorkoutSession>,
+      allCompletedSessions: null == allCompletedSessions
+          ? _value._allCompletedSessions
+          : allCompletedSessions // ignore: cast_nullable_to_non_nullable
+              as List<WorkoutSession>,
       routines: null == routines
           ? _value._routines
           : routines // ignore: cast_nullable_to_non_nullable
@@ -1285,10 +1419,12 @@ class _$DashboardStateErrorImpl implements DashboardStateError {
       final List<WorkoutSession> sessions = const [],
       final List<WorkoutSession> activeSessions = const [],
       final List<WorkoutSession> completedSessions = const [],
+      final List<WorkoutSession> allCompletedSessions = const [],
       final List<WorkoutRoutine> routines = const []})
       : _sessions = sessions,
         _activeSessions = activeSessions,
         _completedSessions = completedSessions,
+        _allCompletedSessions = allCompletedSessions,
         _routines = routines;
 
   @override
@@ -1323,6 +1459,16 @@ class _$DashboardStateErrorImpl implements DashboardStateError {
     return EqualUnmodifiableListView(_completedSessions);
   }
 
+  final List<WorkoutSession> _allCompletedSessions;
+  @override
+  @JsonKey()
+  List<WorkoutSession> get allCompletedSessions {
+    if (_allCompletedSessions is EqualUnmodifiableListView)
+      return _allCompletedSessions;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_allCompletedSessions);
+  }
+
   final List<WorkoutRoutine> _routines;
   @override
   @JsonKey()
@@ -1334,7 +1480,7 @@ class _$DashboardStateErrorImpl implements DashboardStateError {
 
   @override
   String toString() {
-    return 'DashboardState.error(selectedDate: $selectedDate, message: $message, sessions: $sessions, activeSessions: $activeSessions, completedSessions: $completedSessions, routines: $routines)';
+    return 'DashboardState.error(selectedDate: $selectedDate, message: $message, sessions: $sessions, activeSessions: $activeSessions, completedSessions: $completedSessions, allCompletedSessions: $allCompletedSessions, routines: $routines)';
   }
 
   @override
@@ -1350,6 +1496,8 @@ class _$DashboardStateErrorImpl implements DashboardStateError {
                 .equals(other._activeSessions, _activeSessions) &&
             const DeepCollectionEquality()
                 .equals(other._completedSessions, _completedSessions) &&
+            const DeepCollectionEquality()
+                .equals(other._allCompletedSessions, _allCompletedSessions) &&
             const DeepCollectionEquality().equals(other._routines, _routines));
   }
 
@@ -1361,6 +1509,7 @@ class _$DashboardStateErrorImpl implements DashboardStateError {
       const DeepCollectionEquality().hash(_sessions),
       const DeepCollectionEquality().hash(_activeSessions),
       const DeepCollectionEquality().hash(_completedSessions),
+      const DeepCollectionEquality().hash(_allCompletedSessions),
       const DeepCollectionEquality().hash(_routines));
 
   /// Create a copy of DashboardState
@@ -1380,6 +1529,7 @@ class _$DashboardStateErrorImpl implements DashboardStateError {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)
         initial,
     required TResult Function(
@@ -1387,6 +1537,7 @@ class _$DashboardStateErrorImpl implements DashboardStateError {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)
         loading,
     required TResult Function(
@@ -1394,6 +1545,7 @@ class _$DashboardStateErrorImpl implements DashboardStateError {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)
         success,
     required TResult Function(
@@ -1402,11 +1554,12 @@ class _$DashboardStateErrorImpl implements DashboardStateError {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)
         error,
   }) {
     return error(selectedDate, message, sessions, activeSessions,
-        completedSessions, routines);
+        completedSessions, allCompletedSessions, routines);
   }
 
   @override
@@ -1417,6 +1570,7 @@ class _$DashboardStateErrorImpl implements DashboardStateError {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         initial,
     TResult? Function(
@@ -1424,6 +1578,7 @@ class _$DashboardStateErrorImpl implements DashboardStateError {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         loading,
     TResult? Function(
@@ -1431,6 +1586,7 @@ class _$DashboardStateErrorImpl implements DashboardStateError {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         success,
     TResult? Function(
@@ -1439,11 +1595,12 @@ class _$DashboardStateErrorImpl implements DashboardStateError {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         error,
   }) {
     return error?.call(selectedDate, message, sessions, activeSessions,
-        completedSessions, routines);
+        completedSessions, allCompletedSessions, routines);
   }
 
   @override
@@ -1454,6 +1611,7 @@ class _$DashboardStateErrorImpl implements DashboardStateError {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         initial,
     TResult Function(
@@ -1461,6 +1619,7 @@ class _$DashboardStateErrorImpl implements DashboardStateError {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         loading,
     TResult Function(
@@ -1468,6 +1627,7 @@ class _$DashboardStateErrorImpl implements DashboardStateError {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         success,
     TResult Function(
@@ -1476,13 +1636,14 @@ class _$DashboardStateErrorImpl implements DashboardStateError {
             List<WorkoutSession> sessions,
             List<WorkoutSession> activeSessions,
             List<WorkoutSession> completedSessions,
+            List<WorkoutSession> allCompletedSessions,
             List<WorkoutRoutine> routines)?
         error,
     required TResult orElse(),
   }) {
     if (error != null) {
       return error(selectedDate, message, sessions, activeSessions,
-          completedSessions, routines);
+          completedSessions, allCompletedSessions, routines);
     }
     return orElse();
   }
@@ -1532,6 +1693,7 @@ abstract class DashboardStateError implements DashboardState {
       final List<WorkoutSession> sessions,
       final List<WorkoutSession> activeSessions,
       final List<WorkoutSession> completedSessions,
+      final List<WorkoutSession> allCompletedSessions,
       final List<WorkoutRoutine> routines}) = _$DashboardStateErrorImpl;
 
   @override
@@ -1543,6 +1705,8 @@ abstract class DashboardStateError implements DashboardState {
   List<WorkoutSession> get activeSessions;
   @override
   List<WorkoutSession> get completedSessions;
+  @override
+  List<WorkoutSession> get allCompletedSessions;
   @override
   List<WorkoutRoutine> get routines;
 
