@@ -7,6 +7,7 @@ import '../../domain/usecases/link_with_google_usecase.dart';
 import '../../domain/usecases/sign_in_anonymously_usecase.dart';
 import '../../domain/usecases/sign_out_cloud_usecase.dart';
 import '../../domain/usecases/watch_auth_state_usecase.dart';
+import '../../../../core/utils/dev_logger.dart';
 import 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
@@ -39,54 +40,48 @@ class AuthCubit extends Cubit<AuthState> {
   static const Duration _restoreGracePeriod = Duration(seconds: 2);
 
   void _bootstrap() {
+    appLog('AuthCubit._bootstrap called');
     try {
       _authSubscription = _watchAuthState().listen(
         _onAuthStateChanged,
-        onError: (_) {
+        onError: (e) {
+          appLog('AuthCubit._bootstrap error: $e');
           if (!isClosed) emit(const AuthUnavailable());
         },
       );
-    } catch (_) {
+    } catch (e) {
+      appLog('AuthCubit._bootstrap init error: $e');
       emit(const AuthUnavailable());
     }
   }
 
   void _onAuthStateChanged(CloudUser? user) {
+    appLog('AuthCubit._onAuthStateChanged: user is ${user?.uid ?? 'null'}, state is ${state.runtimeType}');
     if (user != null) {
-      // A real session arrived (restored or freshly linked); cancel any pending
-      // anonymous sign-in so it can't overwrite this session.
-      _anonymousSignInTimer?.cancel();
-      if (state is AuthLoading) return;
       _emitUserState(user);
       return;
     }
 
-    if (state is AuthLoading) return;
-
-    // Defer the anonymous sign-in: if a persisted session is still being
-    // restored it will arrive within the grace period and cancel this.
-    _anonymousSignInTimer?.cancel();
-    _anonymousSignInTimer = Timer(_restoreGracePeriod, () {
-      if (!isClosed) _signInAnonymouslyNow();
-    });
+    // Instead of creating a real Firebase anonymous user, we just emit an 
+    // AuthAnonymous state with a dummy CloudUser. This prevents us from 
+    // overwriting or interfering with any real Firebase session.
+    appLog('AuthCubit._onAuthStateChanged: Emitting local anonymous user without calling Firebase');
+    final localAnonymousUser = const CloudUser(
+      uid: 'local_anonymous',
+      isAnonymous: true,
+      email: '',
+      displayName: '',
+      photoUrl: '',
+    );
+    emit(AuthAnonymous(localAnonymousUser));
   }
 
   Future<void> _signInAnonymouslyNow() async {
-    if (state is AuthLoading) return;
-
-    try {
-      emit(const AuthLoading());
-      final user = await _signInAnonymously().timeout(_anonymousAuthTimeout);
-      // The data source may return an already-restored (possibly Google-linked)
-      // session instead of creating a new anonymous one, so emit the state that
-      // matches the actual user rather than assuming anonymous.
-      if (!isClosed) _emitUserState(user);
-    } catch (_) {
-      if (!isClosed) emit(const AuthUnavailable());
-    }
+    // Disabled. We no longer create Firebase anonymous users on startup.
   }
 
   void _emitUserState(CloudUser user) {
+    appLog('AuthCubit._emitUserState: isAnonymous: ${user.isAnonymous}');
     if (user.isAnonymous) {
       emit(AuthAnonymous(user));
     } else {

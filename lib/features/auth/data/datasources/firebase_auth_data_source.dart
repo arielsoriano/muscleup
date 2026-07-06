@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../domain/entities/cloud_user.dart';
+import '../../../../core/utils/dev_logger.dart';
 
 class FirebaseAuthDataSource {
   FirebaseAuthDataSource({
@@ -15,23 +16,28 @@ class FirebaseAuthDataSource {
 
   Stream<CloudUser?> watchAuthStateChanges() {
     try {
-      return _firebaseAuth.authStateChanges().map(_mapFirebaseUser);
+      appLog('Setting up authStateChanges stream');
+      return _firebaseAuth.authStateChanges().map((user) {
+        appLog('authStateChanges emitted: ${user?.uid ?? 'null'}');
+        return _mapFirebaseUser(user);
+      });
     } catch (e) {
+      appLog('Error in watchAuthStateChanges: $e');
       return Stream.error(e);
     }
   }
 
   Future<CloudUser> signInAnonymously() async {
-    // Never create a new anonymous account if a session already exists.
-    // On cold start Firebase may briefly report no user before restoring the
-    // persisted (possibly Google-linked) session; signing in anonymously here
-    // would clobber that session and log the user out on every restart.
+    appLog('signInAnonymously() called');
     final existing = _firebaseAuth.currentUser;
     if (existing != null) {
+      appLog('signInAnonymously: existing user found: ${existing.uid}');
       return _mapFirebaseUser(existing)!;
     }
 
+    appLog('signInAnonymously: creating new anonymous user');
     final result = await _firebaseAuth.signInAnonymously();
+    appLog('signInAnonymously: created new anonymous user: ${result.user?.uid}');
     return _mapFirebaseUser(result.user)!;
   }
 
@@ -86,20 +92,19 @@ class FirebaseAuthDataSource {
     var displayName = _nullIfEmpty(user.displayName);
     var photoUrl = _nullIfEmpty(user.photoURL);
 
-    if (email == null || displayName == null || photoUrl == null) {
-      for (final profile in user.providerData) {
-        if (profile.providerId == 'google.com') {
-          email ??= _nullIfEmpty(profile.email);
-          displayName ??= _nullIfEmpty(profile.displayName);
-          photoUrl ??= _nullIfEmpty(profile.photoURL);
-          break;
-        }
+    bool hasGoogleProvider = false;
+    for (final profile in user.providerData) {
+      if (profile.providerId == 'google.com') {
+        hasGoogleProvider = true;
+        email ??= _nullIfEmpty(profile.email);
+        displayName ??= _nullIfEmpty(profile.displayName);
+        photoUrl ??= _nullIfEmpty(profile.photoURL);
       }
     }
 
     return CloudUser(
       uid: user.uid,
-      isAnonymous: user.isAnonymous,
+      isAnonymous: user.isAnonymous && !hasGoogleProvider,
       email: email,
       displayName: displayName,
       photoUrl: photoUrl,

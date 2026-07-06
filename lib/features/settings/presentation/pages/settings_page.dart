@@ -19,6 +19,7 @@ import '../cubit/settings_cubit.dart';
 import '../cubit/settings_state.dart';
 import '../cubit/sync_status_cubit.dart';
 import '../cubit/training_defaults_cubit.dart';
+import 'dev_logs_page.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -44,26 +45,43 @@ class _SettingsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.l10n.settings),
+        title: GestureDetector(
+          onLongPress: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const DevLogsPage()),
+            );
+          },
+          child: Text(context.l10n.settings),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingMedium),
-        children: const [
-          _AccountSection(),
-          _DividerSection(),
-          _SyncSection(),
-          _DividerSection(),
-          _AppearanceSection(),
-          _DividerSection(),
-          _TrainingDefaultsSection(),
-          _DividerSection(),
-          _ExerciseLibrarySection(),
-          _DividerSection(),
-          _LanguageSection(),
-          _DividerSection(),
-          _FeedbackSection(),
-          _DividerSection(),
-          _AppInfoSection(),
+        children: [
+          const _AccountSection(),
+          const _DividerSection(),
+          const _SyncSection(),
+          const _DividerSection(),
+          const _AppearanceSection(),
+          const _DividerSection(),
+          const _TrainingDefaultsSection(),
+          const _DividerSection(),
+          const _ExerciseLibrarySection(),
+          const _DividerSection(),
+          const _LanguageSection(),
+          const _DividerSection(),
+          const _FeedbackSection(),
+          const _DividerSection(),
+          const _AppInfoSection(),
+          const _DividerSection(),
+          ListTile(
+            leading: const Icon(Icons.bug_report),
+            title: const Text('Dev Logs'),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const DevLogsPage()),
+              );
+            },
+          ),
         ],
       ),
     );
