@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -70,6 +71,8 @@ class _SettingsView extends StatelessWidget {
           const _LanguageSection(),
           const _DividerSection(),
           const _FeedbackSection(),
+          const _DividerSection(),
+          const _LegalSection(),
           const _DividerSection(),
           const _AppInfoSection(),
           const _DividerSection(),
@@ -927,7 +930,7 @@ class _ExerciseLibrarySection extends StatelessWidget {
 class _FeedbackSection extends StatelessWidget {
   const _FeedbackSection();
 
-  static const String _contactEmail = 'lrarielsoriano@gmail.com';
+  static const String _contactEmail = AppConstants.contactEmail;
 
   @override
   Widget build(BuildContext context) {
@@ -1007,6 +1010,27 @@ class _FeedbackSection extends StatelessWidget {
               '${Uri.encodeComponent(entry.key)}=${Uri.encodeComponent(entry.value)}',
         )
         .join('&');
+  }
+}
+
+class _LegalSection extends StatelessWidget {
+  const _LegalSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionHeader(context.l10n.legalSection),
+        ListTile(
+          leading: const Icon(Icons.privacy_tip_outlined),
+          title: Text(context.l10n.privacyPolicy),
+          subtitle: Text(context.l10n.privacyPolicySubtitle),
+          trailing: const Icon(Icons.chevron_right_rounded),
+          onTap: () => context.push(AppRoutes.privacyPolicy),
+        ),
+      ],
+    );
   }
 }
 

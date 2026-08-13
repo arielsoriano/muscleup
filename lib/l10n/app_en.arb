@@ -530,5 +530,51 @@
   "sendFeedbackSubtitle": "Suggestions, ideas or report a problem",
   "feedbackEmailSubject": "Muscleup — Feedback",
   "feedbackEmailBody": "Write your feedback, idea or problem here:",
-  "emailCopiedToClipboard": "Couldn't open your email app. The address was copied to your clipboard."
+  "emailCopiedToClipboard": "Couldn't open your email app. The address was copied to your clipboard.",
+  "legalSection": "Legal",
+  "privacyPolicy": "Privacy policy",
+  "privacyPolicySubtitle": "How Muscleup handles your data",
+  "privacyPolicyLastUpdated": "Last updated: {date}",
+  "@privacyPolicyLastUpdated": {
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "yMMMMd"
+      }
+    }
+  },
+  "privacyPolicyIntro": "Muscleup is a workout tracking app. This policy explains what data the app may collect, how it is used, and what choices you have regarding that data.",
+  "privacyPolicyDataTitle": "Data we collect",
+  "privacyPolicyDataItem1": "Account information such as name, email address, and user ID.",
+  "privacyPolicyDataItem2": "Workout data such as routines, exercises, sets, weight, repetitions, sessions, history, and optional notes you enter in the app.",
+  "privacyPolicyDataItem3": "App settings such as language, theme, and workout-related preferences.",
+  "privacyPolicyCollectionTitle": "How data is collected",
+  "privacyPolicyCollectionItem1": "The app can be used locally without linking an account.",
+  "privacyPolicyCollectionItem2": "If you choose to link your account with Google, Muscleup uses Firebase Authentication for sign-in.",
+  "privacyPolicyCollectionItem3": "If you choose cloud sync, data is stored in Google Firebase Cloud Firestore and associated with your account.",
+  "privacyPolicyUsageTitle": "How we use data",
+  "privacyPolicyUsageItem1": "To enable sign-in and account management.",
+  "privacyPolicyUsageItem2": "To save, sync, and restore your routines and workout history.",
+  "privacyPolicyUsageItem3": "To store your preferences and provide the core app functionality.",
+  "privacyPolicySharingTitle": "Data sharing",
+  "privacyPolicySharingBody": "Muscleup does not sell your data or share it with third parties for advertising or marketing purposes. Data may be processed by infrastructure providers required to run the app, such as Firebase Authentication and Cloud Firestore.",
+  "privacyPolicySecurityTitle": "Encryption and security",
+  "privacyPolicySecurityBody": "Data is transferred over secure encrypted connections. Access to synced data is restricted to the authenticated user who owns it.",
+  "privacyPolicyRetentionTitle": "Data retention",
+  "privacyPolicyRetentionBody": "Data is retained while you keep your account and use cloud synchronization, unless you request deletion. Some minimal technical data may remain temporarily in infrastructure backups for a limited period.",
+  "privacyPolicyDeletionTitle": "Account and data deletion",
+  "privacyPolicyDeletionBody": "You can request deletion of your account and all associated data at any time. The account deletion page lists the full instructions, exactly what gets deleted, and how long it takes. We confirm by email once your data has been deleted.",
+  "privacyPolicyChildrenTitle": "Children's privacy",
+  "privacyPolicyChildrenBody": "Muscleup is not specifically directed to children under 13.",
+  "privacyPolicyContactTitle": "Contact",
+  "privacyPolicyContactBody": "If you have questions about this policy, write to us at:",
+  "privacyPolicyOpenOnline": "View the online version",
+  "privacyPolicyAccountDeletionPage": "Open the account deletion page",
+  "privacyPolicyAccountDeletion": "Request deletion by email",
+  "accountDeletionEmailSubject": "Muscleup — Account deletion request",
+  "accountDeletionEmailBody": "I would like to request the deletion of my Muscleup account and all associated data.",
+  "couldNotOpenLink": "Couldn't open the link on this device.",
+  "exitAppTitle": "Exit Muscleup?",
+  "exitAppMessage": "Are you sure you want to close the app?",
+  "exitAppConfirm": "Exit"
 }

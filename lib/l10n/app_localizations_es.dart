@@ -542,4 +542,143 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get emailCopiedToClipboard =>
       'No pudimos abrir tu app de correo. Copiamos la dirección al portapapeles.';
+
+  @override
+  String get legalSection => 'Legal';
+
+  @override
+  String get privacyPolicy => 'Política de privacidad';
+
+  @override
+  String get privacyPolicySubtitle => 'Cómo Muscleup trata tus datos';
+
+  @override
+  String privacyPolicyLastUpdated(DateTime date) {
+    final intl.DateFormat dateDateFormat = intl.DateFormat.yMMMMd(localeName);
+    final String dateString = dateDateFormat.format(date);
+
+    return 'Última actualización: $dateString';
+  }
+
+  @override
+  String get privacyPolicyIntro =>
+      'Muscleup es una app de seguimiento de entrenamientos. Esta política explica qué datos puede recopilar la app, cómo se usan y qué opciones tenés sobre ellos.';
+
+  @override
+  String get privacyPolicyDataTitle => 'Datos que recopilamos';
+
+  @override
+  String get privacyPolicyDataItem1 =>
+      'Información de cuenta, como nombre, correo electrónico e ID de usuario.';
+
+  @override
+  String get privacyPolicyDataItem2 =>
+      'Datos de entrenamiento, como rutinas, ejercicios, series, peso, repeticiones, sesiones, historial y notas opcionales que escribas en la app.';
+
+  @override
+  String get privacyPolicyDataItem3 =>
+      'Ajustes de la app, como idioma, tema y preferencias relacionadas con el entrenamiento.';
+
+  @override
+  String get privacyPolicyCollectionTitle => 'Cómo se recopilan los datos';
+
+  @override
+  String get privacyPolicyCollectionItem1 =>
+      'La app puede usarse localmente sin vincular una cuenta.';
+
+  @override
+  String get privacyPolicyCollectionItem2 =>
+      'Si elegís vincular tu cuenta con Google, Muscleup usa Firebase Authentication para la autenticación.';
+
+  @override
+  String get privacyPolicyCollectionItem3 =>
+      'Si elegís sincronización en la nube, los datos se almacenan en Google Firebase Cloud Firestore asociados a tu cuenta.';
+
+  @override
+  String get privacyPolicyUsageTitle => 'Cómo usamos los datos';
+
+  @override
+  String get privacyPolicyUsageItem1 =>
+      'Para habilitar el inicio de sesión y la administración de tu cuenta.';
+
+  @override
+  String get privacyPolicyUsageItem2 =>
+      'Para guardar, sincronizar y restaurar tus rutinas e historial de entrenamiento.';
+
+  @override
+  String get privacyPolicyUsageItem3 =>
+      'Para guardar tus preferencias y ofrecer el funcionamiento básico de la app.';
+
+  @override
+  String get privacyPolicySharingTitle => 'Compartición de datos';
+
+  @override
+  String get privacyPolicySharingBody =>
+      'Muscleup no vende tus datos ni los comparte con terceros con fines publicitarios o de marketing. Los datos pueden ser procesados por proveedores de infraestructura necesarios para operar la app, como Firebase Authentication y Cloud Firestore.';
+
+  @override
+  String get privacyPolicySecurityTitle => 'Encriptación y seguridad';
+
+  @override
+  String get privacyPolicySecurityBody =>
+      'Los datos se transfieren mediante conexiones seguras cifradas en tránsito. El acceso a los datos sincronizados está restringido al usuario autenticado correspondiente.';
+
+  @override
+  String get privacyPolicyRetentionTitle => 'Conservación de datos';
+
+  @override
+  String get privacyPolicyRetentionBody =>
+      'Los datos se conservan mientras mantengas tu cuenta y uses la sincronización en la nube, salvo que solicites su eliminación. Algunos datos técnicos mínimos pueden permanecer temporalmente en respaldos del proveedor de infraestructura por un tiempo limitado.';
+
+  @override
+  String get privacyPolicyDeletionTitle => 'Eliminación de cuenta y datos';
+
+  @override
+  String get privacyPolicyDeletionBody =>
+      'Podés solicitar la eliminación de tu cuenta y de todos los datos asociados en cualquier momento. La página de eliminación de cuenta tiene las instrucciones completas, qué se elimina exactamente y cuánto demora. Te confirmamos por mail cuando tus datos hayan sido eliminados.';
+
+  @override
+  String get privacyPolicyChildrenTitle => 'Privacidad de menores';
+
+  @override
+  String get privacyPolicyChildrenBody =>
+      'Muscleup no está diseñada específicamente para niños menores de 13 años.';
+
+  @override
+  String get privacyPolicyContactTitle => 'Contacto';
+
+  @override
+  String get privacyPolicyContactBody =>
+      'Si tenés preguntas sobre esta política, escribinos a:';
+
+  @override
+  String get privacyPolicyOpenOnline => 'Ver la versión online';
+
+  @override
+  String get privacyPolicyAccountDeletionPage =>
+      'Abrir la página de eliminación de cuenta';
+
+  @override
+  String get privacyPolicyAccountDeletion => 'Solicitar eliminación por mail';
+
+  @override
+  String get accountDeletionEmailSubject =>
+      'Muscleup — Solicitud de eliminación de cuenta';
+
+  @override
+  String get accountDeletionEmailBody =>
+      'Quiero solicitar la eliminación de mi cuenta de Muscleup y de todos los datos asociados.';
+
+  @override
+  String get couldNotOpenLink =>
+      'No pudimos abrir el enlace en este dispositivo.';
+
+  @override
+  String get exitAppTitle => '¿Salir de Muscleup?';
+
+  @override
+  String get exitAppMessage => '¿Seguro que querés cerrar la app?';
+
+  @override
+  String get exitAppConfirm => 'Salir';
 }

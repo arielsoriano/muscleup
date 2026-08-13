@@ -1081,6 +1081,234 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t open your email app. The address was copied to your clipboard.'**
   String get emailCopiedToClipboard;
+
+  /// No description provided for @legalSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal'**
+  String get legalSection;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @privacyPolicySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How Muscleup handles your data'**
+  String get privacyPolicySubtitle;
+
+  /// No description provided for @privacyPolicyLastUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated: {date}'**
+  String privacyPolicyLastUpdated(DateTime date);
+
+  /// No description provided for @privacyPolicyIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Muscleup is a workout tracking app. This policy explains what data the app may collect, how it is used, and what choices you have regarding that data.'**
+  String get privacyPolicyIntro;
+
+  /// No description provided for @privacyPolicyDataTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Data we collect'**
+  String get privacyPolicyDataTitle;
+
+  /// No description provided for @privacyPolicyDataItem1.
+  ///
+  /// In en, this message translates to:
+  /// **'Account information such as name, email address, and user ID.'**
+  String get privacyPolicyDataItem1;
+
+  /// No description provided for @privacyPolicyDataItem2.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout data such as routines, exercises, sets, weight, repetitions, sessions, history, and optional notes you enter in the app.'**
+  String get privacyPolicyDataItem2;
+
+  /// No description provided for @privacyPolicyDataItem3.
+  ///
+  /// In en, this message translates to:
+  /// **'App settings such as language, theme, and workout-related preferences.'**
+  String get privacyPolicyDataItem3;
+
+  /// No description provided for @privacyPolicyCollectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How data is collected'**
+  String get privacyPolicyCollectionTitle;
+
+  /// No description provided for @privacyPolicyCollectionItem1.
+  ///
+  /// In en, this message translates to:
+  /// **'The app can be used locally without linking an account.'**
+  String get privacyPolicyCollectionItem1;
+
+  /// No description provided for @privacyPolicyCollectionItem2.
+  ///
+  /// In en, this message translates to:
+  /// **'If you choose to link your account with Google, Muscleup uses Firebase Authentication for sign-in.'**
+  String get privacyPolicyCollectionItem2;
+
+  /// No description provided for @privacyPolicyCollectionItem3.
+  ///
+  /// In en, this message translates to:
+  /// **'If you choose cloud sync, data is stored in Google Firebase Cloud Firestore and associated with your account.'**
+  String get privacyPolicyCollectionItem3;
+
+  /// No description provided for @privacyPolicyUsageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How we use data'**
+  String get privacyPolicyUsageTitle;
+
+  /// No description provided for @privacyPolicyUsageItem1.
+  ///
+  /// In en, this message translates to:
+  /// **'To enable sign-in and account management.'**
+  String get privacyPolicyUsageItem1;
+
+  /// No description provided for @privacyPolicyUsageItem2.
+  ///
+  /// In en, this message translates to:
+  /// **'To save, sync, and restore your routines and workout history.'**
+  String get privacyPolicyUsageItem2;
+
+  /// No description provided for @privacyPolicyUsageItem3.
+  ///
+  /// In en, this message translates to:
+  /// **'To store your preferences and provide the core app functionality.'**
+  String get privacyPolicyUsageItem3;
+
+  /// No description provided for @privacyPolicySharingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Data sharing'**
+  String get privacyPolicySharingTitle;
+
+  /// No description provided for @privacyPolicySharingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Muscleup does not sell your data or share it with third parties for advertising or marketing purposes. Data may be processed by infrastructure providers required to run the app, such as Firebase Authentication and Cloud Firestore.'**
+  String get privacyPolicySharingBody;
+
+  /// No description provided for @privacyPolicySecurityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Encryption and security'**
+  String get privacyPolicySecurityTitle;
+
+  /// No description provided for @privacyPolicySecurityBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Data is transferred over secure encrypted connections. Access to synced data is restricted to the authenticated user who owns it.'**
+  String get privacyPolicySecurityBody;
+
+  /// No description provided for @privacyPolicyRetentionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Data retention'**
+  String get privacyPolicyRetentionTitle;
+
+  /// No description provided for @privacyPolicyRetentionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Data is retained while you keep your account and use cloud synchronization, unless you request deletion. Some minimal technical data may remain temporarily in infrastructure backups for a limited period.'**
+  String get privacyPolicyRetentionBody;
+
+  /// No description provided for @privacyPolicyDeletionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account and data deletion'**
+  String get privacyPolicyDeletionTitle;
+
+  /// No description provided for @privacyPolicyDeletionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can request deletion of your account and all associated data at any time. The account deletion page lists the full instructions, exactly what gets deleted, and how long it takes. We confirm by email once your data has been deleted.'**
+  String get privacyPolicyDeletionBody;
+
+  /// No description provided for @privacyPolicyChildrenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Children\'s privacy'**
+  String get privacyPolicyChildrenTitle;
+
+  /// No description provided for @privacyPolicyChildrenBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Muscleup is not specifically directed to children under 13.'**
+  String get privacyPolicyChildrenBody;
+
+  /// No description provided for @privacyPolicyContactTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get privacyPolicyContactTitle;
+
+  /// No description provided for @privacyPolicyContactBody.
+  ///
+  /// In en, this message translates to:
+  /// **'If you have questions about this policy, write to us at:'**
+  String get privacyPolicyContactBody;
+
+  /// No description provided for @privacyPolicyOpenOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'View the online version'**
+  String get privacyPolicyOpenOnline;
+
+  /// No description provided for @privacyPolicyAccountDeletionPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the account deletion page'**
+  String get privacyPolicyAccountDeletionPage;
+
+  /// No description provided for @privacyPolicyAccountDeletion.
+  ///
+  /// In en, this message translates to:
+  /// **'Request deletion by email'**
+  String get privacyPolicyAccountDeletion;
+
+  /// No description provided for @accountDeletionEmailSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Muscleup — Account deletion request'**
+  String get accountDeletionEmailSubject;
+
+  /// No description provided for @accountDeletionEmailBody.
+  ///
+  /// In en, this message translates to:
+  /// **'I would like to request the deletion of my Muscleup account and all associated data.'**
+  String get accountDeletionEmailBody;
+
+  /// No description provided for @couldNotOpenLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the link on this device.'**
+  String get couldNotOpenLink;
+
+  /// No description provided for @exitAppTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit Muscleup?'**
+  String get exitAppTitle;
+
+  /// No description provided for @exitAppMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to close the app?'**
+  String get exitAppMessage;
+
+  /// No description provided for @exitAppConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit'**
+  String get exitAppConfirm;
 }
 
 class _AppLocalizationsDelegate

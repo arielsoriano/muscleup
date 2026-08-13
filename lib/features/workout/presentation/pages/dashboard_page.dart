@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -125,67 +126,106 @@ class _ShellContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return NavigationBarTheme(
-      data: NavigationBarThemeData(
-        indicatorColor: colorScheme.primary,
-        iconTheme: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) {
-            return IconThemeData(color: colorScheme.onPrimary);
-          }
-          return IconThemeData(color: colorScheme.onSurfaceVariant);
-        }),
-        labelTextStyle: WidgetStateProperty.resolveWith((states) {
-          final baseStyle = Theme.of(context).textTheme.labelMedium;
-          if (states.contains(WidgetState.selected)) {
-            return baseStyle?.copyWith(
-              color: colorScheme.primary,
-              fontWeight: FontWeight.w700,
-            );
-          }
-          return baseStyle?.copyWith(color: colorScheme.onSurfaceVariant);
-        }),
-      ),
-      child: Scaffold(
-        body: IndexedStack(
-          index: currentIndex,
-          children: [
-            _TodayTab(
-              onGoToToday: onGoToToday,
-              onStartRoutine: onStartRoutineFromList,
-            ),
-            RoutinesPage(
-              onGoToToday: onGoToToday,
-              onOpenRoutineDetails: onOpenRoutineDetails,
-              onStartRoutine: onStartRoutineFromList,
-              returnToToday: returnToTodayAfterRoutineDetails,
-            ),
-            _HistoryTab(onGoToToday: onGoToToday),
-          ],
+    return PopScope(
+      // The dashboard is the root route, so a system back here would close the
+      // app outright. Intercept it and ask for confirmation first.
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) async {
+        if (didPop) return;
+
+        final shouldExit = await _confirmExit(context);
+        if (shouldExit) {
+          await SystemNavigator.pop();
+        }
+      },
+      child: NavigationBarTheme(
+        data: NavigationBarThemeData(
+          indicatorColor: colorScheme.primary,
+          iconTheme: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return IconThemeData(color: colorScheme.onPrimary);
+            }
+            return IconThemeData(color: colorScheme.onSurfaceVariant);
+          }),
+          labelTextStyle: WidgetStateProperty.resolveWith((states) {
+            final baseStyle = Theme.of(context).textTheme.labelMedium;
+            if (states.contains(WidgetState.selected)) {
+              return baseStyle?.copyWith(
+                color: colorScheme.primary,
+                fontWeight: FontWeight.w700,
+              );
+            }
+            return baseStyle?.copyWith(color: colorScheme.onSurfaceVariant);
+          }),
         ),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: currentIndex,
-          backgroundColor: colorScheme.surface,
-          onDestinationSelected: onTabSelected,
-          destinations: [
-            NavigationDestination(
-              icon: const Icon(Icons.today_outlined),
-              selectedIcon: const Icon(Icons.today_rounded),
-              label: context.l10n.today,
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.fitness_center_outlined),
-              selectedIcon: const Icon(Icons.fitness_center_rounded),
-              label: context.l10n.routines,
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.history_outlined),
-              selectedIcon: const Icon(Icons.history_rounded),
-              label: context.l10n.history,
-            ),
-          ],
+        child: Scaffold(
+          body: IndexedStack(
+            index: currentIndex,
+            children: [
+              _TodayTab(
+                onGoToToday: onGoToToday,
+                onStartRoutine: onStartRoutineFromList,
+              ),
+              RoutinesPage(
+                onGoToToday: onGoToToday,
+                onOpenRoutineDetails: onOpenRoutineDetails,
+                onStartRoutine: onStartRoutineFromList,
+                returnToToday: returnToTodayAfterRoutineDetails,
+              ),
+              _HistoryTab(onGoToToday: onGoToToday),
+            ],
+          ),
+          bottomNavigationBar: NavigationBar(
+            selectedIndex: currentIndex,
+            backgroundColor: colorScheme.surface,
+            onDestinationSelected: onTabSelected,
+            destinations: [
+              NavigationDestination(
+                icon: const Icon(Icons.today_outlined),
+                selectedIcon: const Icon(Icons.today_rounded),
+                label: context.l10n.today,
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.fitness_center_outlined),
+                selectedIcon: const Icon(Icons.fitness_center_rounded),
+                label: context.l10n.routines,
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.history_outlined),
+                selectedIcon: const Icon(Icons.history_rounded),
+                label: context.l10n.history,
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  /// Asks the user to confirm before leaving the app. Returns `false` when the
+  /// dialog is dismissed by tapping outside it.
+  Future<bool> _confirmExit(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(dialogContext.l10n.exitAppTitle),
+          content: Text(dialogContext.l10n.exitAppMessage),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(dialogContext.l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(dialogContext.l10n.exitAppConfirm),
+            ),
+          ],
+        );
+      },
+    );
+
+    return confirmed ?? false;
   }
 }
 
