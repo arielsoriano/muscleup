@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,12 +47,11 @@ class _SettingsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        // Long-pressing the title is the release escape hatch into the auth
+        // logs: invisible to users, but reachable when a tester reports a
+        // sign-in problem that only reproduces on their device.
         title: GestureDetector(
-          onLongPress: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const DevLogsPage()),
-            );
-          },
+          onLongPress: () => _openDevLogs(context),
           child: Text(context.l10n.settings),
         ),
       ),
@@ -75,18 +75,25 @@ class _SettingsView extends StatelessWidget {
           const _LegalSection(),
           const _DividerSection(),
           const _AppInfoSection(),
-          const _DividerSection(),
-          ListTile(
-            leading: const Icon(Icons.bug_report),
-            title: const Text('Dev Logs'),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const DevLogsPage()),
-              );
-            },
-          ),
+          // Developer-only entry point. The label is untranslated and the page
+          // is raw diagnostics, so it stays out of release builds; use the
+          // long-press on the title there instead.
+          if (kDebugMode) ...[
+            const _DividerSection(),
+            ListTile(
+              leading: const Icon(Icons.bug_report),
+              title: const Text('Dev Logs'),
+              onTap: () => _openDevLogs(context),
+            ),
+          ],
         ],
       ),
+    );
+  }
+
+  void _openDevLogs(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const DevLogsPage()),
     );
   }
 }
