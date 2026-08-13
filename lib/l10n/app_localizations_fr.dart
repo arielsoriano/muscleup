@@ -693,4 +693,108 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get exitAppConfirm => 'Quitter';
+
+  @override
+  String get importTitle => 'Importer des routines';
+
+  @override
+  String get importHeadline => 'Importez tout votre programme en une étape';
+
+  @override
+  String get importIntro =>
+      'Collez votre programme d\'entraînement et Muscleup crée toutes les routines, avec leurs exercices, séries, charges, répétitions et notes. N\'importe quel assistant IA peut mettre vos notes au format attendu par l\'app.';
+
+  @override
+  String get importStep1 => 'Copiez les instructions.';
+
+  @override
+  String get importStep2 =>
+      'Collez-les dans un chat IA — ChatGPT, Claude, Gemini — suivies de vos notes d\'entraînement, telles que vous les avez écrites.';
+
+  @override
+  String get importStep3 =>
+      'Copiez la réponse, collez-la ci-dessous et vérifiez-la avant d\'importer.';
+
+  @override
+  String get importCopyInstructions => 'Copier les instructions';
+
+  @override
+  String get importInstructionsCopied =>
+      'Instructions copiées. Collez-les dans un chat IA avec vos notes.';
+
+  @override
+  String importInstructionsLanguageNote(String language) {
+    return 'Les instructions sont en anglais car les assistants les suivent plus fidèlement ainsi. Vos routines reviennent en $language.';
+  }
+
+  @override
+  String get importPasteLabel => 'La réponse de l\'assistant';
+
+  @override
+  String get importPasteHint => 'Collez le JSON ici';
+
+  @override
+  String get importPasteFromClipboard => 'Coller';
+
+  @override
+  String get importClipboardEmpty => 'Il n\'y a rien à coller.';
+
+  @override
+  String get importCheck => 'Vérifier';
+
+  @override
+  String get importClear => 'Effacer';
+
+  @override
+  String get importAction => 'Importer';
+
+  @override
+  String get importPreviewTitle => 'Voici ce qui sera créé';
+
+  @override
+  String importRoutineSummary(int exerciseCount, int setCount) {
+    return 'Exercices : $exerciseCount · Séries : $setCount';
+  }
+
+  @override
+  String get importNoticesTitle => 'À vérifier';
+
+  @override
+  String get importSuccess => 'Routines importées';
+
+  @override
+  String get importErrorEmptyInput =>
+      'Collez d\'abord la réponse de l\'assistant.';
+
+  @override
+  String get importErrorInvalidJson =>
+      'Ce texte n\'est pas du JSON valide. Copiez à nouveau la réponse, accolades incluses, ou demandez à l\'assistant de ne répondre qu\'avec le JSON.';
+
+  @override
+  String get importErrorNoRoutines =>
+      'Aucune routine trouvée dans ce texte. Il lui faut une liste « routines » avec au moins un jour comportant des exercices.';
+
+  @override
+  String importNoticeNoExercises(String name) {
+    return '« $name » a été ignorée : aucun exercice.';
+  }
+
+  @override
+  String importNoticeSkippedRoutines(int count) {
+    return 'Entrées ignorées faute de nom : $count.';
+  }
+
+  @override
+  String importNoticeSkippedExercises(String name, int count) {
+    return 'Exercices ignorés dans « $name » faute de nom : $count.';
+  }
+
+  @override
+  String importNoticeDuplicateName(String name) {
+    return 'Vous avez déjà une routine nommée « $name ». Celle-ci est ajoutée quand même.';
+  }
+
+  @override
+  String get importSettingsSubtitle =>
+      'Collez un programme et créez toutes les routines d\'un coup';
 }

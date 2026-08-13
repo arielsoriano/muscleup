@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/l10n_extension.dart';
 import '../../../../core/utils/ui_helpers.dart';
 import '../../../../core/widgets/app_logo.dart';
@@ -176,6 +177,11 @@ class _RoutinesPageContent extends StatelessWidget {
         title: Text(context.l10n.routines),
         actions: [
           IconButton(
+            icon: const Icon(Icons.auto_awesome_rounded),
+            tooltip: context.l10n.importTitle,
+            onPressed: () => context.push(AppRoutes.importRoutines),
+          ),
+          IconButton(
             icon: const Icon(Icons.settings_rounded),
             tooltip: context.l10n.settings,
             onPressed: () => context.push(AppRoutes.settings),
@@ -199,10 +205,30 @@ class _RoutinesPageContent extends StatelessWidget {
                   return _SyncingRoutinesPlaceholder();
                 }
 
+                // An empty library is exactly when importing a whole plan at
+                // once is worth the most, so it is offered here rather than
+                // hidden behind the app bar icon alone.
                 return Center(
-                  child: Text(
-                    context.l10n.noRoutines,
-                    style: Theme.of(context).textTheme.bodyLarge,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: AppTheme.spacingLarge),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          context.l10n.noRoutines,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        const SizedBox(height: AppTheme.spacingMedium),
+                        OutlinedButton.icon(
+                          onPressed: () =>
+                              context.push(AppRoutes.importRoutines),
+                          icon: const Icon(Icons.auto_awesome_rounded),
+                          label: Text(context.l10n.importTitle),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               }

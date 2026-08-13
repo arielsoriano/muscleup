@@ -680,4 +680,108 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get exitAppConfirm => 'Keluar';
+
+  @override
+  String get importTitle => 'Impor rutinitas';
+
+  @override
+  String get importHeadline => 'Bawa seluruh programmu dalam satu langkah';
+
+  @override
+  String get importIntro =>
+      'Tempelkan program latihanmu dan Muscleup akan membuat semua rutinitas beserta latihan, set, beban, repetisi, dan catatannya. Asisten AI mana pun bisa mengubah catatanmu ke format yang dibutuhkan aplikasi.';
+
+  @override
+  String get importStep1 => 'Salin instruksinya.';
+
+  @override
+  String get importStep2 =>
+      'Tempelkan ke chat AI — ChatGPT, Claude, Gemini — lalu ikuti dengan catatan latihanmu, apa adanya.';
+
+  @override
+  String get importStep3 =>
+      'Salin jawabannya, tempelkan di bawah, dan periksa sebelum mengimpor.';
+
+  @override
+  String get importCopyInstructions => 'Salin instruksi';
+
+  @override
+  String get importInstructionsCopied =>
+      'Instruksi disalin. Tempelkan ke chat AI bersama catatanmu.';
+
+  @override
+  String importInstructionsLanguageNote(String language) {
+    return 'Instruksinya dalam bahasa Inggris karena asisten mengikutinya paling akurat begitu. Rutinitasmu akan kembali dalam $language.';
+  }
+
+  @override
+  String get importPasteLabel => 'Jawaban asisten';
+
+  @override
+  String get importPasteHint => 'Tempelkan JSON di sini';
+
+  @override
+  String get importPasteFromClipboard => 'Tempel';
+
+  @override
+  String get importClipboardEmpty => 'Tidak ada yang bisa ditempel.';
+
+  @override
+  String get importCheck => 'Periksa';
+
+  @override
+  String get importClear => 'Bersihkan';
+
+  @override
+  String get importAction => 'Impor';
+
+  @override
+  String get importPreviewTitle => 'Ini yang akan dibuat';
+
+  @override
+  String importRoutineSummary(int exerciseCount, int setCount) {
+    return 'Latihan: $exerciseCount · Set: $setCount';
+  }
+
+  @override
+  String get importNoticesTitle => 'Perlu diperiksa';
+
+  @override
+  String get importSuccess => 'Rutinitas diimpor';
+
+  @override
+  String get importErrorEmptyInput =>
+      'Tempelkan jawaban asisten terlebih dahulu.';
+
+  @override
+  String get importErrorInvalidJson =>
+      'Teks itu bukan JSON yang valid. Salin lagi jawabannya termasuk tanda kurung kurawal, atau minta asisten menjawab hanya dengan JSON.';
+
+  @override
+  String get importErrorNoRoutines =>
+      'Tidak ada rutinitas yang ditemukan pada teks itu. Dibutuhkan daftar “routines” dengan setidaknya satu hari yang berisi latihan.';
+
+  @override
+  String importNoticeNoExercises(String name) {
+    return '“$name” dilewati: tidak ada latihan.';
+  }
+
+  @override
+  String importNoticeSkippedRoutines(int count) {
+    return 'Entri dilewati karena tidak punya nama: $count.';
+  }
+
+  @override
+  String importNoticeSkippedExercises(String name, int count) {
+    return 'Latihan di “$name” dilewati karena tidak punya nama: $count.';
+  }
+
+  @override
+  String importNoticeDuplicateName(String name) {
+    return 'Kamu sudah punya rutinitas bernama “$name”. Yang ini tetap ditambahkan.';
+  }
+
+  @override
+  String get importSettingsSubtitle =>
+      'Tempel satu program dan buat semua rutinitas sekaligus';
 }

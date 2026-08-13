@@ -43,6 +43,7 @@ import '../../features/settings/presentation/cubit/training_defaults_cubit.dart'
 import '../../features/workout/presentation/cubit/active_workout_cubit.dart';
 import '../../features/workout/presentation/cubit/dashboard_cubit.dart';
 import '../../features/workout/presentation/cubit/routine_form_cubit.dart';
+import '../../features/workout/presentation/cubit/routine_import_cubit.dart';
 import '../../features/workout/presentation/cubit/workout_cubit.dart';
 import '../../features/workout/presentation/services/rest_timer_service.dart';
 import '../router/app_router.dart';
@@ -255,6 +256,14 @@ Future<void> _initializePresentation() async {
       getLogsForSessionUseCase: serviceLocator(),
       restTimerService: serviceLocator(),
       sessionId: sessionId,
+    ),
+  );
+
+  serviceLocator.registerFactory(
+    () => RoutineImportCubit(
+      saveRoutineUseCase: serviceLocator(),
+      repository: serviceLocator(),
+      trainingDefaultsRepository: serviceLocator(),
     ),
   );
 

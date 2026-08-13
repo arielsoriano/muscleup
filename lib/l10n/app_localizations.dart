@@ -1331,6 +1331,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Exit'**
   String get exitAppConfirm;
+
+  /// Title of the routine import screen
+  ///
+  /// In en, this message translates to:
+  /// **'Import routines'**
+  String get importTitle;
+
+  /// Headline on the routine import screen
+  ///
+  /// In en, this message translates to:
+  /// **'Bring your whole plan in one step'**
+  String get importHeadline;
+
+  /// Explains what the routine import does
+  ///
+  /// In en, this message translates to:
+  /// **'Paste your training plan and Muscleup creates every routine, with its exercises, sets, weights, repetitions and notes. Any AI assistant can put your notes into the format the app expects.'**
+  String get importIntro;
+
+  /// First step of the import instructions
+  ///
+  /// In en, this message translates to:
+  /// **'Copy the instructions.'**
+  String get importStep1;
+
+  /// Second step of the import instructions
+  ///
+  /// In en, this message translates to:
+  /// **'Paste them into an AI chat — ChatGPT, Claude, Gemini — followed by your workout notes, exactly as you have them written.'**
+  String get importStep2;
+
+  /// Third step of the import instructions
+  ///
+  /// In en, this message translates to:
+  /// **'Copy the reply, paste it below and check it before importing.'**
+  String get importStep3;
+
+  /// Copies the AI prompt to the clipboard
+  ///
+  /// In en, this message translates to:
+  /// **'Copy instructions'**
+  String get importCopyInstructions;
+
+  /// Confirmation that the prompt was copied
+  ///
+  /// In en, this message translates to:
+  /// **'Instructions copied. Paste them into an AI chat along with your notes.'**
+  String get importInstructionsCopied;
+
+  /// Explains why the copied prompt is in English
+  ///
+  /// In en, this message translates to:
+  /// **'The instructions are in English because assistants follow them most accurately that way. Your routines come back in {language}.'**
+  String importInstructionsLanguageNote(String language);
+
+  /// Label above the paste field
+  ///
+  /// In en, this message translates to:
+  /// **'The assistant\'s reply'**
+  String get importPasteLabel;
+
+  /// Hint inside the paste field
+  ///
+  /// In en, this message translates to:
+  /// **'Paste the JSON here'**
+  String get importPasteHint;
+
+  /// Pastes the clipboard into the field
+  ///
+  /// In en, this message translates to:
+  /// **'Paste'**
+  String get importPasteFromClipboard;
+
+  /// Shown when the clipboard has no text
+  ///
+  /// In en, this message translates to:
+  /// **'There is nothing to paste.'**
+  String get importClipboardEmpty;
+
+  /// Checks the pasted text before importing
+  ///
+  /// In en, this message translates to:
+  /// **'Check'**
+  String get importCheck;
+
+  /// Empties the paste field
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get importClear;
+
+  /// Confirms the import
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get importAction;
+
+  /// Heading above the routines about to be created
+  ///
+  /// In en, this message translates to:
+  /// **'This is what will be created'**
+  String get importPreviewTitle;
+
+  /// Exercise and set totals of a routine about to be imported
+  ///
+  /// In en, this message translates to:
+  /// **'Exercises: {exerciseCount} · Sets: {setCount}'**
+  String importRoutineSummary(int exerciseCount, int setCount);
+
+  /// Heading above the import warnings
+  ///
+  /// In en, this message translates to:
+  /// **'Worth a look'**
+  String get importNoticesTitle;
+
+  /// Confirmation that the routines were imported
+  ///
+  /// In en, this message translates to:
+  /// **'Routines imported'**
+  String get importSuccess;
+
+  /// Shown when nothing was pasted
+  ///
+  /// In en, this message translates to:
+  /// **'Paste the assistant\'s reply first.'**
+  String get importErrorEmptyInput;
+
+  /// Shown when the pasted text is not valid JSON
+  ///
+  /// In en, this message translates to:
+  /// **'That text is not valid JSON. Copy the reply again including the braces, or ask the assistant to reply with the JSON only.'**
+  String get importErrorInvalidJson;
+
+  /// Shown when the JSON contains no routines
+  ///
+  /// In en, this message translates to:
+  /// **'No routines were found in that text. It needs a “routines” list with at least one day that has exercises.'**
+  String get importErrorNoRoutines;
+
+  /// Warning that a day was skipped for having no exercises
+  ///
+  /// In en, this message translates to:
+  /// **'“{name}” was left out: it has no exercises.'**
+  String importNoticeNoExercises(String name);
+
+  /// Warning that unnamed routines were skipped
+  ///
+  /// In en, this message translates to:
+  /// **'Entries left out for having no name: {count}.'**
+  String importNoticeSkippedRoutines(int count);
+
+  /// Warning that unnamed exercises were skipped from a routine
+  ///
+  /// In en, this message translates to:
+  /// **'Exercises left out of “{name}” for having no name: {count}.'**
+  String importNoticeSkippedExercises(String name, int count);
+
+  /// Warning that a routine with the same name already exists
+  ///
+  /// In en, this message translates to:
+  /// **'You already have a routine called “{name}”. This one is added as well.'**
+  String importNoticeDuplicateName(String name);
+
+  /// Subtitle of the import entry in settings
+  ///
+  /// In en, this message translates to:
+  /// **'Paste a plan and create every routine at once'**
+  String get importSettingsSubtitle;
 }
 
 class _AppLocalizationsDelegate

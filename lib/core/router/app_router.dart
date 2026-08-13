@@ -9,6 +9,7 @@ import '../../features/workout/presentation/pages/active_workout_page.dart';
 import '../../features/workout/presentation/pages/dashboard_page.dart';
 import '../../features/workout/presentation/pages/exercise_progress_page.dart';
 import '../../features/workout/presentation/pages/routine_form_page.dart';
+import '../../features/workout/presentation/pages/routine_import_page.dart';
 import '../../features/workout/presentation/pages/routines_page.dart';
 import '../../features/workout/presentation/pages/workout_details_page.dart';
 
@@ -19,6 +20,7 @@ class AppRoutes {
   static const String activeWorkout = '/active-workout';
   static const String manageRoutine = '/manage-routine';
   static const String editRoutine = '/edit-routine/:id';
+  static const String importRoutines = '/import-routines';
   static const String settings = '/settings';
   static const String exerciseLibrary = '/exercise-library';
   static const String exerciseProgress = '/exercise-progress';
@@ -86,6 +88,16 @@ GoRouter createAppRouter() {
             child: RoutineFormPage(
               routine: routine as dynamic,
             ),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.importRoutines,
+        pageBuilder: (context, state) {
+          return _buildFadeTransitionPage(
+            context: context,
+            state: state,
+            child: const RoutineImportPage(),
           );
         },
       ),

@@ -688,4 +688,108 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get exitAppConfirm => 'Beenden';
+
+  @override
+  String get importTitle => 'Routinen importieren';
+
+  @override
+  String get importHeadline => 'Deinen ganzen Plan in einem Schritt übernehmen';
+
+  @override
+  String get importIntro =>
+      'Füge deinen Trainingsplan ein und Muscleup erstellt alle Routinen samt Übungen, Sätzen, Gewichten, Wiederholungen und Notizen. Jeder KI-Assistent kann deine Notizen in das Format bringen, das die App erwartet.';
+
+  @override
+  String get importStep1 => 'Kopiere die Anleitung.';
+
+  @override
+  String get importStep2 =>
+      'Füge sie in einen KI-Chat ein — ChatGPT, Claude, Gemini — und danach deine Trainingsnotizen, genau so, wie du sie aufgeschrieben hast.';
+
+  @override
+  String get importStep3 =>
+      'Kopiere die Antwort, füge sie unten ein und prüfe sie vor dem Import.';
+
+  @override
+  String get importCopyInstructions => 'Anleitung kopieren';
+
+  @override
+  String get importInstructionsCopied =>
+      'Anleitung kopiert. Füge sie zusammen mit deinen Notizen in einen KI-Chat ein.';
+
+  @override
+  String importInstructionsLanguageNote(String language) {
+    return 'Die Anleitung ist auf Englisch, weil Assistenten sie so am genauesten befolgen. Deine Routinen kommen auf $language zurück.';
+  }
+
+  @override
+  String get importPasteLabel => 'Die Antwort des Assistenten';
+
+  @override
+  String get importPasteHint => 'JSON hier einfügen';
+
+  @override
+  String get importPasteFromClipboard => 'Einfügen';
+
+  @override
+  String get importClipboardEmpty => 'Es gibt nichts zum Einfügen.';
+
+  @override
+  String get importCheck => 'Prüfen';
+
+  @override
+  String get importClear => 'Leeren';
+
+  @override
+  String get importAction => 'Importieren';
+
+  @override
+  String get importPreviewTitle => 'Das wird erstellt';
+
+  @override
+  String importRoutineSummary(int exerciseCount, int setCount) {
+    return 'Übungen: $exerciseCount · Sätze: $setCount';
+  }
+
+  @override
+  String get importNoticesTitle => 'Zum Nachsehen';
+
+  @override
+  String get importSuccess => 'Routinen importiert';
+
+  @override
+  String get importErrorEmptyInput =>
+      'Füge zuerst die Antwort des Assistenten ein.';
+
+  @override
+  String get importErrorInvalidJson =>
+      'Dieser Text ist kein gültiges JSON. Kopiere die Antwort erneut, inklusive der Klammern, oder bitte den Assistenten, nur mit dem JSON zu antworten.';
+
+  @override
+  String get importErrorNoRoutines =>
+      'In diesem Text wurden keine Routinen gefunden. Er braucht eine Liste „routines“ mit mindestens einem Tag, der Übungen enthält.';
+
+  @override
+  String importNoticeNoExercises(String name) {
+    return '„$name“ wurde weggelassen: keine Übungen.';
+  }
+
+  @override
+  String importNoticeSkippedRoutines(int count) {
+    return 'Wegen fehlendem Namen übersprungen: $count.';
+  }
+
+  @override
+  String importNoticeSkippedExercises(String name, int count) {
+    return 'In „$name“ wegen fehlendem Namen übersprungene Übungen: $count.';
+  }
+
+  @override
+  String importNoticeDuplicateName(String name) {
+    return 'Du hast schon eine Routine namens „$name“. Diese wird zusätzlich angelegt.';
+  }
+
+  @override
+  String get importSettingsSubtitle =>
+      'Plan einfügen und alle Routinen auf einmal erstellen';
 }

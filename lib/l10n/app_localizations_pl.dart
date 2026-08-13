@@ -688,4 +688,107 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get exitAppConfirm => 'Zamknij';
+
+  @override
+  String get importTitle => 'Importuj rutyny';
+
+  @override
+  String get importHeadline => 'Przenieś cały plan w jednym kroku';
+
+  @override
+  String get importIntro =>
+      'Wklej swój plan treningowy, a Muscleup utworzy wszystkie rutyny z ćwiczeniami, seriami, ciężarami, powtórzeniami i notatkami. Dowolny asystent AI potrafi przenieść Twoje notatki do formatu, którego oczekuje aplikacja.';
+
+  @override
+  String get importStep1 => 'Skopiuj instrukcję.';
+
+  @override
+  String get importStep2 =>
+      'Wklej ją do czatu z AI — ChatGPT, Claude, Gemini — a zaraz po niej swoje notatki treningowe, dokładnie tak, jak je masz zapisane.';
+
+  @override
+  String get importStep3 =>
+      'Skopiuj odpowiedź, wklej ją poniżej i sprawdź przed importem.';
+
+  @override
+  String get importCopyInstructions => 'Skopiuj instrukcję';
+
+  @override
+  String get importInstructionsCopied =>
+      'Instrukcja skopiowana. Wklej ją do czatu z AI razem ze swoimi notatkami.';
+
+  @override
+  String importInstructionsLanguageNote(String language) {
+    return 'Instrukcja jest po angielsku, bo asystenci najdokładniej ją wtedy wykonują. Twoje rutyny wrócą w języku $language.';
+  }
+
+  @override
+  String get importPasteLabel => 'Odpowiedź asystenta';
+
+  @override
+  String get importPasteHint => 'Wklej tutaj JSON';
+
+  @override
+  String get importPasteFromClipboard => 'Wklej';
+
+  @override
+  String get importClipboardEmpty => 'Nie ma czego wkleić.';
+
+  @override
+  String get importCheck => 'Sprawdź';
+
+  @override
+  String get importClear => 'Wyczyść';
+
+  @override
+  String get importAction => 'Importuj';
+
+  @override
+  String get importPreviewTitle => 'Oto co zostanie utworzone';
+
+  @override
+  String importRoutineSummary(int exerciseCount, int setCount) {
+    return 'Ćwiczenia: $exerciseCount · Serie: $setCount';
+  }
+
+  @override
+  String get importNoticesTitle => 'Warto sprawdzić';
+
+  @override
+  String get importSuccess => 'Rutyny zaimportowane';
+
+  @override
+  String get importErrorEmptyInput => 'Najpierw wklej odpowiedź asystenta.';
+
+  @override
+  String get importErrorInvalidJson =>
+      'Ten tekst to nie prawidłowy JSON. Skopiuj odpowiedź ponownie razem z nawiasami klamrowymi albo poproś asystenta, żeby odpowiedział wyłącznie JSON-em.';
+
+  @override
+  String get importErrorNoRoutines =>
+      'Nie znaleziono rutyn w tym tekście. Potrzebna jest lista „routines” z co najmniej jednym dniem, który ma ćwiczenia.';
+
+  @override
+  String importNoticeNoExercises(String name) {
+    return '„$name” pominięto: brak ćwiczeń.';
+  }
+
+  @override
+  String importNoticeSkippedRoutines(int count) {
+    return 'Pominięte wpisy bez nazwy: $count.';
+  }
+
+  @override
+  String importNoticeSkippedExercises(String name, int count) {
+    return 'Ćwiczenia pominięte w „$name” z powodu braku nazwy: $count.';
+  }
+
+  @override
+  String importNoticeDuplicateName(String name) {
+    return 'Masz już rutynę o nazwie „$name”. Ta zostanie dodana obok niej.';
+  }
+
+  @override
+  String get importSettingsSubtitle =>
+      'Wklej plan i utwórz wszystkie rutyny naraz';
 }

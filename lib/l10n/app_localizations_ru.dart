@@ -691,4 +691,107 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get exitAppConfirm => 'Выйти';
+
+  @override
+  String get importTitle => 'Импорт программ';
+
+  @override
+  String get importHeadline => 'Перенесите всю программу за один шаг';
+
+  @override
+  String get importIntro =>
+      'Вставьте свой план тренировок, и Muscleup создаст все программы с упражнениями, подходами, весами, повторениями и заметками. Любой ИИ-ассистент может привести ваши записи к нужному формату.';
+
+  @override
+  String get importStep1 => 'Скопируйте инструкцию.';
+
+  @override
+  String get importStep2 =>
+      'Вставьте её в чат с ИИ — ChatGPT, Claude, Gemini — а сразу за ней свои записи о тренировках в том виде, в котором они у вас есть.';
+
+  @override
+  String get importStep3 =>
+      'Скопируйте ответ, вставьте его ниже и проверьте перед импортом.';
+
+  @override
+  String get importCopyInstructions => 'Скопировать инструкцию';
+
+  @override
+  String get importInstructionsCopied =>
+      'Инструкция скопирована. Вставьте её в чат с ИИ вместе со своими записями.';
+
+  @override
+  String importInstructionsLanguageNote(String language) {
+    return 'Инструкция на английском: так ассистенты выполняют её точнее. Программы вернутся на $language.';
+  }
+
+  @override
+  String get importPasteLabel => 'Ответ ассистента';
+
+  @override
+  String get importPasteHint => 'Вставьте JSON здесь';
+
+  @override
+  String get importPasteFromClipboard => 'Вставить';
+
+  @override
+  String get importClipboardEmpty => 'Вставлять нечего.';
+
+  @override
+  String get importCheck => 'Проверить';
+
+  @override
+  String get importClear => 'Очистить';
+
+  @override
+  String get importAction => 'Импортировать';
+
+  @override
+  String get importPreviewTitle => 'Вот что будет создано';
+
+  @override
+  String importRoutineSummary(int exerciseCount, int setCount) {
+    return 'Упражнений: $exerciseCount · Подходов: $setCount';
+  }
+
+  @override
+  String get importNoticesTitle => 'Стоит проверить';
+
+  @override
+  String get importSuccess => 'Программы импортированы';
+
+  @override
+  String get importErrorEmptyInput => 'Сначала вставьте ответ ассистента.';
+
+  @override
+  String get importErrorInvalidJson =>
+      'Это не корректный JSON. Скопируйте ответ заново вместе с фигурными скобками или попросите ассистента ответить только JSON.';
+
+  @override
+  String get importErrorNoRoutines =>
+      'В этом тексте не найдено программ. Нужен список «routines» хотя бы с одним днём, в котором есть упражнения.';
+
+  @override
+  String importNoticeNoExercises(String name) {
+    return '«$name» пропущена: нет упражнений.';
+  }
+
+  @override
+  String importNoticeSkippedRoutines(int count) {
+    return 'Пропущено записей без названия: $count.';
+  }
+
+  @override
+  String importNoticeSkippedExercises(String name, int count) {
+    return 'Пропущено упражнений без названия в «$name»: $count.';
+  }
+
+  @override
+  String importNoticeDuplicateName(String name) {
+    return 'Программа «$name» у вас уже есть. Эта будет добавлена дополнительно.';
+  }
+
+  @override
+  String get importSettingsSubtitle =>
+      'Вставьте план и создайте все программы сразу';
 }

@@ -685,4 +685,107 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get exitAppConfirm => 'Sair';
+
+  @override
+  String get importTitle => 'Importar rotinas';
+
+  @override
+  String get importHeadline => 'Traga todo o seu plano em um só passo';
+
+  @override
+  String get importIntro =>
+      'Cole o seu plano de treino e o Muscleup cria todas as rotinas, com exercícios, séries, pesos, repetições e notas. Qualquer assistente de IA consegue passar as suas anotações para o formato que o app espera.';
+
+  @override
+  String get importStep1 => 'Copie as instruções.';
+
+  @override
+  String get importStep2 =>
+      'Cole em um chat de IA — ChatGPT, Claude, Gemini — seguidas das suas anotações de treino, exatamente como você as tem escritas.';
+
+  @override
+  String get importStep3 =>
+      'Copie a resposta, cole abaixo e revise antes de importar.';
+
+  @override
+  String get importCopyInstructions => 'Copiar instruções';
+
+  @override
+  String get importInstructionsCopied =>
+      'Instruções copiadas. Cole em um chat de IA junto com as suas anotações.';
+
+  @override
+  String importInstructionsLanguageNote(String language) {
+    return 'As instruções estão em inglês porque os assistentes as seguem com mais precisão assim. As suas rotinas voltam em $language.';
+  }
+
+  @override
+  String get importPasteLabel => 'A resposta do assistente';
+
+  @override
+  String get importPasteHint => 'Cole o JSON aqui';
+
+  @override
+  String get importPasteFromClipboard => 'Colar';
+
+  @override
+  String get importClipboardEmpty => 'Não há nada para colar.';
+
+  @override
+  String get importCheck => 'Revisar';
+
+  @override
+  String get importClear => 'Limpar';
+
+  @override
+  String get importAction => 'Importar';
+
+  @override
+  String get importPreviewTitle => 'Isto é o que será criado';
+
+  @override
+  String importRoutineSummary(int exerciseCount, int setCount) {
+    return 'Exercícios: $exerciseCount · Séries: $setCount';
+  }
+
+  @override
+  String get importNoticesTitle => 'Vale conferir';
+
+  @override
+  String get importSuccess => 'Rotinas importadas';
+
+  @override
+  String get importErrorEmptyInput => 'Cole primeiro a resposta do assistente.';
+
+  @override
+  String get importErrorInvalidJson =>
+      'Esse texto não é JSON válido. Copie a resposta novamente incluindo as chaves, ou peça ao assistente para responder apenas com o JSON.';
+
+  @override
+  String get importErrorNoRoutines =>
+      'Nenhuma rotina foi encontrada nesse texto. Ele precisa de uma lista “routines” com pelo menos um dia que tenha exercícios.';
+
+  @override
+  String importNoticeNoExercises(String name) {
+    return '“$name” ficou de fora: não tem exercícios.';
+  }
+
+  @override
+  String importNoticeSkippedRoutines(int count) {
+    return 'Entradas ignoradas por não ter nome: $count.';
+  }
+
+  @override
+  String importNoticeSkippedExercises(String name, int count) {
+    return 'Exercícios ignorados em “$name” por não ter nome: $count.';
+  }
+
+  @override
+  String importNoticeDuplicateName(String name) {
+    return 'Você já tem uma rotina chamada “$name”. Esta é adicionada também.';
+  }
+
+  @override
+  String get importSettingsSubtitle =>
+      'Cole um plano e crie todas as rotinas de uma vez';
 }

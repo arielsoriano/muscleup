@@ -682,4 +682,107 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exitAppConfirm => 'Exit';
+
+  @override
+  String get importTitle => 'Import routines';
+
+  @override
+  String get importHeadline => 'Bring your whole plan in one step';
+
+  @override
+  String get importIntro =>
+      'Paste your training plan and Muscleup creates every routine, with its exercises, sets, weights, repetitions and notes. Any AI assistant can put your notes into the format the app expects.';
+
+  @override
+  String get importStep1 => 'Copy the instructions.';
+
+  @override
+  String get importStep2 =>
+      'Paste them into an AI chat — ChatGPT, Claude, Gemini — followed by your workout notes, exactly as you have them written.';
+
+  @override
+  String get importStep3 =>
+      'Copy the reply, paste it below and check it before importing.';
+
+  @override
+  String get importCopyInstructions => 'Copy instructions';
+
+  @override
+  String get importInstructionsCopied =>
+      'Instructions copied. Paste them into an AI chat along with your notes.';
+
+  @override
+  String importInstructionsLanguageNote(String language) {
+    return 'The instructions are in English because assistants follow them most accurately that way. Your routines come back in $language.';
+  }
+
+  @override
+  String get importPasteLabel => 'The assistant\'s reply';
+
+  @override
+  String get importPasteHint => 'Paste the JSON here';
+
+  @override
+  String get importPasteFromClipboard => 'Paste';
+
+  @override
+  String get importClipboardEmpty => 'There is nothing to paste.';
+
+  @override
+  String get importCheck => 'Check';
+
+  @override
+  String get importClear => 'Clear';
+
+  @override
+  String get importAction => 'Import';
+
+  @override
+  String get importPreviewTitle => 'This is what will be created';
+
+  @override
+  String importRoutineSummary(int exerciseCount, int setCount) {
+    return 'Exercises: $exerciseCount · Sets: $setCount';
+  }
+
+  @override
+  String get importNoticesTitle => 'Worth a look';
+
+  @override
+  String get importSuccess => 'Routines imported';
+
+  @override
+  String get importErrorEmptyInput => 'Paste the assistant\'s reply first.';
+
+  @override
+  String get importErrorInvalidJson =>
+      'That text is not valid JSON. Copy the reply again including the braces, or ask the assistant to reply with the JSON only.';
+
+  @override
+  String get importErrorNoRoutines =>
+      'No routines were found in that text. It needs a “routines” list with at least one day that has exercises.';
+
+  @override
+  String importNoticeNoExercises(String name) {
+    return '“$name” was left out: it has no exercises.';
+  }
+
+  @override
+  String importNoticeSkippedRoutines(int count) {
+    return 'Entries left out for having no name: $count.';
+  }
+
+  @override
+  String importNoticeSkippedExercises(String name, int count) {
+    return 'Exercises left out of “$name” for having no name: $count.';
+  }
+
+  @override
+  String importNoticeDuplicateName(String name) {
+    return 'You already have a routine called “$name”. This one is added as well.';
+  }
+
+  @override
+  String get importSettingsSubtitle =>
+      'Paste a plan and create every routine at once';
 }

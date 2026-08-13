@@ -689,4 +689,108 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get exitAppConfirm => 'Afsluiten';
+
+  @override
+  String get importTitle => 'Routines importeren';
+
+  @override
+  String get importHeadline => 'Zet je hele schema in één stap over';
+
+  @override
+  String get importIntro =>
+      'Plak je trainingsschema en Muscleup maakt alle routines aan, met oefeningen, sets, gewichten, herhalingen en notities. Elke AI-assistent kan je aantekeningen in de vorm zetten die de app verwacht.';
+
+  @override
+  String get importStep1 => 'Kopieer de instructies.';
+
+  @override
+  String get importStep2 =>
+      'Plak ze in een AI-chat — ChatGPT, Claude, Gemini — en zet daarachter je trainingsaantekeningen, precies zoals je ze hebt opgeschreven.';
+
+  @override
+  String get importStep3 =>
+      'Kopieer het antwoord, plak het hieronder en controleer het voordat je importeert.';
+
+  @override
+  String get importCopyInstructions => 'Instructies kopiëren';
+
+  @override
+  String get importInstructionsCopied =>
+      'Instructies gekopieerd. Plak ze samen met je aantekeningen in een AI-chat.';
+
+  @override
+  String importInstructionsLanguageNote(String language) {
+    return 'De instructies zijn in het Engels, omdat assistenten ze dan het nauwkeurigst volgen. Je routines komen terug in het $language.';
+  }
+
+  @override
+  String get importPasteLabel => 'Het antwoord van de assistent';
+
+  @override
+  String get importPasteHint => 'Plak de JSON hier';
+
+  @override
+  String get importPasteFromClipboard => 'Plakken';
+
+  @override
+  String get importClipboardEmpty => 'Er is niets om te plakken.';
+
+  @override
+  String get importCheck => 'Controleren';
+
+  @override
+  String get importClear => 'Wissen';
+
+  @override
+  String get importAction => 'Importeren';
+
+  @override
+  String get importPreviewTitle => 'Dit wordt aangemaakt';
+
+  @override
+  String importRoutineSummary(int exerciseCount, int setCount) {
+    return 'Oefeningen: $exerciseCount · Sets: $setCount';
+  }
+
+  @override
+  String get importNoticesTitle => 'Even nakijken';
+
+  @override
+  String get importSuccess => 'Routines geïmporteerd';
+
+  @override
+  String get importErrorEmptyInput =>
+      'Plak eerst het antwoord van de assistent.';
+
+  @override
+  String get importErrorInvalidJson =>
+      'Deze tekst is geen geldige JSON. Kopieer het antwoord opnieuw, inclusief de accolades, of vraag de assistent om alleen met de JSON te antwoorden.';
+
+  @override
+  String get importErrorNoRoutines =>
+      'Geen routines gevonden in deze tekst. Er moet een lijst “routines” in staan met minstens één dag met oefeningen.';
+
+  @override
+  String importNoticeNoExercises(String name) {
+    return '“$name” is overgeslagen: geen oefeningen.';
+  }
+
+  @override
+  String importNoticeSkippedRoutines(int count) {
+    return 'Overgeslagen omdat er geen naam was: $count.';
+  }
+
+  @override
+  String importNoticeSkippedExercises(String name, int count) {
+    return 'Oefeningen in “$name” overgeslagen omdat er geen naam was: $count.';
+  }
+
+  @override
+  String importNoticeDuplicateName(String name) {
+    return 'Je hebt al een routine met de naam “$name”. Deze wordt er extra bij gezet.';
+  }
+
+  @override
+  String get importSettingsSubtitle =>
+      'Plak een schema en maak alle routines in één keer';
 }

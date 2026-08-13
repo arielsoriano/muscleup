@@ -576,5 +576,153 @@
   "couldNotOpenLink": "Couldn't open the link on this device.",
   "exitAppTitle": "Exit Muscleup?",
   "exitAppMessage": "Are you sure you want to close the app?",
-  "exitAppConfirm": "Exit"
+  "exitAppConfirm": "Exit",
+  "importTitle": "Import routines",
+  "@importTitle": {
+    "description": "Title of the routine import screen"
+  },
+  "importHeadline": "Bring your whole plan in one step",
+  "@importHeadline": {
+    "description": "Headline on the routine import screen"
+  },
+  "importIntro": "Paste your training plan and Muscleup creates every routine, with its exercises, sets, weights, repetitions and notes. Any AI assistant can put your notes into the format the app expects.",
+  "@importIntro": {
+    "description": "Explains what the routine import does"
+  },
+  "importStep1": "Copy the instructions.",
+  "@importStep1": {
+    "description": "First step of the import instructions"
+  },
+  "importStep2": "Paste them into an AI chat — ChatGPT, Claude, Gemini — followed by your workout notes, exactly as you have them written.",
+  "@importStep2": {
+    "description": "Second step of the import instructions"
+  },
+  "importStep3": "Copy the reply, paste it below and check it before importing.",
+  "@importStep3": {
+    "description": "Third step of the import instructions"
+  },
+  "importCopyInstructions": "Copy instructions",
+  "@importCopyInstructions": {
+    "description": "Copies the AI prompt to the clipboard"
+  },
+  "importInstructionsCopied": "Instructions copied. Paste them into an AI chat along with your notes.",
+  "@importInstructionsCopied": {
+    "description": "Confirmation that the prompt was copied"
+  },
+  "importInstructionsLanguageNote": "The instructions are in English because assistants follow them most accurately that way. Your routines come back in {language}.",
+  "@importInstructionsLanguageNote": {
+    "description": "Explains why the copied prompt is in English",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "importPasteLabel": "The assistant's reply",
+  "@importPasteLabel": {
+    "description": "Label above the paste field"
+  },
+  "importPasteHint": "Paste the JSON here",
+  "@importPasteHint": {
+    "description": "Hint inside the paste field"
+  },
+  "importPasteFromClipboard": "Paste",
+  "@importPasteFromClipboard": {
+    "description": "Pastes the clipboard into the field"
+  },
+  "importClipboardEmpty": "There is nothing to paste.",
+  "@importClipboardEmpty": {
+    "description": "Shown when the clipboard has no text"
+  },
+  "importCheck": "Check",
+  "@importCheck": {
+    "description": "Checks the pasted text before importing"
+  },
+  "importClear": "Clear",
+  "@importClear": {
+    "description": "Empties the paste field"
+  },
+  "importAction": "Import",
+  "@importAction": {
+    "description": "Confirms the import"
+  },
+  "importPreviewTitle": "This is what will be created",
+  "@importPreviewTitle": {
+    "description": "Heading above the routines about to be created"
+  },
+  "importRoutineSummary": "Exercises: {exerciseCount} · Sets: {setCount}",
+  "@importRoutineSummary": {
+    "description": "Exercise and set totals of a routine about to be imported",
+    "placeholders": {
+      "exerciseCount": {
+        "type": "int"
+      },
+      "setCount": {
+        "type": "int"
+      }
+    }
+  },
+  "importNoticesTitle": "Worth a look",
+  "@importNoticesTitle": {
+    "description": "Heading above the import warnings"
+  },
+  "importSuccess": "Routines imported",
+  "@importSuccess": {
+    "description": "Confirmation that the routines were imported"
+  },
+  "importErrorEmptyInput": "Paste the assistant's reply first.",
+  "@importErrorEmptyInput": {
+    "description": "Shown when nothing was pasted"
+  },
+  "importErrorInvalidJson": "That text is not valid JSON. Copy the reply again including the braces, or ask the assistant to reply with the JSON only.",
+  "@importErrorInvalidJson": {
+    "description": "Shown when the pasted text is not valid JSON"
+  },
+  "importErrorNoRoutines": "No routines were found in that text. It needs a “routines” list with at least one day that has exercises.",
+  "@importErrorNoRoutines": {
+    "description": "Shown when the JSON contains no routines"
+  },
+  "importNoticeNoExercises": "“{name}” was left out: it has no exercises.",
+  "@importNoticeNoExercises": {
+    "description": "Warning that a day was skipped for having no exercises",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "importNoticeSkippedRoutines": "Entries left out for having no name: {count}.",
+  "@importNoticeSkippedRoutines": {
+    "description": "Warning that unnamed routines were skipped",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importNoticeSkippedExercises": "Exercises left out of “{name}” for having no name: {count}.",
+  "@importNoticeSkippedExercises": {
+    "description": "Warning that unnamed exercises were skipped from a routine",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importNoticeDuplicateName": "You already have a routine called “{name}”. This one is added as well.",
+  "@importNoticeDuplicateName": {
+    "description": "Warning that a routine with the same name already exists",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "importSettingsSubtitle": "Paste a plan and create every routine at once",
+  "@importSettingsSubtitle": {
+    "description": "Subtitle of the import entry in settings"
+  }
 }

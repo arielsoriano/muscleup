@@ -680,4 +680,108 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get exitAppConfirm => 'Thoát';
+
+  @override
+  String get importTitle => 'Nhập lịch tập';
+
+  @override
+  String get importHeadline =>
+      'Mang cả kế hoạch của bạn vào chỉ trong một bước';
+
+  @override
+  String get importIntro =>
+      'Dán kế hoạch tập của bạn và Muscleup sẽ tạo toàn bộ lịch tập, kèm bài tập, số set, mức tạ, số lần và ghi chú. Bất kỳ trợ lý AI nào cũng có thể chuyển ghi chú của bạn sang định dạng mà ứng dụng cần.';
+
+  @override
+  String get importStep1 => 'Sao chép hướng dẫn.';
+
+  @override
+  String get importStep2 =>
+      'Dán vào một cuộc trò chuyện AI — ChatGPT, Claude, Gemini — rồi dán tiếp ghi chú tập luyện của bạn, đúng như bạn đã viết.';
+
+  @override
+  String get importStep3 =>
+      'Sao chép câu trả lời, dán vào bên dưới và kiểm tra trước khi nhập.';
+
+  @override
+  String get importCopyInstructions => 'Sao chép hướng dẫn';
+
+  @override
+  String get importInstructionsCopied =>
+      'Đã sao chép hướng dẫn. Dán vào một cuộc trò chuyện AI cùng với ghi chú của bạn.';
+
+  @override
+  String importInstructionsLanguageNote(String language) {
+    return 'Hướng dẫn viết bằng tiếng Anh vì trợ lý AI làm theo chính xác nhất như vậy. Lịch tập của bạn sẽ trả về bằng $language.';
+  }
+
+  @override
+  String get importPasteLabel => 'Câu trả lời của trợ lý';
+
+  @override
+  String get importPasteHint => 'Dán JSON vào đây';
+
+  @override
+  String get importPasteFromClipboard => 'Dán';
+
+  @override
+  String get importClipboardEmpty => 'Không có gì để dán.';
+
+  @override
+  String get importCheck => 'Kiểm tra';
+
+  @override
+  String get importClear => 'Xoá';
+
+  @override
+  String get importAction => 'Nhập';
+
+  @override
+  String get importPreviewTitle => 'Đây là những gì sẽ được tạo';
+
+  @override
+  String importRoutineSummary(int exerciseCount, int setCount) {
+    return 'Bài tập: $exerciseCount · Set: $setCount';
+  }
+
+  @override
+  String get importNoticesTitle => 'Nên xem lại';
+
+  @override
+  String get importSuccess => 'Đã nhập lịch tập';
+
+  @override
+  String get importErrorEmptyInput => 'Hãy dán câu trả lời của trợ lý trước.';
+
+  @override
+  String get importErrorInvalidJson =>
+      'Văn bản này không phải JSON hợp lệ. Hãy sao chép lại câu trả lời kèm dấu ngoặc nhọn, hoặc yêu cầu trợ lý chỉ trả lời bằng JSON.';
+
+  @override
+  String get importErrorNoRoutines =>
+      'Không tìm thấy lịch tập nào trong văn bản đó. Cần có danh sách “routines” với ít nhất một ngày có bài tập.';
+
+  @override
+  String importNoticeNoExercises(String name) {
+    return '“$name” đã bị bỏ qua: không có bài tập.';
+  }
+
+  @override
+  String importNoticeSkippedRoutines(int count) {
+    return 'Mục bị bỏ qua vì không có tên: $count.';
+  }
+
+  @override
+  String importNoticeSkippedExercises(String name, int count) {
+    return 'Bài tập bị bỏ qua trong “$name” vì không có tên: $count.';
+  }
+
+  @override
+  String importNoticeDuplicateName(String name) {
+    return 'Bạn đã có lịch tập tên “$name”. Lịch này vẫn được thêm vào.';
+  }
+
+  @override
+  String get importSettingsSubtitle =>
+      'Dán một kế hoạch và tạo tất cả lịch tập cùng lúc';
 }

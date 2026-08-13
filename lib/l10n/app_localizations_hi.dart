@@ -680,4 +680,107 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get exitAppConfirm => 'बंद करें';
+
+  @override
+  String get importTitle => 'रूटीन इंपोर्ट करें';
+
+  @override
+  String get importHeadline => 'अपना पूरा प्लान एक ही कदम में लाएँ';
+
+  @override
+  String get importIntro =>
+      'अपना वर्कआउट प्लान पेस्ट करें और Muscleup सभी रूटीन बना देगा — एक्सरसाइज़, सेट, वज़न, दोहराव और नोट्स के साथ। कोई भी AI असिस्टेंट आपके नोट्स को ऐप के ज़रूरी फ़ॉर्मैट में बदल सकता है।';
+
+  @override
+  String get importStep1 => 'निर्देश कॉपी करें।';
+
+  @override
+  String get importStep2 =>
+      'उन्हें किसी AI चैट में पेस्ट करें — ChatGPT, Claude, Gemini — और उसके बाद अपने वर्कआउट नोट्स जैसे लिखे हैं वैसे ही पेस्ट करें।';
+
+  @override
+  String get importStep3 =>
+      'जवाब कॉपी करें, नीचे पेस्ट करें और इंपोर्ट करने से पहले जाँच लें।';
+
+  @override
+  String get importCopyInstructions => 'निर्देश कॉपी करें';
+
+  @override
+  String get importInstructionsCopied =>
+      'निर्देश कॉपी हो गए। इन्हें अपने नोट्स के साथ किसी AI चैट में पेस्ट करें।';
+
+  @override
+  String importInstructionsLanguageNote(String language) {
+    return 'निर्देश अंग्रेज़ी में हैं क्योंकि असिस्टेंट उन्हें इसी तरह सबसे सही ढंग से मानते हैं। आपके रूटीन $language में वापस आएँगे।';
+  }
+
+  @override
+  String get importPasteLabel => 'असिस्टेंट का जवाब';
+
+  @override
+  String get importPasteHint => 'JSON यहाँ पेस्ट करें';
+
+  @override
+  String get importPasteFromClipboard => 'पेस्ट करें';
+
+  @override
+  String get importClipboardEmpty => 'पेस्ट करने के लिए कुछ नहीं है।';
+
+  @override
+  String get importCheck => 'जाँचें';
+
+  @override
+  String get importClear => 'साफ़ करें';
+
+  @override
+  String get importAction => 'इंपोर्ट करें';
+
+  @override
+  String get importPreviewTitle => 'यह बनाया जाएगा';
+
+  @override
+  String importRoutineSummary(int exerciseCount, int setCount) {
+    return 'एक्सरसाइज़: $exerciseCount · सेट: $setCount';
+  }
+
+  @override
+  String get importNoticesTitle => 'देख लेने लायक';
+
+  @override
+  String get importSuccess => 'रूटीन इंपोर्ट हो गए';
+
+  @override
+  String get importErrorEmptyInput => 'पहले असिस्टेंट का जवाब पेस्ट करें।';
+
+  @override
+  String get importErrorInvalidJson =>
+      'यह टेक्स्ट मान्य JSON नहीं है। जवाब को ब्रेसेज़ सहित फिर से कॉपी करें, या असिस्टेंट से कहें कि वह सिर्फ़ JSON में जवाब दे।';
+
+  @override
+  String get importErrorNoRoutines =>
+      'उस टेक्स्ट में कोई रूटीन नहीं मिला। इसमें “routines” की सूची चाहिए, जिसमें कम से कम एक दिन में एक्सरसाइज़ हों।';
+
+  @override
+  String importNoticeNoExercises(String name) {
+    return '“$name” छोड़ दिया गया: इसमें कोई एक्सरसाइज़ नहीं है।';
+  }
+
+  @override
+  String importNoticeSkippedRoutines(int count) {
+    return 'नाम न होने के कारण छोड़ी गई प्रविष्टियाँ: $count।';
+  }
+
+  @override
+  String importNoticeSkippedExercises(String name, int count) {
+    return '“$name” में नाम न होने के कारण छोड़ी गई एक्सरसाइज़: $count।';
+  }
+
+  @override
+  String importNoticeDuplicateName(String name) {
+    return 'आपके पास “$name” नाम का रूटीन पहले से है। यह उसके साथ जोड़ दिया जाएगा।';
+  }
+
+  @override
+  String get importSettingsSubtitle =>
+      'प्लान पेस्ट करें और सारे रूटीन एक बार में बनाएँ';
 }

@@ -935,6 +935,13 @@ class _ExerciseLibrarySection extends StatelessWidget {
           trailing: const Icon(Icons.chevron_right_rounded),
           onTap: () => context.push(AppRoutes.exerciseLibrary),
         ),
+        ListTile(
+          leading: const Icon(Icons.auto_awesome_rounded),
+          title: Text(context.l10n.importTitle),
+          subtitle: Text(context.l10n.importSettingsSubtitle),
+          trailing: const Icon(Icons.chevron_right_rounded),
+          onTap: () => context.push(AppRoutes.importRoutines),
+        ),
       ],
     );
   }

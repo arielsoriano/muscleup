@@ -681,4 +681,107 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get exitAppConfirm => 'Çık';
+
+  @override
+  String get importTitle => 'Rutinleri içe aktar';
+
+  @override
+  String get importHeadline => 'Tüm programını tek adımda getir';
+
+  @override
+  String get importIntro =>
+      'Antrenman programını yapıştır, Muscleup tüm rutinleri egzersizleri, setleri, ağırlıkları, tekrarları ve notlarıyla oluşturur. Herhangi bir yapay zekâ asistanı notlarını uygulamanın beklediği biçime çevirebilir.';
+
+  @override
+  String get importStep1 => 'Talimatları kopyala.';
+
+  @override
+  String get importStep2 =>
+      'Bir yapay zekâ sohbetine yapıştır — ChatGPT, Claude, Gemini — ardından antrenman notlarını yazdığın gibi ekle.';
+
+  @override
+  String get importStep3 =>
+      'Yanıtı kopyala, aşağıya yapıştır ve içe aktarmadan önce kontrol et.';
+
+  @override
+  String get importCopyInstructions => 'Talimatları kopyala';
+
+  @override
+  String get importInstructionsCopied =>
+      'Talimatlar kopyalandı. Notlarınla birlikte bir yapay zekâ sohbetine yapıştır.';
+
+  @override
+  String importInstructionsLanguageNote(String language) {
+    return 'Talimatlar İngilizce, çünkü asistanlar onları böyle en doğru şekilde uygular. Rutinlerin $language dilinde geri gelir.';
+  }
+
+  @override
+  String get importPasteLabel => 'Asistanın yanıtı';
+
+  @override
+  String get importPasteHint => 'JSON\'u buraya yapıştır';
+
+  @override
+  String get importPasteFromClipboard => 'Yapıştır';
+
+  @override
+  String get importClipboardEmpty => 'Yapıştırılacak bir şey yok.';
+
+  @override
+  String get importCheck => 'Kontrol et';
+
+  @override
+  String get importClear => 'Temizle';
+
+  @override
+  String get importAction => 'İçe aktar';
+
+  @override
+  String get importPreviewTitle => 'Oluşturulacak olanlar';
+
+  @override
+  String importRoutineSummary(int exerciseCount, int setCount) {
+    return 'Egzersiz: $exerciseCount · Set: $setCount';
+  }
+
+  @override
+  String get importNoticesTitle => 'Göz atmaya değer';
+
+  @override
+  String get importSuccess => 'Rutinler içe aktarıldı';
+
+  @override
+  String get importErrorEmptyInput => 'Önce asistanın yanıtını yapıştır.';
+
+  @override
+  String get importErrorInvalidJson =>
+      'Bu metin geçerli JSON değil. Yanıtı süslü parantezler dâhil yeniden kopyala ya da asistandan yalnızca JSON ile yanıt vermesini iste.';
+
+  @override
+  String get importErrorNoRoutines =>
+      'Bu metinde rutin bulunamadı. İçinde egzersiz olan en az bir gün içeren bir “routines” listesi gerekiyor.';
+
+  @override
+  String importNoticeNoExercises(String name) {
+    return '“$name” atlandı: egzersizi yok.';
+  }
+
+  @override
+  String importNoticeSkippedRoutines(int count) {
+    return 'Adı olmadığı için atlanan kayıtlar: $count.';
+  }
+
+  @override
+  String importNoticeSkippedExercises(String name, int count) {
+    return '“$name” içinde adı olmadığı için atlanan egzersizler: $count.';
+  }
+
+  @override
+  String importNoticeDuplicateName(String name) {
+    return '“$name” adında bir rutinin zaten var. Bu da ayrıca ekleniyor.';
+  }
+
+  @override
+  String get importSettingsSubtitle =>
+      'Bir program yapıştır, tüm rutinleri tek seferde oluştur';
 }
