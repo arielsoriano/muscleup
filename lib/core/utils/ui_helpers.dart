@@ -8,20 +8,24 @@ enum SnackBarType {
 }
 
 extension BuildContextSnackBarExtension on BuildContext {
+  /// Only a small breathing gap: `Scaffold` already lifts a floating snackbar
+  /// clear of the bottom navigation bar (and of any FAB), so anything larger
+  /// here stacks on top of that offset and strands the message mid-screen.
   static const EdgeInsets _defaultSnackBarMargin = EdgeInsets.only(
-    bottom: 100,
-    left: 20,
-    right: 20,
+    bottom: 16,
+    left: 16,
+    right: 16,
   );
 
   /// Unified snackbar method that respects the app theme and selected skin
-  /// 
+  ///
   /// Uses the actual theme colors (primary, error) instead of hardcoded values,
   /// ensuring the snackbar automatically adapts to the selected app skin
   void showAppSnackBar({
     required String message,
     SnackBarType type = SnackBarType.success,
     Duration duration = const Duration(seconds: 3),
+    EdgeInsets? margin,
   }) {
     final colorScheme = Theme.of(this).colorScheme;
 
@@ -52,7 +56,7 @@ extension BuildContextSnackBarExtension on BuildContext {
         ),
         backgroundColor: backgroundColor,
         behavior: SnackBarBehavior.floating,
-        margin: _defaultSnackBarMargin,
+        margin: margin ?? _defaultSnackBarMargin,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),

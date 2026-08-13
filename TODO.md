@@ -3,7 +3,7 @@
 ## UI & UX Improvements
 
 ### 1. Fix Floating SnackBar Position Above Bottom Navigation Bar
-- [ ] **Status**: Pending
+- [x] **Status**: Done — `_defaultSnackBarMargin` is now `bottom: 16, left: 16, right: 16`, and `showAppSnackBar` accepts an optional `margin` override.
 - **Description**: Floating feedback messages (snackbars) displayed when performing actions like deleting a routine or completing workouts currently appear too high up on the screen. The desired behavior is for them to appear at a standard, comfortable low height—positioned just above the bottom tab navigation bar (`Today`, `Routines`, `History`).
 - **Root Cause**:
   - In `lib/core/utils/ui_helpers.dart`, the `BuildContextSnackBarExtension.showAppSnackBar` method uses a hardcoded margin with `bottom: 100`:
