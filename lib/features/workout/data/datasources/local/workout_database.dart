@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:drift/drift.dart';
@@ -6,6 +7,8 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
 import '../../../../../core/constants/app_constants.dart';
+import '../../../../../core/constants/exercise_library.dart';
+import '../../../../../core/l10n/localized_text.dart';
 import '../../../domain/entities/workout_entities.dart';
 
 part 'workout_database.g.dart';
@@ -38,6 +41,13 @@ class Exercises extends Table {
   TextColumn get routineId =>
       text().references(Routines, #id, onDelete: KeyAction.cascade)();
   TextColumn get name => text()();
+
+  /// The catalog entry this exercise came from, as its canonical English name,
+  /// or null for an exercise the user typed in themselves. The displayed name
+  /// is resolved from this, so a routine reads in the language the app is
+  /// currently set to rather than the one it was built in.
+  TextColumn get canonicalName => text().nullable()();
+
   TextColumn get notes => text().nullable()();
   IntColumn get restTimeSeconds => integer()();
   IntColumn get sortOrder => integer()();
@@ -115,9 +125,14 @@ class SetLogs extends Table {
 @DataClassName('LibraryExerciseData')
 class LibraryExercises extends Table {
   TextColumn get id => text()();
+
+  /// The canonical name, language-independent, used to identify the exercise.
   TextColumn get name => text()();
-  TextColumn get nameEn => text()();
-  TextColumn get nameEs => text()();
+
+  /// Every translated name, as a JSON object keyed by language code. Adding a
+  /// language adds keys here instead of columns to this table.
+  TextColumn get namesJson => text().withDefault(const Constant('{}'))();
+
   BoolColumn get isCustom => boolean()();
   IntColumn get category => intEnum<ExerciseCategory>().nullable()();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
@@ -143,17 +158,6 @@ class OutboxChanges extends Table {
 
   @override
   Set<Column<Object>> get primaryKey => {id};
-}
-
-enum ExerciseCategory {
-  chest,
-  back,
-  shoulders,
-  arms,
-  legs,
-  core,
-  cardio,
-  fullBody,
 }
 
 @DriftDatabase(tables: [
@@ -195,14 +199,109 @@ class AppDatabase extends _$AppDatabase {
         if (from < 4) {
           await _migrateV3ToV4();
         }
+        if (from < 5) {
+          await _migrateV4ToV5(m);
+        }
+        if (from < 6) {
+          await _migrateV5ToV6();
+        }
+      },
+      beforeOpen: (details) async {
+        await refreshSeededExerciseTranslations();
       },
     );
   }
 
+  /// Links routine exercises back to the catalog entry they came from.
+  ///
+  /// Until now a routine stored only the translated text that was on screen
+  /// when the exercise was added, so a routine built in Spanish stayed in
+  /// Spanish no matter what language the app was switched to. Existing rows are
+  /// matched against every known translation of the catalog, which recovers the
+  /// link for routines that were built before this column existed.
+  Future<void> _migrateV5ToV6() async {
+    await customStatement(
+      'ALTER TABLE exercises ADD COLUMN canonical_name TEXT NULL',
+    );
+
+    final rows =
+        await customSelect('SELECT id, name FROM exercises').get();
+
+    for (final row in rows) {
+      final canonical =
+          ExerciseLibrary.canonicalNameFor(row.read<String>('name'));
+      // No match means the user typed this exercise in themselves. It keeps its
+      // own name and canonical_name stays null.
+      if (canonical == null) {
+        continue;
+      }
+
+      await customStatement(
+        'UPDATE exercises SET canonical_name = ? WHERE id = ?',
+        [canonical, row.read<String>('id')],
+      );
+    }
+  }
+
+  /// Replaces the fixed `name_en` / `name_es` columns with a single JSON map of
+  /// translations, so future languages need no further schema change.
+  Future<void> _migrateV4ToV5(Migrator m) async {
+    await customStatement(
+      "ALTER TABLE library_exercises ADD COLUMN names_json TEXT NOT NULL DEFAULT '{}'",
+    );
+
+    // Backfilled in Dart rather than with SQL string concatenation: exercise
+    // names contain quotes and accents that would need escaping by hand, and
+    // jsonEncode already gets that right.
+    final legacyRows = await customSelect(
+      'SELECT id, name_en, name_es FROM library_exercises',
+    ).get();
+
+    for (final row in legacyRows) {
+      final names = <String, String>{};
+      final nameEn = row.read<String?>('name_en')?.trim();
+      final nameEs = row.read<String?>('name_es')?.trim();
+      if (nameEn != null && nameEn.isNotEmpty) {
+        names['en'] = nameEn;
+      }
+      if (nameEs != null && nameEs.isNotEmpty) {
+        names['es'] = nameEs;
+      }
+
+      await customStatement(
+        'UPDATE library_exercises SET names_json = ? WHERE id = ?',
+        [jsonEncode(names), row.read<String>('id')],
+      );
+    }
+
+    // Recreates the table from the current Dart schema, which no longer
+    // declares name_en / name_es, and copies the columns both versions share.
+    // Going through TableMigration instead of DROP COLUMN keeps this working on
+    // the older SQLite builds still shipping on some Android devices.
+    // ignore: experimental_member_use
+    await m.alterTable(TableMigration(libraryExercises));
+  }
+
   Future<void> _migrateV3ToV4() async {
+    // Guarded because the column may already be there: a database coming from
+    // v2 runs _migrateV2ToV3 first, and that creates training_defaults from
+    // _createTrainingDefaultsTable, which already declares this column. Adding
+    // it unconditionally threw "duplicate column name" and left the database
+    // unopenable for anyone upgrading from v1 or v2.
+    if (await _columnExists('training_defaults',
+        'auto_start_rest_timer_on_set_completed',)) {
+      return;
+    }
+
     await customStatement(
       'ALTER TABLE training_defaults ADD COLUMN auto_start_rest_timer_on_set_completed INTEGER NOT NULL DEFAULT 0',
     );
+  }
+
+  Future<bool> _columnExists(String tableName, String columnName) async {
+    final columns =
+        await customSelect('PRAGMA table_info($tableName)').get();
+    return columns.any((row) => row.read<String>('name') == columnName);
   }
 
   Future<void> _migrateV2ToV3() async {
@@ -308,85 +407,62 @@ class AppDatabase extends _$AppDatabase {
     );
   }
 
+  /// Seeds the catalog from [ExerciseLibrary], the single place the exercise
+  /// list and its translations are defined.
   Future<void> _seedLibraryExercises() async {
-    final exercises = [
-      ('Bench Press', 'Press de Banca', ExerciseCategory.chest),
-      ('Incline Bench Press', 'Press Inclinado', ExerciseCategory.chest),
-      ('Decline Bench Press', 'Press Declinado', ExerciseCategory.chest),
-      ('Dumbbell Fly', 'Aperturas con Mancuernas', ExerciseCategory.chest),
-      ('Push-ups', 'Flexiones', ExerciseCategory.chest),
-      ('Chest Dips', 'Fondos en Paralelas', ExerciseCategory.chest),
-      ('Pull-up', 'Dominadas', ExerciseCategory.back),
-      ('Chin-up', 'Dominadas Supinas', ExerciseCategory.back),
-      ('Barbell Row', 'Remo con Barra', ExerciseCategory.back),
-      ('Dumbbell Row', 'Remo con Mancuerna', ExerciseCategory.back),
-      ('Lat Pulldown', 'Jalón al Pecho', ExerciseCategory.back),
-      ('Deadlift', 'Peso Muerto', ExerciseCategory.back),
-      ('T-Bar Row', 'Remo en T', ExerciseCategory.back),
-      ('Overhead Press', 'Press Militar', ExerciseCategory.shoulders),
-      ('Lateral Raise', 'Elevaciones Laterales', ExerciseCategory.shoulders),
-      ('Front Raise', 'Elevaciones Frontales', ExerciseCategory.shoulders),
-      ('Rear Delt Fly', 'Aperturas Posteriores', ExerciseCategory.shoulders),
-      ('Arnold Press', 'Press Arnold', ExerciseCategory.shoulders),
-      ('Shrugs', 'Encogimientos', ExerciseCategory.shoulders),
-      ('Barbell Curl', 'Curl con Barra', ExerciseCategory.arms),
-      ('Dumbbell Curl', 'Curl con Mancuerna', ExerciseCategory.arms),
-      ('Hammer Curl', 'Curl Martillo', ExerciseCategory.arms),
-      ('Preacher Curl', 'Curl en Banco Scott', ExerciseCategory.arms),
-      (
-        'Triceps Pushdown',
-        'Extensión de Tríceps en Polea',
-        ExerciseCategory.arms
-      ),
-      (
-        'Overhead Triceps Extension',
-        'Extensión de Tríceps sobre Cabeza',
-        ExerciseCategory.arms
-      ),
-      ('Triceps Dips', 'Fondos de Tríceps', ExerciseCategory.arms),
-      ('Close-Grip Bench Press', 'Press Cerrado', ExerciseCategory.arms),
-      ('Squat', 'Sentadilla', ExerciseCategory.legs),
-      ('Front Squat', 'Sentadilla Frontal', ExerciseCategory.legs),
-      ('Leg Press', 'Prensa de Piernas', ExerciseCategory.legs),
-      ('Leg Extension', 'Extensión de Cuádriceps', ExerciseCategory.legs),
-      ('Leg Curl', 'Curl Femoral', ExerciseCategory.legs),
-      ('Romanian Deadlift', 'Peso Muerto Rumano', ExerciseCategory.legs),
-      ('Lunges', 'Zancadas', ExerciseCategory.legs),
-      ('Bulgarian Split Squat', 'Sentadilla Búlgara', ExerciseCategory.legs),
-      ('Calf Raise', 'Elevación de Talones', ExerciseCategory.legs),
-      ('Hip Thrust', 'Empuje de Cadera', ExerciseCategory.legs),
-      ('Plank', 'Plancha', ExerciseCategory.core),
-      ('Crunches', 'Abdominales', ExerciseCategory.core),
-      ('Russian Twist', 'Giro Ruso', ExerciseCategory.core),
-      ('Leg Raise', 'Elevación de Piernas', ExerciseCategory.core),
-      ('Mountain Climbers', 'Escaladores', ExerciseCategory.core),
-      ('Bicycle Crunches', 'Abdominales Bicicleta', ExerciseCategory.core),
-      ('Running', 'Correr', ExerciseCategory.cardio),
-      ('Cycling', 'Ciclismo', ExerciseCategory.cardio),
-      ('Rowing', 'Remo', ExerciseCategory.cardio),
-      ('Jump Rope', 'Saltar la Cuerda', ExerciseCategory.cardio),
-      ('Burpees', 'Burpees', ExerciseCategory.fullBody),
-      ('Thrusters', 'Thrusters', ExerciseCategory.fullBody),
-      ('Clean and Jerk', 'Cargada y Envión', ExerciseCategory.fullBody),
-      ('Snatch', 'Arrancada', ExerciseCategory.fullBody),
-    ];
-
-    for (final exercise in exercises) {
-      final id = exercise.$1.toLowerCase().replaceAll(' ', '_');
+    for (final exercise in ExerciseLibrary.exercises) {
       await into(libraryExercises).insert(
         LibraryExercisesCompanion.insert(
-          id: id,
-          name: exercise.$1,
-          nameEn: exercise.$1,
-          nameEs: exercise.$2,
+          id: exercise.id,
+          name: exercise.canonicalName,
+          namesJson: Value(exercise.names.encode()),
           isCustom: false,
-          category: Value(exercise.$3),
+          category: Value(exercise.category),
           updatedAt: Value(DateTime.now()),
           syncStatus: const Value(SyncStatus.synced),
           remoteVersion: const Value(0),
         ),
         mode: InsertMode.insertOrIgnore,
       );
+    }
+  }
+
+  /// Adds translations that landed after a device already seeded its catalog.
+  ///
+  /// Shipping a new language must reach users who installed an earlier build:
+  /// their seeded rows carry only the languages that existed back then, so on
+  /// every launch the stored names are merged with the current catalog. Rows
+  /// the user edited keep their own values, since the merge only fills in
+  /// languages that are missing.
+  Future<void> refreshSeededExerciseTranslations() async {
+    final seededRows = await (select(libraryExercises)
+          ..where((row) => row.isCustom.equals(false)))
+        .get();
+    if (seededRows.isEmpty) {
+      return;
+    }
+
+    final catalogByName = <String, ExerciseLibraryEntry>{
+      for (final entry in ExerciseLibrary.exercises)
+        entry.canonicalName.toLowerCase(): entry,
+    };
+
+    for (final row in seededRows) {
+      final entry = catalogByName[row.name.toLowerCase()];
+      if (entry == null) {
+        continue;
+      }
+
+      final stored = LocalizedText.decode(row.namesJson, fallback: row.name);
+      final merged = entry.names.mergedWith(stored);
+      if (merged == stored) {
+        continue;
+      }
+
+      // Deliberately does not touch updatedAt or syncStatus: filling in a
+      // translation we shipped is not a user edit and must not enqueue a sync.
+      await (update(libraryExercises)..where((r) => r.id.equals(row.id)))
+          .write(LibraryExercisesCompanion(namesJson: Value(merged.encode())));
     }
   }
 }

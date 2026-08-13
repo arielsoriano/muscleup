@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../core/constants/exercise_library.dart';
+
 part 'workout_entities.freezed.dart';
 
 enum WorkoutUnit {
@@ -40,13 +42,52 @@ class WorkoutRoutine with _$WorkoutRoutine {
 class WorkoutExercise with _$WorkoutExercise {
   const factory WorkoutExercise({
     required String id,
+
+    /// The name as it was stored. For a catalog exercise this is whatever
+    /// language it was added in; [WorkoutExerciseNaming.displayName] is what
+    /// should be shown instead.
     required String name,
     required int sortOrder,
     String? notes,
     required int restTimeSeconds,
     required List<WorkoutSet> templateSets,
+
+    /// The catalog entry this exercise came from, as its canonical English
+    /// name, or null when the user typed the exercise in themselves.
+    ///
+    /// Storing the link rather than the translated text is what lets a routine
+    /// built in one language read correctly in another: the name is resolved
+    /// against the catalog every time it is shown, instead of being frozen at
+    /// the moment the exercise was added.
+    String? canonicalName,
     SyncMetadata? syncMetadata,
   }) = _WorkoutExercise;
+}
+
+extension WorkoutExerciseNaming on WorkoutExercise {
+  /// The name to show the user, in [languageCode].
+  ///
+  /// Catalog exercises follow the app's language. Exercises the user created
+  /// keep the name they typed, in the language they typed it — there is no
+  /// translation for them to follow.
+  String displayName(String languageCode) {
+    final canonical = canonicalName;
+    if (canonical == null) {
+      return name;
+    }
+
+    // Looked up rather than resolved blindly: a canonical name that is no
+    // longer in the catalog would otherwise render as the raw English key, and
+    // the text the user actually saw when they built the routine is the better
+    // thing to show.
+    final entry = ExerciseLibrary.entryFor(canonical);
+    if (entry == null) {
+      return name;
+    }
+
+    final resolved = entry.names.resolve(languageCode);
+    return resolved.isEmpty ? name : resolved;
+  }
 }
 
 @freezed

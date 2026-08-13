@@ -1,19 +1,10 @@
-class ExerciseLibraryEntry {
-  const ExerciseLibraryEntry({
-    required this.nameEn,
-    required this.nameEs,
-    required this.category,
-  });
+import '../l10n/localized_text.dart';
+import 'exercise_names/exercise_name_translations.dart';
 
-  final String nameEn;
-  final String nameEs;
-  final ExerciseCategory category;
-
-  String getLocalizedName(String languageCode) {
-    return languageCode == 'es' ? nameEs : nameEn;
-  }
-}
-
+/// The muscle group an exercise belongs to.
+///
+/// Persisted by index in the `library_exercises` table, so entries may be
+/// appended but never reordered or removed.
 enum ExerciseCategory {
   chest,
   back,
@@ -25,264 +16,146 @@ enum ExerciseCategory {
   fullBody,
 }
 
+/// One exercise in the seeded catalog.
+///
+/// The English name is canonical: it identifies the exercise across the
+/// translation tables and never changes, while [names] carries whatever
+/// translations currently exist for it.
+class ExerciseLibraryEntry {
+  const ExerciseLibraryEntry({
+    required this.canonicalName,
+    required this.names,
+    required this.category,
+  });
+
+  final String canonicalName;
+  final LocalizedText names;
+  final ExerciseCategory category;
+
+  /// A stable identifier derived from the canonical name, so a seeded row keeps
+  /// the same primary key across installs and languages.
+  String get id => canonicalName.toLowerCase().replaceAll(' ', '_');
+
+  String getLocalizedName(String languageCode) => names.resolve(languageCode);
+}
+
 class ExerciseLibrary {
-  static const List<ExerciseLibraryEntry> exercises = [
-    ExerciseLibraryEntry(
-      nameEn: 'Bench Press',
-      nameEs: 'Press de Banca',
-      category: ExerciseCategory.chest,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Incline Bench Press',
-      nameEs: 'Press Inclinado',
-      category: ExerciseCategory.chest,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Decline Bench Press',
-      nameEs: 'Press Declinado',
-      category: ExerciseCategory.chest,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Dumbbell Fly',
-      nameEs: 'Aperturas con Mancuernas',
-      category: ExerciseCategory.chest,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Push-ups',
-      nameEs: 'Flexiones',
-      category: ExerciseCategory.chest,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Chest Dips',
-      nameEs: 'Fondos en Paralelas',
-      category: ExerciseCategory.chest,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Pull-up',
-      nameEs: 'Dominadas',
-      category: ExerciseCategory.back,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Chin-up',
-      nameEs: 'Dominadas Supinas',
-      category: ExerciseCategory.back,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Barbell Row',
-      nameEs: 'Remo con Barra',
-      category: ExerciseCategory.back,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Dumbbell Row',
-      nameEs: 'Remo con Mancuerna',
-      category: ExerciseCategory.back,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Lat Pulldown',
-      nameEs: 'Jalón al Pecho',
-      category: ExerciseCategory.back,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Deadlift',
-      nameEs: 'Peso Muerto',
-      category: ExerciseCategory.back,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'T-Bar Row',
-      nameEs: 'Remo en T',
-      category: ExerciseCategory.back,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Overhead Press',
-      nameEs: 'Press Militar',
-      category: ExerciseCategory.shoulders,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Lateral Raise',
-      nameEs: 'Elevaciones Laterales',
-      category: ExerciseCategory.shoulders,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Front Raise',
-      nameEs: 'Elevaciones Frontales',
-      category: ExerciseCategory.shoulders,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Rear Delt Fly',
-      nameEs: 'Aperturas Posteriores',
-      category: ExerciseCategory.shoulders,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Arnold Press',
-      nameEs: 'Press Arnold',
-      category: ExerciseCategory.shoulders,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Shrugs',
-      nameEs: 'Encogimientos',
-      category: ExerciseCategory.shoulders,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Barbell Curl',
-      nameEs: 'Curl con Barra',
-      category: ExerciseCategory.arms,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Dumbbell Curl',
-      nameEs: 'Curl con Mancuerna',
-      category: ExerciseCategory.arms,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Hammer Curl',
-      nameEs: 'Curl Martillo',
-      category: ExerciseCategory.arms,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Preacher Curl',
-      nameEs: 'Curl en Banco Scott',
-      category: ExerciseCategory.arms,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Triceps Pushdown',
-      nameEs: 'Extensión de Tríceps en Polea',
-      category: ExerciseCategory.arms,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Overhead Triceps Extension',
-      nameEs: 'Extensión de Tríceps sobre Cabeza',
-      category: ExerciseCategory.arms,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Triceps Dips',
-      nameEs: 'Fondos de Tríceps',
-      category: ExerciseCategory.arms,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Close-Grip Bench Press',
-      nameEs: 'Press Cerrado',
-      category: ExerciseCategory.arms,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Squat',
-      nameEs: 'Sentadilla',
-      category: ExerciseCategory.legs,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Front Squat',
-      nameEs: 'Sentadilla Frontal',
-      category: ExerciseCategory.legs,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Leg Press',
-      nameEs: 'Prensa de Piernas',
-      category: ExerciseCategory.legs,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Leg Extension',
-      nameEs: 'Extensión de Cuádriceps',
-      category: ExerciseCategory.legs,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Leg Curl',
-      nameEs: 'Curl Femoral',
-      category: ExerciseCategory.legs,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Romanian Deadlift',
-      nameEs: 'Peso Muerto Rumano',
-      category: ExerciseCategory.legs,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Lunges',
-      nameEs: 'Zancadas',
-      category: ExerciseCategory.legs,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Bulgarian Split Squat',
-      nameEs: 'Sentadilla Búlgara',
-      category: ExerciseCategory.legs,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Calf Raise',
-      nameEs: 'Elevación de Talones',
-      category: ExerciseCategory.legs,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Hip Thrust',
-      nameEs: 'Empuje de Cadera',
-      category: ExerciseCategory.legs,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Plank',
-      nameEs: 'Plancha',
-      category: ExerciseCategory.core,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Crunches',
-      nameEs: 'Abdominales',
-      category: ExerciseCategory.core,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Russian Twist',
-      nameEs: 'Giro Ruso',
-      category: ExerciseCategory.core,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Leg Raise',
-      nameEs: 'Elevación de Piernas',
-      category: ExerciseCategory.core,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Mountain Climbers',
-      nameEs: 'Escaladores',
-      category: ExerciseCategory.core,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Bicycle Crunches',
-      nameEs: 'Abdominales Bicicleta',
-      category: ExerciseCategory.core,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Running',
-      nameEs: 'Correr',
-      category: ExerciseCategory.cardio,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Cycling',
-      nameEs: 'Ciclismo',
-      category: ExerciseCategory.cardio,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Rowing',
-      nameEs: 'Remo',
-      category: ExerciseCategory.cardio,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Jump Rope',
-      nameEs: 'Saltar la Cuerda',
-      category: ExerciseCategory.cardio,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Burpees',
-      nameEs: 'Burpees',
-      category: ExerciseCategory.fullBody,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Thrusters',
-      nameEs: 'Thrusters',
-      category: ExerciseCategory.fullBody,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Clean and Jerk',
-      nameEs: 'Cargada y Envión',
-      category: ExerciseCategory.fullBody,
-    ),
-    ExerciseLibraryEntry(
-      nameEn: 'Snatch',
-      nameEs: 'Arrancada',
-      category: ExerciseCategory.fullBody,
-    ),
+  /// The catalog, as canonical English name paired with its category.
+  ///
+  /// Translations live in `exercise_names/`, not here — adding a language means
+  /// adding a table there, never editing this list.
+  static const List<(String, ExerciseCategory)> _catalog =
+      <(String, ExerciseCategory)>[
+    ('Bench Press', ExerciseCategory.chest),
+    ('Incline Bench Press', ExerciseCategory.chest),
+    ('Decline Bench Press', ExerciseCategory.chest),
+    ('Dumbbell Fly', ExerciseCategory.chest),
+    ('Push-ups', ExerciseCategory.chest),
+    ('Chest Dips', ExerciseCategory.chest),
+    ('Pull-up', ExerciseCategory.back),
+    ('Chin-up', ExerciseCategory.back),
+    ('Barbell Row', ExerciseCategory.back),
+    ('Dumbbell Row', ExerciseCategory.back),
+    ('Lat Pulldown', ExerciseCategory.back),
+    ('Deadlift', ExerciseCategory.back),
+    ('T-Bar Row', ExerciseCategory.back),
+    ('Overhead Press', ExerciseCategory.shoulders),
+    ('Lateral Raise', ExerciseCategory.shoulders),
+    ('Front Raise', ExerciseCategory.shoulders),
+    ('Rear Delt Fly', ExerciseCategory.shoulders),
+    ('Arnold Press', ExerciseCategory.shoulders),
+    ('Shrugs', ExerciseCategory.shoulders),
+    ('Barbell Curl', ExerciseCategory.arms),
+    ('Dumbbell Curl', ExerciseCategory.arms),
+    ('Hammer Curl', ExerciseCategory.arms),
+    ('Preacher Curl', ExerciseCategory.arms),
+    ('Triceps Pushdown', ExerciseCategory.arms),
+    ('Overhead Triceps Extension', ExerciseCategory.arms),
+    ('Triceps Dips', ExerciseCategory.arms),
+    ('Close-Grip Bench Press', ExerciseCategory.arms),
+    ('Squat', ExerciseCategory.legs),
+    ('Front Squat', ExerciseCategory.legs),
+    ('Leg Press', ExerciseCategory.legs),
+    ('Leg Extension', ExerciseCategory.legs),
+    ('Leg Curl', ExerciseCategory.legs),
+    ('Romanian Deadlift', ExerciseCategory.legs),
+    ('Lunges', ExerciseCategory.legs),
+    ('Bulgarian Split Squat', ExerciseCategory.legs),
+    ('Calf Raise', ExerciseCategory.legs),
+    ('Hip Thrust', ExerciseCategory.legs),
+    ('Plank', ExerciseCategory.core),
+    ('Crunches', ExerciseCategory.core),
+    ('Russian Twist', ExerciseCategory.core),
+    ('Leg Raise', ExerciseCategory.core),
+    ('Mountain Climbers', ExerciseCategory.core),
+    ('Bicycle Crunches', ExerciseCategory.core),
+    ('Running', ExerciseCategory.cardio),
+    ('Cycling', ExerciseCategory.cardio),
+    ('Rowing', ExerciseCategory.cardio),
+    ('Jump Rope', ExerciseCategory.cardio),
+    ('Burpees', ExerciseCategory.fullBody),
+    ('Thrusters', ExerciseCategory.fullBody),
+    ('Clean and Jerk', ExerciseCategory.fullBody),
+    ('Snatch', ExerciseCategory.fullBody),
   ];
+
+  /// The catalog with every available translation attached. Built once.
+  static final List<ExerciseLibraryEntry> exercises = List<ExerciseLibraryEntry>.unmodifiable(
+    _catalog.map(
+      (entry) => ExerciseLibraryEntry(
+        canonicalName: entry.$1,
+        names: namesFor(entry.$1),
+        category: entry.$2,
+      ),
+    ),
+  );
+
+  /// Maps every name the catalog is known by, in any language, to its
+  /// canonical name. Built once.
+  static final Map<String, String> _canonicalByAnyName = <String, String>{
+    for (final entry in exercises)
+      for (final name in entry.names.values)
+        _normalize(name): entry.canonicalName,
+  };
+
+  /// The catalog entry a name belongs to, whatever language it is written in,
+  /// or null when the name is not in the catalog at all.
+  ///
+  /// This is how a name that was stored as plain text — a routine exercise
+  /// added before the app knew about translations — is recognised as a catalog
+  /// exercise and re-rendered in the reader's language.
+  static String? canonicalNameFor(String name) {
+    return _canonicalByAnyName[_normalize(name)];
+  }
+
+  static ExerciseLibraryEntry? entryFor(String canonicalName) {
+    for (final entry in exercises) {
+      if (entry.canonicalName == canonicalName) {
+        return entry;
+      }
+    }
+    return null;
+  }
+
+  static String _normalize(String value) => value.trim().toLowerCase();
+
+  /// Collects every translation of [canonicalName] into one [LocalizedText].
+  /// A language with no entry for this exercise simply contributes nothing, and
+  /// the name resolves to English there.
+  static LocalizedText namesFor(String canonicalName) {
+    final names = <String, String>{
+      LocalizedText.baseLanguageCode: canonicalName,
+    };
+
+    for (final table in exerciseNameTranslations.entries) {
+      final translated = table.value[canonicalName];
+      if (translated != null && translated.trim().isNotEmpty) {
+        names[table.key] = translated.trim();
+      }
+    }
+
+    return LocalizedText(names);
+  }
 
   static List<ExerciseLibraryEntry> searchExercises(
     String query,

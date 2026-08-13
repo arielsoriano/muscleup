@@ -5,6 +5,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart';
 
+import 'package:muscleup/core/l10n/localized_text.dart';
 import 'package:muscleup/features/workout/data/datasources/local/workout_database.dart';
 import 'package:muscleup/features/workout/data/repositories/workout_repository_impl.dart';
 import 'package:muscleup/features/workout/domain/entities/workout_entities.dart';
@@ -55,6 +56,140 @@ void main() {
       expect(routineMetadata.readNullable<int>('deleted_at'), isNull);
       expect(routineMetadata.read<int>('sync_status'), SyncStatus.synced.index);
       expect(routineMetadata.read<int>('remote_version'), 0);
+
+      await database.close();
+      await tempDirectory.delete(recursive: true);
+    });
+  });
+
+  group('Drift migration v4 to v5', () {
+    /// Builds a database in its v4 shape: exercise names still live in the
+    /// name_en / name_es columns.
+    Future<File> createV4Database(Directory directory) async {
+      final databaseFile = File('${directory.path}/muscleup_test.db');
+
+      final sqlite = sqlite3.open(databaseFile.path);
+      sqlite.execute('PRAGMA user_version = 4;');
+
+      sqlite.execute('CREATE TABLE routines (id TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL, sort_order INTEGER NOT NULL, is_deleted INTEGER NOT NULL DEFAULT 0, updated_at INTEGER, deleted_at INTEGER, sync_status INTEGER NOT NULL DEFAULT 0, remote_version INTEGER NOT NULL DEFAULT 0);');
+      sqlite.execute('CREATE TABLE exercises (id TEXT NOT NULL PRIMARY KEY, routine_id TEXT NOT NULL REFERENCES routines(id) ON DELETE CASCADE, name TEXT NOT NULL, notes TEXT NULL, rest_time_seconds INTEGER NOT NULL, sort_order INTEGER NOT NULL, updated_at INTEGER, deleted_at INTEGER, sync_status INTEGER NOT NULL DEFAULT 0, remote_version INTEGER NOT NULL DEFAULT 0);');
+      sqlite.execute('CREATE TABLE sets (id TEXT NOT NULL PRIMARY KEY, exercise_id TEXT NOT NULL REFERENCES exercises(id) ON DELETE CASCADE, target_value1 REAL NULL, target_value2 REAL NULL, unit1 INTEGER NULL, unit2 INTEGER NULL, sort_order INTEGER NOT NULL, updated_at INTEGER, deleted_at INTEGER, sync_status INTEGER NOT NULL DEFAULT 0, remote_version INTEGER NOT NULL DEFAULT 0);');
+      sqlite.execute('CREATE TABLE sessions (id TEXT NOT NULL PRIMARY KEY, routine_id TEXT NOT NULL REFERENCES routines(id), routine_name TEXT NOT NULL, created_at INTEGER NOT NULL, notes TEXT NULL, is_completed INTEGER NOT NULL DEFAULT 1, updated_at INTEGER, deleted_at INTEGER, sync_status INTEGER NOT NULL DEFAULT 0, remote_version INTEGER NOT NULL DEFAULT 0);');
+      sqlite.execute('CREATE TABLE set_logs (id TEXT NOT NULL PRIMARY KEY, session_id TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE, workout_exercise_id TEXT NOT NULL, set_number INTEGER NOT NULL, actual_value1 REAL NULL, actual_value2 REAL NULL, unit1 INTEGER NULL, unit2 INTEGER NULL, is_completed INTEGER NOT NULL, timestamp INTEGER NOT NULL, updated_at INTEGER, deleted_at INTEGER, sync_status INTEGER NOT NULL DEFAULT 0, remote_version INTEGER NOT NULL DEFAULT 0);');
+      sqlite.execute('CREATE TABLE library_exercises (id TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL, name_en TEXT NOT NULL, name_es TEXT NOT NULL, is_custom INTEGER NOT NULL, category INTEGER NULL, updated_at INTEGER, deleted_at INTEGER, sync_status INTEGER NOT NULL DEFAULT 0, remote_version INTEGER NOT NULL DEFAULT 0);');
+      sqlite.execute('CREATE TABLE outbox_changes (id TEXT NOT NULL PRIMARY KEY, entity_type TEXT NOT NULL, entity_id TEXT NOT NULL, operation TEXT NOT NULL, payload_json TEXT NOT NULL, created_at INTEGER NOT NULL, retry_count INTEGER NOT NULL DEFAULT 0, last_error TEXT NULL);');
+      sqlite.execute('CREATE TABLE training_defaults (id INTEGER PRIMARY KEY CHECK(id = 1), default_rest_seconds INTEGER NOT NULL, default_repetitions INTEGER NOT NULL, default_weight REAL NOT NULL, auto_start_rest_timer_on_set_completed INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL);');
+
+      sqlite.dispose();
+      return databaseFile;
+    }
+
+    test('folds name_en and name_es into the names map', () async {
+      final tempDirectory =
+          await Directory.systemTemp.createTemp('muscleup_db_v4_');
+      final databaseFile = await createV4Database(tempDirectory);
+
+      final sqlite = sqlite3.open(databaseFile.path);
+      // A seeded row, and a custom one whose name carries an apostrophe and an
+      // accent — the characters that would break hand-built JSON.
+      sqlite.execute("INSERT INTO library_exercises (id, name, name_en, name_es, is_custom, category, updated_at, sync_status, remote_version) VALUES ('lateral_raise', 'Lateral Raise', 'Lateral Raise', 'Elevaciones Laterales', 0, 2, 100, 1, 0);");
+      sqlite.execute("INSERT INTO library_exercises (id, name, name_en, name_es, is_custom, category, updated_at, sync_status, remote_version) VALUES ('custom_1', 'Remo \"Pendlay\" à côté', 'Remo \"Pendlay\" à côté', 'Remo \"Pendlay\" à côté', 1, NULL, 100, 1, 0);");
+      sqlite.dispose();
+
+      final database = AppDatabase.forExecutor(NativeDatabase(databaseFile));
+      await database.customSelect('SELECT 1;').get();
+
+      final rows = await database.select(database.libraryExercises).get();
+
+      final seeded = rows.firstWhere((row) => row.id == 'lateral_raise');
+      final seededNames = LocalizedText.decode(seeded.namesJson);
+      expect(seededNames.resolve('en'), 'Lateral Raise');
+      expect(seededNames.resolve('es'), 'Elevaciones Laterales');
+
+      final custom = rows.firstWhere((row) => row.id == 'custom_1');
+      final customNames = LocalizedText.decode(custom.namesJson);
+      expect(customNames.resolve('es'), 'Remo "Pendlay" à côté');
+
+      // The legacy columns are gone, so nothing can write to them again.
+      final columns =
+          await database.customSelect('PRAGMA table_info(library_exercises)').get();
+      final columnNames = columns.map((row) => row.read<String>('name')).toSet();
+      expect(columnNames, contains('names_json'));
+      expect(columnNames, isNot(contains('name_en')));
+      expect(columnNames, isNot(contains('name_es')));
+
+      await database.close();
+      await tempDirectory.delete(recursive: true);
+    });
+
+    test('backfills translations shipped after the row was seeded', () async {
+      final tempDirectory =
+          await Directory.systemTemp.createTemp('muscleup_db_v4_backfill_');
+      final databaseFile = await createV4Database(tempDirectory);
+
+      final sqlite = sqlite3.open(databaseFile.path);
+      // Simulates a device seeded before Spanish existed: English only.
+      sqlite.execute("INSERT INTO library_exercises (id, name, name_en, name_es, is_custom, category, updated_at, sync_status, remote_version) VALUES ('deadlift', 'Deadlift', 'Deadlift', '', 0, 1, 100, 1, 0);");
+      sqlite.dispose();
+
+      final database = AppDatabase.forExecutor(NativeDatabase(databaseFile));
+      await database.customSelect('SELECT 1;').get();
+
+      final row = await (database.select(database.libraryExercises)
+            ..where((r) => r.id.equals('deadlift')))
+          .getSingle();
+
+      // beforeOpen merges the current catalog into rows seeded by older builds,
+      // which is how a newly shipped language reaches existing installs.
+      expect(LocalizedText.decode(row.namesJson).resolve('es'), 'Peso Muerto');
+      expect(row.syncStatus, SyncStatus.synced,
+          reason: 'filling in a shipped translation is not a user edit',);
+
+      await database.close();
+      await tempDirectory.delete(recursive: true);
+    });
+  });
+
+  group('Drift migration v5 to v6', () {
+    test('links routine exercises back to the catalog they came from', () async {
+      final tempDirectory =
+          await Directory.systemTemp.createTemp('muscleup_db_v5_');
+      final databaseFile = File('${tempDirectory.path}/muscleup_test.db');
+
+      final sqlite = sqlite3.open(databaseFile.path);
+      sqlite.execute('PRAGMA user_version = 5;');
+
+      sqlite.execute('CREATE TABLE routines (id TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL, sort_order INTEGER NOT NULL, is_deleted INTEGER NOT NULL DEFAULT 0, updated_at INTEGER, deleted_at INTEGER, sync_status INTEGER NOT NULL DEFAULT 0, remote_version INTEGER NOT NULL DEFAULT 0);');
+      sqlite.execute('CREATE TABLE exercises (id TEXT NOT NULL PRIMARY KEY, routine_id TEXT NOT NULL REFERENCES routines(id) ON DELETE CASCADE, name TEXT NOT NULL, notes TEXT NULL, rest_time_seconds INTEGER NOT NULL, sort_order INTEGER NOT NULL, updated_at INTEGER, deleted_at INTEGER, sync_status INTEGER NOT NULL DEFAULT 0, remote_version INTEGER NOT NULL DEFAULT 0);');
+      sqlite.execute('CREATE TABLE sets (id TEXT NOT NULL PRIMARY KEY, exercise_id TEXT NOT NULL REFERENCES exercises(id) ON DELETE CASCADE, target_value1 REAL NULL, target_value2 REAL NULL, unit1 INTEGER NULL, unit2 INTEGER NULL, sort_order INTEGER NOT NULL, updated_at INTEGER, deleted_at INTEGER, sync_status INTEGER NOT NULL DEFAULT 0, remote_version INTEGER NOT NULL DEFAULT 0);');
+      sqlite.execute('CREATE TABLE sessions (id TEXT NOT NULL PRIMARY KEY, routine_id TEXT NOT NULL REFERENCES routines(id), routine_name TEXT NOT NULL, created_at INTEGER NOT NULL, notes TEXT NULL, is_completed INTEGER NOT NULL DEFAULT 1, updated_at INTEGER, deleted_at INTEGER, sync_status INTEGER NOT NULL DEFAULT 0, remote_version INTEGER NOT NULL DEFAULT 0);');
+      sqlite.execute('CREATE TABLE set_logs (id TEXT NOT NULL PRIMARY KEY, session_id TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE, workout_exercise_id TEXT NOT NULL, set_number INTEGER NOT NULL, actual_value1 REAL NULL, actual_value2 REAL NULL, unit1 INTEGER NULL, unit2 INTEGER NULL, is_completed INTEGER NOT NULL, timestamp INTEGER NOT NULL, updated_at INTEGER, deleted_at INTEGER, sync_status INTEGER NOT NULL DEFAULT 0, remote_version INTEGER NOT NULL DEFAULT 0);');
+      sqlite.execute("CREATE TABLE library_exercises (id TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL, names_json TEXT NOT NULL DEFAULT '{}', is_custom INTEGER NOT NULL, category INTEGER NULL, updated_at INTEGER, deleted_at INTEGER, sync_status INTEGER NOT NULL DEFAULT 0, remote_version INTEGER NOT NULL DEFAULT 0);");
+      sqlite.execute('CREATE TABLE outbox_changes (id TEXT NOT NULL PRIMARY KEY, entity_type TEXT NOT NULL, entity_id TEXT NOT NULL, operation TEXT NOT NULL, payload_json TEXT NOT NULL, created_at INTEGER NOT NULL, retry_count INTEGER NOT NULL DEFAULT 0, last_error TEXT NULL);');
+      sqlite.execute('CREATE TABLE training_defaults (id INTEGER PRIMARY KEY CHECK(id = 1), default_rest_seconds INTEGER NOT NULL, default_repetitions INTEGER NOT NULL, default_weight REAL NOT NULL, auto_start_rest_timer_on_set_completed INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL);');
+
+      // A routine built while the app was in Spanish: the exercise names were
+      // stored as the translated text that happened to be on screen.
+      sqlite.execute("INSERT INTO routines (id, name, sort_order, updated_at) VALUES ('r1', 'Día de Pierna', 0, 100);");
+      sqlite.execute("INSERT INTO exercises (id, routine_id, name, rest_time_seconds, sort_order, updated_at) VALUES ('e1', 'r1', 'Sentadilla', 90, 0, 100);");
+      sqlite.execute("INSERT INTO exercises (id, routine_id, name, rest_time_seconds, sort_order, updated_at) VALUES ('e2', 'r1', 'Peso Muerto Rumano', 90, 1, 100);");
+      // One the user typed in themselves: not in the catalog in any language.
+      sqlite.execute("INSERT INTO exercises (id, routine_id, name, rest_time_seconds, sort_order, updated_at) VALUES ('e3', 'r1', 'Remo invertido en anillas', 60, 2, 100);");
+      sqlite.dispose();
+
+      final database = AppDatabase.forExecutor(NativeDatabase(databaseFile));
+      await database.customSelect('SELECT 1;').get();
+
+      final rows = await database.select(database.exercises).get();
+      final byId = {for (final row in rows) row.id: row};
+
+      expect(byId['e1']!.canonicalName, 'Squat');
+      expect(byId['e2']!.canonicalName, 'Romanian Deadlift');
+      expect(byId['e3']!.canonicalName, isNull,
+          reason: 'a user-created exercise has no catalog entry to link to',);
+
+      // The stored text is left untouched; only the link is added.
+      expect(byId['e1']!.name, 'Sentadilla');
 
       await database.close();
       await tempDirectory.delete(recursive: true);

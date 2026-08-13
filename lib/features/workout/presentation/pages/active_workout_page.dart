@@ -583,7 +583,9 @@ class _ActiveWorkoutPageContentState extends State<_ActiveWorkoutPageContent> {
               children: [
                 Expanded(
                   child: Text(
-                    exercise.name,
+                    exercise.displayName(
+                      Localizations.localeOf(context).languageCode,
+                    ),
                     style: textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       decoration: isExerciseCompleted

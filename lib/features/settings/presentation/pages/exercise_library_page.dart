@@ -90,12 +90,19 @@ class _ExerciseLibraryPageState extends State<ExerciseLibraryPage> {
       return;
     }
 
+    // Only the language being edited is replaced. Renaming an exercise while
+    // the app is in Spanish used to overwrite its English name with the Spanish
+    // text, which then surfaced as the English name on every other device.
+    //
+    // A seeded exercise keeps its canonical English name: that is what links
+    // the row to the shipped catalog, so renaming it would cut the row off from
+    // translations added in later releases. A custom exercise has no catalog
+    // entry behind it, so its canonical name follows the edit.
     await _runMutation(
       () => _repository.updateLibraryExercise(
         exercise.id,
-        name.trim(),
-        nameEn: name.trim(),
-        nameEs: name.trim(),
+        exercise.isCustom ? name.trim() : exercise.name,
+        names: exercise.names.withValue(languageCode, name.trim()),
       ),
     );
   }

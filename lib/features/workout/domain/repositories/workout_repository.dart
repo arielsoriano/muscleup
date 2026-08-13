@@ -1,4 +1,5 @@
 import '../../../../core/error/failures.dart';
+import '../../../../core/l10n/localized_text.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../entities/workout_entities.dart';
 
@@ -49,13 +50,18 @@ abstract class WorkoutRepository {
 
   Future<Either<Failure, List<LibraryExerciseEntity>>> getLibraryExercises();
 
-  Future<Either<Failure, void>> saveLibraryExercise(String name, {String? nameEn, String? nameEs});
+  /// Saves a new library exercise. [names] carries the translations when the
+  /// caller has them; omitting it files [name] under the base language, which
+  /// is the case for an exercise the user typed in themselves.
+  Future<Either<Failure, void>> saveLibraryExercise(
+    String name, {
+    LocalizedText? names,
+  });
 
   Future<Either<Failure, void>> updateLibraryExercise(
     String id,
     String name, {
-    String? nameEn,
-    String? nameEs,
+    LocalizedText? names,
   });
 
   Future<Either<Failure, void>> deleteLibraryExercise(String id);
@@ -82,20 +88,29 @@ class LibraryExerciseEntity {
   LibraryExerciseEntity({
     required this.id,
     required this.name,
-    required this.nameEn,
-    required this.nameEs,
+    required this.names,
     required this.isCustom,
     this.syncMetadata,
   });
 
   final String id;
+
+  /// The canonical name: English for seeded exercises, whatever the user typed
+  /// for custom ones. Identifies the exercise independently of the UI language.
   final String name;
-  final String nameEn;
-  final String nameEs;
+
+  /// The name in every language it exists in.
+  final LocalizedText names;
+
   final bool isCustom;
   final SyncMetadata? syncMetadata;
 
   String getLocalizedName(String languageCode) {
-    return languageCode == 'es' ? nameEs : nameEn;
+    final localized = names.resolve(languageCode);
+    return localized.isEmpty ? name : localized;
   }
+
+  /// Every name this exercise is known by, for search and deduplication.
+  Set<String> get allNames => <String>{name, ...names.values}
+    ..removeWhere((value) => value.trim().isEmpty);
 }

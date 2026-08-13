@@ -465,6 +465,12 @@ class $ExercisesTable extends Exercises
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _canonicalNameMeta =
+      const VerificationMeta('canonicalName');
+  @override
+  late final GeneratedColumn<String> canonicalName = GeneratedColumn<String>(
+      'canonical_name', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
   late final GeneratedColumn<String> notes = GeneratedColumn<String>(
@@ -516,6 +522,7 @@ class $ExercisesTable extends Exercises
         id,
         routineId,
         name,
+        canonicalName,
         notes,
         restTimeSeconds,
         sortOrder,
@@ -550,6 +557,12 @@ class $ExercisesTable extends Exercises
           _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
     } else if (isInserting) {
       context.missing(_nameMeta);
+    }
+    if (data.containsKey('canonical_name')) {
+      context.handle(
+          _canonicalNameMeta,
+          canonicalName.isAcceptableOrUnknown(
+              data['canonical_name']!, _canonicalNameMeta));
     }
     if (data.containsKey('notes')) {
       context.handle(
@@ -598,6 +611,8 @@ class $ExercisesTable extends Exercises
           .read(DriftSqlType.string, data['${effectivePrefix}routine_id'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      canonicalName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}canonical_name']),
       notes: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}notes']),
       restTimeSeconds: attachedDatabase.typeMapping
@@ -629,6 +644,12 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
   final String id;
   final String routineId;
   final String name;
+
+  /// The catalog entry this exercise came from, as its canonical English name,
+  /// or null for an exercise the user typed in themselves. The displayed name
+  /// is resolved from this, so a routine reads in the language the app is
+  /// currently set to rather than the one it was built in.
+  final String? canonicalName;
   final String? notes;
   final int restTimeSeconds;
   final int sortOrder;
@@ -640,6 +661,7 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
       {required this.id,
       required this.routineId,
       required this.name,
+      this.canonicalName,
       this.notes,
       required this.restTimeSeconds,
       required this.sortOrder,
@@ -653,6 +675,9 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
     map['id'] = Variable<String>(id);
     map['routine_id'] = Variable<String>(routineId);
     map['name'] = Variable<String>(name);
+    if (!nullToAbsent || canonicalName != null) {
+      map['canonical_name'] = Variable<String>(canonicalName);
+    }
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
     }
@@ -675,6 +700,9 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
       id: Value(id),
       routineId: Value(routineId),
       name: Value(name),
+      canonicalName: canonicalName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(canonicalName),
       notes:
           notes == null && nullToAbsent ? const Value.absent() : Value(notes),
       restTimeSeconds: Value(restTimeSeconds),
@@ -695,6 +723,7 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
       id: serializer.fromJson<String>(json['id']),
       routineId: serializer.fromJson<String>(json['routineId']),
       name: serializer.fromJson<String>(json['name']),
+      canonicalName: serializer.fromJson<String?>(json['canonicalName']),
       notes: serializer.fromJson<String?>(json['notes']),
       restTimeSeconds: serializer.fromJson<int>(json['restTimeSeconds']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
@@ -712,6 +741,7 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
       'id': serializer.toJson<String>(id),
       'routineId': serializer.toJson<String>(routineId),
       'name': serializer.toJson<String>(name),
+      'canonicalName': serializer.toJson<String?>(canonicalName),
       'notes': serializer.toJson<String?>(notes),
       'restTimeSeconds': serializer.toJson<int>(restTimeSeconds),
       'sortOrder': serializer.toJson<int>(sortOrder),
@@ -727,6 +757,7 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
           {String? id,
           String? routineId,
           String? name,
+          Value<String?> canonicalName = const Value.absent(),
           Value<String?> notes = const Value.absent(),
           int? restTimeSeconds,
           int? sortOrder,
@@ -738,6 +769,8 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
         id: id ?? this.id,
         routineId: routineId ?? this.routineId,
         name: name ?? this.name,
+        canonicalName:
+            canonicalName.present ? canonicalName.value : this.canonicalName,
         notes: notes.present ? notes.value : this.notes,
         restTimeSeconds: restTimeSeconds ?? this.restTimeSeconds,
         sortOrder: sortOrder ?? this.sortOrder,
@@ -751,6 +784,9 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
       id: data.id.present ? data.id.value : this.id,
       routineId: data.routineId.present ? data.routineId.value : this.routineId,
       name: data.name.present ? data.name.value : this.name,
+      canonicalName: data.canonicalName.present
+          ? data.canonicalName.value
+          : this.canonicalName,
       notes: data.notes.present ? data.notes.value : this.notes,
       restTimeSeconds: data.restTimeSeconds.present
           ? data.restTimeSeconds.value
@@ -772,6 +808,7 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
           ..write('id: $id, ')
           ..write('routineId: $routineId, ')
           ..write('name: $name, ')
+          ..write('canonicalName: $canonicalName, ')
           ..write('notes: $notes, ')
           ..write('restTimeSeconds: $restTimeSeconds, ')
           ..write('sortOrder: $sortOrder, ')
@@ -784,8 +821,18 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
   }
 
   @override
-  int get hashCode => Object.hash(id, routineId, name, notes, restTimeSeconds,
-      sortOrder, updatedAt, deletedAt, syncStatus, remoteVersion);
+  int get hashCode => Object.hash(
+      id,
+      routineId,
+      name,
+      canonicalName,
+      notes,
+      restTimeSeconds,
+      sortOrder,
+      updatedAt,
+      deletedAt,
+      syncStatus,
+      remoteVersion);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -793,6 +840,7 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
           other.id == this.id &&
           other.routineId == this.routineId &&
           other.name == this.name &&
+          other.canonicalName == this.canonicalName &&
           other.notes == this.notes &&
           other.restTimeSeconds == this.restTimeSeconds &&
           other.sortOrder == this.sortOrder &&
@@ -806,6 +854,7 @@ class ExercisesCompanion extends UpdateCompanion<ExerciseData> {
   final Value<String> id;
   final Value<String> routineId;
   final Value<String> name;
+  final Value<String?> canonicalName;
   final Value<String?> notes;
   final Value<int> restTimeSeconds;
   final Value<int> sortOrder;
@@ -818,6 +867,7 @@ class ExercisesCompanion extends UpdateCompanion<ExerciseData> {
     this.id = const Value.absent(),
     this.routineId = const Value.absent(),
     this.name = const Value.absent(),
+    this.canonicalName = const Value.absent(),
     this.notes = const Value.absent(),
     this.restTimeSeconds = const Value.absent(),
     this.sortOrder = const Value.absent(),
@@ -831,6 +881,7 @@ class ExercisesCompanion extends UpdateCompanion<ExerciseData> {
     required String id,
     required String routineId,
     required String name,
+    this.canonicalName = const Value.absent(),
     this.notes = const Value.absent(),
     required int restTimeSeconds,
     required int sortOrder,
@@ -848,6 +899,7 @@ class ExercisesCompanion extends UpdateCompanion<ExerciseData> {
     Expression<String>? id,
     Expression<String>? routineId,
     Expression<String>? name,
+    Expression<String>? canonicalName,
     Expression<String>? notes,
     Expression<int>? restTimeSeconds,
     Expression<int>? sortOrder,
@@ -861,6 +913,7 @@ class ExercisesCompanion extends UpdateCompanion<ExerciseData> {
       if (id != null) 'id': id,
       if (routineId != null) 'routine_id': routineId,
       if (name != null) 'name': name,
+      if (canonicalName != null) 'canonical_name': canonicalName,
       if (notes != null) 'notes': notes,
       if (restTimeSeconds != null) 'rest_time_seconds': restTimeSeconds,
       if (sortOrder != null) 'sort_order': sortOrder,
@@ -876,6 +929,7 @@ class ExercisesCompanion extends UpdateCompanion<ExerciseData> {
       {Value<String>? id,
       Value<String>? routineId,
       Value<String>? name,
+      Value<String?>? canonicalName,
       Value<String?>? notes,
       Value<int>? restTimeSeconds,
       Value<int>? sortOrder,
@@ -888,6 +942,7 @@ class ExercisesCompanion extends UpdateCompanion<ExerciseData> {
       id: id ?? this.id,
       routineId: routineId ?? this.routineId,
       name: name ?? this.name,
+      canonicalName: canonicalName ?? this.canonicalName,
       notes: notes ?? this.notes,
       restTimeSeconds: restTimeSeconds ?? this.restTimeSeconds,
       sortOrder: sortOrder ?? this.sortOrder,
@@ -910,6 +965,9 @@ class ExercisesCompanion extends UpdateCompanion<ExerciseData> {
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
+    }
+    if (canonicalName.present) {
+      map['canonical_name'] = Variable<String>(canonicalName.value);
     }
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
@@ -945,6 +1003,7 @@ class ExercisesCompanion extends UpdateCompanion<ExerciseData> {
           ..write('id: $id, ')
           ..write('routineId: $routineId, ')
           ..write('name: $name, ')
+          ..write('canonicalName: $canonicalName, ')
           ..write('notes: $notes, ')
           ..write('restTimeSeconds: $restTimeSeconds, ')
           ..write('sortOrder: $sortOrder, ')
@@ -2774,16 +2833,14 @@ class $LibraryExercisesTable extends LibraryExercises
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _nameEnMeta = const VerificationMeta('nameEn');
+  static const VerificationMeta _namesJsonMeta =
+      const VerificationMeta('namesJson');
   @override
-  late final GeneratedColumn<String> nameEn = GeneratedColumn<String>(
-      'name_en', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _nameEsMeta = const VerificationMeta('nameEs');
-  @override
-  late final GeneratedColumn<String> nameEs = GeneratedColumn<String>(
-      'name_es', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> namesJson = GeneratedColumn<String>(
+      'names_json', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('{}'));
   static const VerificationMeta _isCustomMeta =
       const VerificationMeta('isCustom');
   @override
@@ -2833,8 +2890,7 @@ class $LibraryExercisesTable extends LibraryExercises
   List<GeneratedColumn> get $columns => [
         id,
         name,
-        nameEn,
-        nameEs,
+        namesJson,
         isCustom,
         category,
         updatedAt,
@@ -2864,17 +2920,9 @@ class $LibraryExercisesTable extends LibraryExercises
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
-    if (data.containsKey('name_en')) {
-      context.handle(_nameEnMeta,
-          nameEn.isAcceptableOrUnknown(data['name_en']!, _nameEnMeta));
-    } else if (isInserting) {
-      context.missing(_nameEnMeta);
-    }
-    if (data.containsKey('name_es')) {
-      context.handle(_nameEsMeta,
-          nameEs.isAcceptableOrUnknown(data['name_es']!, _nameEsMeta));
-    } else if (isInserting) {
-      context.missing(_nameEsMeta);
+    if (data.containsKey('names_json')) {
+      context.handle(_namesJsonMeta,
+          namesJson.isAcceptableOrUnknown(data['names_json']!, _namesJsonMeta));
     }
     if (data.containsKey('is_custom')) {
       context.handle(_isCustomMeta,
@@ -2909,10 +2957,8 @@ class $LibraryExercisesTable extends LibraryExercises
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      nameEn: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name_en'])!,
-      nameEs: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name_es'])!,
+      namesJson: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}names_json'])!,
       isCustom: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}is_custom'])!,
       category: $LibraryExercisesTable.$convertercategoryn.fromSql(
@@ -2946,9 +2992,13 @@ class $LibraryExercisesTable extends LibraryExercises
 class LibraryExerciseData extends DataClass
     implements Insertable<LibraryExerciseData> {
   final String id;
+
+  /// The canonical name, language-independent, used to identify the exercise.
   final String name;
-  final String nameEn;
-  final String nameEs;
+
+  /// Every translated name, as a JSON object keyed by language code. Adding a
+  /// language adds keys here instead of columns to this table.
+  final String namesJson;
   final bool isCustom;
   final ExerciseCategory? category;
   final DateTime updatedAt;
@@ -2958,8 +3008,7 @@ class LibraryExerciseData extends DataClass
   const LibraryExerciseData(
       {required this.id,
       required this.name,
-      required this.nameEn,
-      required this.nameEs,
+      required this.namesJson,
       required this.isCustom,
       this.category,
       required this.updatedAt,
@@ -2971,8 +3020,7 @@ class LibraryExerciseData extends DataClass
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['name'] = Variable<String>(name);
-    map['name_en'] = Variable<String>(nameEn);
-    map['name_es'] = Variable<String>(nameEs);
+    map['names_json'] = Variable<String>(namesJson);
     map['is_custom'] = Variable<bool>(isCustom);
     if (!nullToAbsent || category != null) {
       map['category'] = Variable<int>(
@@ -2994,8 +3042,7 @@ class LibraryExerciseData extends DataClass
     return LibraryExercisesCompanion(
       id: Value(id),
       name: Value(name),
-      nameEn: Value(nameEn),
-      nameEs: Value(nameEs),
+      namesJson: Value(namesJson),
       isCustom: Value(isCustom),
       category: category == null && nullToAbsent
           ? const Value.absent()
@@ -3015,8 +3062,7 @@ class LibraryExerciseData extends DataClass
     return LibraryExerciseData(
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
-      nameEn: serializer.fromJson<String>(json['nameEn']),
-      nameEs: serializer.fromJson<String>(json['nameEs']),
+      namesJson: serializer.fromJson<String>(json['namesJson']),
       isCustom: serializer.fromJson<bool>(json['isCustom']),
       category: $LibraryExercisesTable.$convertercategoryn
           .fromJson(serializer.fromJson<int?>(json['category'])),
@@ -3033,8 +3079,7 @@ class LibraryExerciseData extends DataClass
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
-      'nameEn': serializer.toJson<String>(nameEn),
-      'nameEs': serializer.toJson<String>(nameEs),
+      'namesJson': serializer.toJson<String>(namesJson),
       'isCustom': serializer.toJson<bool>(isCustom),
       'category': serializer.toJson<int?>(
           $LibraryExercisesTable.$convertercategoryn.toJson(category)),
@@ -3049,8 +3094,7 @@ class LibraryExerciseData extends DataClass
   LibraryExerciseData copyWith(
           {String? id,
           String? name,
-          String? nameEn,
-          String? nameEs,
+          String? namesJson,
           bool? isCustom,
           Value<ExerciseCategory?> category = const Value.absent(),
           DateTime? updatedAt,
@@ -3060,8 +3104,7 @@ class LibraryExerciseData extends DataClass
       LibraryExerciseData(
         id: id ?? this.id,
         name: name ?? this.name,
-        nameEn: nameEn ?? this.nameEn,
-        nameEs: nameEs ?? this.nameEs,
+        namesJson: namesJson ?? this.namesJson,
         isCustom: isCustom ?? this.isCustom,
         category: category.present ? category.value : this.category,
         updatedAt: updatedAt ?? this.updatedAt,
@@ -3073,8 +3116,7 @@ class LibraryExerciseData extends DataClass
     return LibraryExerciseData(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
-      nameEn: data.nameEn.present ? data.nameEn.value : this.nameEn,
-      nameEs: data.nameEs.present ? data.nameEs.value : this.nameEs,
+      namesJson: data.namesJson.present ? data.namesJson.value : this.namesJson,
       isCustom: data.isCustom.present ? data.isCustom.value : this.isCustom,
       category: data.category.present ? data.category.value : this.category,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
@@ -3092,8 +3134,7 @@ class LibraryExerciseData extends DataClass
     return (StringBuffer('LibraryExerciseData(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('nameEn: $nameEn, ')
-          ..write('nameEs: $nameEs, ')
+          ..write('namesJson: $namesJson, ')
           ..write('isCustom: $isCustom, ')
           ..write('category: $category, ')
           ..write('updatedAt: $updatedAt, ')
@@ -3105,7 +3146,7 @@ class LibraryExerciseData extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(id, name, nameEn, nameEs, isCustom, category,
+  int get hashCode => Object.hash(id, name, namesJson, isCustom, category,
       updatedAt, deletedAt, syncStatus, remoteVersion);
   @override
   bool operator ==(Object other) =>
@@ -3113,8 +3154,7 @@ class LibraryExerciseData extends DataClass
       (other is LibraryExerciseData &&
           other.id == this.id &&
           other.name == this.name &&
-          other.nameEn == this.nameEn &&
-          other.nameEs == this.nameEs &&
+          other.namesJson == this.namesJson &&
           other.isCustom == this.isCustom &&
           other.category == this.category &&
           other.updatedAt == this.updatedAt &&
@@ -3126,8 +3166,7 @@ class LibraryExerciseData extends DataClass
 class LibraryExercisesCompanion extends UpdateCompanion<LibraryExerciseData> {
   final Value<String> id;
   final Value<String> name;
-  final Value<String> nameEn;
-  final Value<String> nameEs;
+  final Value<String> namesJson;
   final Value<bool> isCustom;
   final Value<ExerciseCategory?> category;
   final Value<DateTime> updatedAt;
@@ -3138,8 +3177,7 @@ class LibraryExercisesCompanion extends UpdateCompanion<LibraryExerciseData> {
   const LibraryExercisesCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
-    this.nameEn = const Value.absent(),
-    this.nameEs = const Value.absent(),
+    this.namesJson = const Value.absent(),
     this.isCustom = const Value.absent(),
     this.category = const Value.absent(),
     this.updatedAt = const Value.absent(),
@@ -3151,8 +3189,7 @@ class LibraryExercisesCompanion extends UpdateCompanion<LibraryExerciseData> {
   LibraryExercisesCompanion.insert({
     required String id,
     required String name,
-    required String nameEn,
-    required String nameEs,
+    this.namesJson = const Value.absent(),
     required bool isCustom,
     this.category = const Value.absent(),
     this.updatedAt = const Value.absent(),
@@ -3162,14 +3199,11 @@ class LibraryExercisesCompanion extends UpdateCompanion<LibraryExerciseData> {
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         name = Value(name),
-        nameEn = Value(nameEn),
-        nameEs = Value(nameEs),
         isCustom = Value(isCustom);
   static Insertable<LibraryExerciseData> custom({
     Expression<String>? id,
     Expression<String>? name,
-    Expression<String>? nameEn,
-    Expression<String>? nameEs,
+    Expression<String>? namesJson,
     Expression<bool>? isCustom,
     Expression<int>? category,
     Expression<DateTime>? updatedAt,
@@ -3181,8 +3215,7 @@ class LibraryExercisesCompanion extends UpdateCompanion<LibraryExerciseData> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
-      if (nameEn != null) 'name_en': nameEn,
-      if (nameEs != null) 'name_es': nameEs,
+      if (namesJson != null) 'names_json': namesJson,
       if (isCustom != null) 'is_custom': isCustom,
       if (category != null) 'category': category,
       if (updatedAt != null) 'updated_at': updatedAt,
@@ -3196,8 +3229,7 @@ class LibraryExercisesCompanion extends UpdateCompanion<LibraryExerciseData> {
   LibraryExercisesCompanion copyWith(
       {Value<String>? id,
       Value<String>? name,
-      Value<String>? nameEn,
-      Value<String>? nameEs,
+      Value<String>? namesJson,
       Value<bool>? isCustom,
       Value<ExerciseCategory?>? category,
       Value<DateTime>? updatedAt,
@@ -3208,8 +3240,7 @@ class LibraryExercisesCompanion extends UpdateCompanion<LibraryExerciseData> {
     return LibraryExercisesCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
-      nameEn: nameEn ?? this.nameEn,
-      nameEs: nameEs ?? this.nameEs,
+      namesJson: namesJson ?? this.namesJson,
       isCustom: isCustom ?? this.isCustom,
       category: category ?? this.category,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -3229,11 +3260,8 @@ class LibraryExercisesCompanion extends UpdateCompanion<LibraryExerciseData> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
-    if (nameEn.present) {
-      map['name_en'] = Variable<String>(nameEn.value);
-    }
-    if (nameEs.present) {
-      map['name_es'] = Variable<String>(nameEs.value);
+    if (namesJson.present) {
+      map['names_json'] = Variable<String>(namesJson.value);
     }
     if (isCustom.present) {
       map['is_custom'] = Variable<bool>(isCustom.value);
@@ -3266,8 +3294,7 @@ class LibraryExercisesCompanion extends UpdateCompanion<LibraryExerciseData> {
     return (StringBuffer('LibraryExercisesCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('nameEn: $nameEn, ')
-          ..write('nameEs: $nameEs, ')
+          ..write('namesJson: $namesJson, ')
           ..write('isCustom: $isCustom, ')
           ..write('category: $category, ')
           ..write('updatedAt: $updatedAt, ')
@@ -4149,6 +4176,7 @@ typedef $$ExercisesTableCreateCompanionBuilder = ExercisesCompanion Function({
   required String id,
   required String routineId,
   required String name,
+  Value<String?> canonicalName,
   Value<String?> notes,
   required int restTimeSeconds,
   required int sortOrder,
@@ -4162,6 +4190,7 @@ typedef $$ExercisesTableUpdateCompanionBuilder = ExercisesCompanion Function({
   Value<String> id,
   Value<String> routineId,
   Value<String> name,
+  Value<String?> canonicalName,
   Value<String?> notes,
   Value<int> restTimeSeconds,
   Value<int> sortOrder,
@@ -4220,6 +4249,9 @@ class $$ExercisesTableFilterComposer
 
   ColumnFilters<String> get name => $composableBuilder(
       column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get canonicalName => $composableBuilder(
+      column: $table.canonicalName, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get notes => $composableBuilder(
       column: $table.notes, builder: (column) => ColumnFilters(column));
@@ -4302,6 +4334,10 @@ class $$ExercisesTableOrderingComposer
   ColumnOrderings<String> get name => $composableBuilder(
       column: $table.name, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get canonicalName => $composableBuilder(
+      column: $table.canonicalName,
+      builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<String> get notes => $composableBuilder(
       column: $table.notes, builder: (column) => ColumnOrderings(column));
 
@@ -4360,6 +4396,9 @@ class $$ExercisesTableAnnotationComposer
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get canonicalName => $composableBuilder(
+      column: $table.canonicalName, builder: (column) => column);
 
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
@@ -4451,6 +4490,7 @@ class $$ExercisesTableTableManager extends RootTableManager<
             Value<String> id = const Value.absent(),
             Value<String> routineId = const Value.absent(),
             Value<String> name = const Value.absent(),
+            Value<String?> canonicalName = const Value.absent(),
             Value<String?> notes = const Value.absent(),
             Value<int> restTimeSeconds = const Value.absent(),
             Value<int> sortOrder = const Value.absent(),
@@ -4464,6 +4504,7 @@ class $$ExercisesTableTableManager extends RootTableManager<
             id: id,
             routineId: routineId,
             name: name,
+            canonicalName: canonicalName,
             notes: notes,
             restTimeSeconds: restTimeSeconds,
             sortOrder: sortOrder,
@@ -4477,6 +4518,7 @@ class $$ExercisesTableTableManager extends RootTableManager<
             required String id,
             required String routineId,
             required String name,
+            Value<String?> canonicalName = const Value.absent(),
             Value<String?> notes = const Value.absent(),
             required int restTimeSeconds,
             required int sortOrder,
@@ -4490,6 +4532,7 @@ class $$ExercisesTableTableManager extends RootTableManager<
             id: id,
             routineId: routineId,
             name: name,
+            canonicalName: canonicalName,
             notes: notes,
             restTimeSeconds: restTimeSeconds,
             sortOrder: sortOrder,
@@ -5776,8 +5819,7 @@ typedef $$LibraryExercisesTableCreateCompanionBuilder
     = LibraryExercisesCompanion Function({
   required String id,
   required String name,
-  required String nameEn,
-  required String nameEs,
+  Value<String> namesJson,
   required bool isCustom,
   Value<ExerciseCategory?> category,
   Value<DateTime> updatedAt,
@@ -5790,8 +5832,7 @@ typedef $$LibraryExercisesTableUpdateCompanionBuilder
     = LibraryExercisesCompanion Function({
   Value<String> id,
   Value<String> name,
-  Value<String> nameEn,
-  Value<String> nameEs,
+  Value<String> namesJson,
   Value<bool> isCustom,
   Value<ExerciseCategory?> category,
   Value<DateTime> updatedAt,
@@ -5816,11 +5857,8 @@ class $$LibraryExercisesTableFilterComposer
   ColumnFilters<String> get name => $composableBuilder(
       column: $table.name, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get nameEn => $composableBuilder(
-      column: $table.nameEn, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get nameEs => $composableBuilder(
-      column: $table.nameEs, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get namesJson => $composableBuilder(
+      column: $table.namesJson, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<bool> get isCustom => $composableBuilder(
       column: $table.isCustom, builder: (column) => ColumnFilters(column));
@@ -5860,11 +5898,8 @@ class $$LibraryExercisesTableOrderingComposer
   ColumnOrderings<String> get name => $composableBuilder(
       column: $table.name, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get nameEn => $composableBuilder(
-      column: $table.nameEn, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get nameEs => $composableBuilder(
-      column: $table.nameEs, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get namesJson => $composableBuilder(
+      column: $table.namesJson, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<bool> get isCustom => $composableBuilder(
       column: $table.isCustom, builder: (column) => ColumnOrderings(column));
@@ -5901,11 +5936,8 @@ class $$LibraryExercisesTableAnnotationComposer
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
-  GeneratedColumn<String> get nameEn =>
-      $composableBuilder(column: $table.nameEn, builder: (column) => column);
-
-  GeneratedColumn<String> get nameEs =>
-      $composableBuilder(column: $table.nameEs, builder: (column) => column);
+  GeneratedColumn<String> get namesJson =>
+      $composableBuilder(column: $table.namesJson, builder: (column) => column);
 
   GeneratedColumn<bool> get isCustom =>
       $composableBuilder(column: $table.isCustom, builder: (column) => column);
@@ -5956,8 +5988,7 @@ class $$LibraryExercisesTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> name = const Value.absent(),
-            Value<String> nameEn = const Value.absent(),
-            Value<String> nameEs = const Value.absent(),
+            Value<String> namesJson = const Value.absent(),
             Value<bool> isCustom = const Value.absent(),
             Value<ExerciseCategory?> category = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
@@ -5969,8 +6000,7 @@ class $$LibraryExercisesTableTableManager extends RootTableManager<
               LibraryExercisesCompanion(
             id: id,
             name: name,
-            nameEn: nameEn,
-            nameEs: nameEs,
+            namesJson: namesJson,
             isCustom: isCustom,
             category: category,
             updatedAt: updatedAt,
@@ -5982,8 +6012,7 @@ class $$LibraryExercisesTableTableManager extends RootTableManager<
           createCompanionCallback: ({
             required String id,
             required String name,
-            required String nameEn,
-            required String nameEs,
+            Value<String> namesJson = const Value.absent(),
             required bool isCustom,
             Value<ExerciseCategory?> category = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
@@ -5995,8 +6024,7 @@ class $$LibraryExercisesTableTableManager extends RootTableManager<
               LibraryExercisesCompanion.insert(
             id: id,
             name: name,
-            nameEn: nameEn,
-            nameEs: nameEs,
+            namesJson: namesJson,
             isCustom: isCustom,
             category: category,
             updatedAt: updatedAt,

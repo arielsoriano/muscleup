@@ -5,6 +5,7 @@ import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/error/failures.dart';
+import '../../../../core/l10n/localized_text.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../domain/entities/workout_entities.dart';
 import '../../domain/repositories/workout_repository.dart';
@@ -217,6 +218,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                   id: exercise.id,
                   routineId: routine.id,
                   name: exercise.name,
+                  canonicalName: Value(exercise.canonicalName),
                   notes: Value(exercise.notes),
                   restTimeSeconds: exercise.restTimeSeconds,
                   sortOrder: exercise.sortOrder,
@@ -235,6 +237,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
               'id': exercise.id,
               'routineId': routine.id,
               'name': exercise.name,
+              'canonicalName': exercise.canonicalName,
               'notes': exercise.notes,
               'restTimeSeconds': exercise.restTimeSeconds,
               'sortOrder': exercise.sortOrder,
@@ -844,6 +847,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                     return WorkoutExercise(
                       id: data.id,
                       name: data.name,
+                      canonicalName: data.canonicalName,
                       sortOrder: data.sortOrder,
                       notes: data.notes,
                       restTimeSeconds: data.restTimeSeconds,
@@ -931,13 +935,11 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                   @override
                   Future<Either<Failure, void>> saveLibraryExercise(
                     String name, {
-                    String? nameEn,
-                    String? nameEs,
+                    LocalizedText? names,
                   }) async {
                     try {
                       final now = DateTime.now();
-                      final localizedNameEn = nameEn ?? name;
-                      final localizedNameEs = nameEs ?? name;
+                      final localizedNames = _resolveNamesToStore(name, names);
 
                       final existingExercises = await (database.select(
                         database.libraryExercises,
@@ -947,12 +949,8 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
 
                       final normalizedName = _normalizeLibraryExerciseName(name);
                       final existingExercise = existingExercises.where((exercise) {
-                        return _normalizeLibraryExerciseName(exercise.name) ==
-                                normalizedName ||
-                            _normalizeLibraryExerciseName(exercise.nameEn) ==
-                                normalizedName ||
-                            _normalizeLibraryExerciseName(exercise.nameEs) ==
-                                normalizedName;
+                        return _libraryExerciseNameKeys(exercise)
+                            .contains(normalizedName);
                       }).firstOrNull;
 
                       if (existingExercise != null) {
@@ -965,8 +963,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                             LibraryExercisesCompanion.insert(
                               id: id,
                               name: name,
-                              nameEn: localizedNameEn,
-                              nameEs: localizedNameEs,
+                              namesJson: Value(localizedNames.encode()),
                               isCustom: true,
                               category: const Value(null),
                               updatedAt: Value(now),
@@ -984,8 +981,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                         payload: {
                           'id': id,
                           'name': name,
-                          'nameEn': localizedNameEn,
-                          'nameEs': localizedNameEs,
+                          'names': localizedNames.toMap(),
                           'isCustom': true,
                         },
                         createdAt: now,
@@ -1003,21 +999,18 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                   Future<Either<Failure, void>> updateLibraryExercise(
                     String id,
                     String name, {
-                    String? nameEn,
-                    String? nameEs,
+                    LocalizedText? names,
                   }) async {
                     try {
                       final now = DateTime.now();
-                      final localizedNameEn = nameEn ?? name;
-                      final localizedNameEs = nameEs ?? name;
+                      final localizedNames = _resolveNamesToStore(name, names);
 
                       await (database.update(database.libraryExercises)
                             ..where((exercise) => exercise.id.equals(id)))
                           .write(
                         LibraryExercisesCompanion(
                           name: Value(name),
-                          nameEn: Value(localizedNameEn),
-                          nameEs: Value(localizedNameEs),
+                          namesJson: Value(localizedNames.encode()),
                           updatedAt: Value(now),
                           deletedAt: const Value(null),
                           syncStatus: const Value(SyncStatus.pending),
@@ -1032,8 +1025,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                         payload: {
                           'id': id,
                           'name': name,
-                          'nameEn': localizedNameEn,
-                          'nameEs': localizedNameEs,
+                          'names': localizedNames.toMap(),
                         },
                         createdAt: now,
                       );
@@ -1110,7 +1102,10 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                       // Merge first, then match on the name the picker will actually
                       // render, so a hit on a duplicate row cannot surface it as a
                       // separate result.
-                      final exercises = _mapAndDedupeLibraryExercises(allExercises)
+                      final exercises = _mapAndDedupeLibraryExercises(
+                        allExercises,
+                        languageCode: languageCode,
+                      )
                           .where(
                             (exercise) => exercise
                                 .getLocalizedName(languageCode)
@@ -1150,22 +1145,26 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                   /// same movement.
                   ///
                   /// Older builds created a custom row every time an exercise was
-                  /// added to a routine, storing the localized name in all three name
-                  /// columns. Such a row overlaps the seeded catalog entry on a single
-                  /// field only — "Elevaciones Laterales" three times, against
-                  /// "Lateral Raise"/"Lateral Raise"/"Elevaciones Laterales" — so
-                  /// keying the dedupe on the whole name triple left both rows visible
-                  /// and the picker showed the exercise twice.
+                  /// added to a routine, storing the localized name in every name
+                  /// field. Such a row overlaps the seeded catalog entry on a single
+                  /// language only — "Elevaciones Laterales" everywhere, against
+                  /// "Lateral Raise"/"Elevaciones Laterales" — so keying the dedupe on
+                  /// the whole set of names left both rows visible and the picker
+                  /// showed the exercise twice.
                   List<LibraryExerciseEntity> _mapAndDedupeLibraryExercises(
-                    List<LibraryExerciseData> rows,
-                  ) {
+                    List<LibraryExerciseData> rows, {
+                    String languageCode = LocalizedText.baseLanguageCode,
+                  }) {
                     final entities = _groupLibraryExercisesByName(rows)
-                        .map(_pickLibraryExerciseRepresentative)
-                        .map(_mapLibraryExerciseDataToEntity)
+                        .map(_mergeLibraryExerciseGroup)
                         .toList()
                       ..sort(
-                        (a, b) =>
-                            a.nameEs.toLowerCase().compareTo(b.nameEs.toLowerCase()),
+                        (a, b) => a
+                            .getLocalizedName(languageCode)
+                            .toLowerCase()
+                            .compareTo(
+                              b.getLocalizedName(languageCode).toLowerCase(),
+                            ),
                       );
 
                     return entities;
@@ -1219,10 +1218,16 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                     return groupsByRoot.values.toList();
                   }
 
-                  /// Picks the row that stands for a group: the seeded catalog entry
-                  /// when there is one, because it is the only row carrying both
-                  /// translations, otherwise the most recently updated row.
-                  LibraryExerciseData _pickLibraryExerciseRepresentative(
+                  /// Collapses a group of rows naming the same exercise into one
+                  /// entity, keeping the union of their translations.
+                  ///
+                  /// The seeded catalog row stands for the group when there is one,
+                  /// because it carries the full set of shipped translations;
+                  /// otherwise the most recently updated row does. Either way the
+                  /// other rows still contribute the languages the representative is
+                  /// missing, so a custom row created in Spanish keeps naming the
+                  /// exercise in Spanish even once it merges into the catalog entry.
+                  LibraryExerciseEntity _mergeLibraryExerciseGroup(
                     List<LibraryExerciseData> group,
                   ) {
                     final sorted = [...group]..sort((a, b) {
@@ -1232,33 +1237,52 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                         return b.updatedAt.compareTo(a.updatedAt);
                       });
 
-                    return sorted.first;
+                    final representative = sorted.first;
+
+                    var names = const LocalizedText.empty();
+                    // Reversed so the representative is applied last and wins any
+                    // language two rows disagree on.
+                    for (final row in sorted.reversed) {
+                      names = names.mergedWith(_libraryExerciseNames(row));
+                    }
+
+                    return LibraryExerciseEntity(
+                      id: representative.id,
+                      name: representative.name,
+                      names: names,
+                      isCustom: representative.isCustom,
+                      syncMetadata: _mapSyncMetadata(
+                        updatedAt: representative.updatedAt,
+                        deletedAt: representative.deletedAt,
+                        syncStatus: representative.syncStatus,
+                        remoteVersion: representative.remoteVersion,
+                      ),
+                    );
+                  }
+
+                  LocalizedText _libraryExerciseNames(LibraryExerciseData row) {
+                    return LocalizedText.decode(row.namesJson, fallback: row.name);
                   }
 
                   Set<String> _libraryExerciseNameKeys(LibraryExerciseData row) {
                     return <String>{
                       _normalizeLibraryExerciseName(row.name),
-                      _normalizeLibraryExerciseName(row.nameEn),
-                      _normalizeLibraryExerciseName(row.nameEs),
+                      for (final name in _libraryExerciseNames(row).values)
+                        _normalizeLibraryExerciseName(name),
                     }..removeWhere((key) => key.isEmpty);
                   }
 
-                  LibraryExerciseEntity _mapLibraryExerciseDataToEntity(
-                    LibraryExerciseData row,
+                  /// The translations to persist for a name the caller supplied.
+                  /// Without an explicit map — a name the user typed — the text is
+                  /// filed under the base language so it resolves in every locale.
+                  LocalizedText _resolveNamesToStore(
+                    String name,
+                    LocalizedText? names,
                   ) {
-                    return LibraryExerciseEntity(
-                      id: row.id,
-                      name: row.name,
-                      nameEn: row.nameEn,
-                      nameEs: row.nameEs,
-                      isCustom: row.isCustom,
-                      syncMetadata: _mapSyncMetadata(
-                        updatedAt: row.updatedAt,
-                        deletedAt: row.deletedAt,
-                        syncStatus: row.syncStatus,
-                        remoteVersion: row.remoteVersion,
-                      ),
-                    );
+                    if (names == null || names.isEmpty) {
+                      return LocalizedText.single(name);
+                    }
+                    return names;
                   }
 
                   String _normalizeLibraryExerciseName(String value) {

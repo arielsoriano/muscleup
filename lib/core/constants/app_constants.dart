@@ -1,7 +1,7 @@
 class AppConstants {
   static const String appName = 'Muscleup';
   static const String databaseName = 'muscleup.db';
-  static const int databaseVersion = 4;
+  static const int databaseVersion = 6;
 
   /// Address published in the Play Store listing and in the privacy policy.
   static const String contactEmail = 'lrarielsoriano@gmail.com';

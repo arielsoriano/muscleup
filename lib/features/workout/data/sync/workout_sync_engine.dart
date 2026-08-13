@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:drift/drift.dart';
 
+import '../../../../core/l10n/localized_text.dart';
 import '../../../auth/domain/entities/cloud_user.dart';
 import '../../../auth/domain/repositories/cloud_auth_repository.dart';
 import '../../domain/entities/workout_entities.dart';
@@ -357,6 +358,7 @@ class WorkoutSyncEngine implements SyncEngine {
       WorkoutExercise(
         id: localRow.id,
         name: localRow.name,
+        canonicalName: localRow.canonicalName,
         sortOrder: localRow.sortOrder,
         notes: localRow.notes,
         restTimeSeconds: localRow.restTimeSeconds,
@@ -487,8 +489,7 @@ class WorkoutSyncEngine implements SyncEngine {
       LibraryExerciseEntity(
         id: localRow.id,
         name: localRow.name,
-        nameEn: localRow.nameEn,
-        nameEs: localRow.nameEs,
+        names: LocalizedText.decode(localRow.namesJson, fallback: localRow.name),
         isCustom: localRow.isCustom,
         syncMetadata: SyncMetadata(
           updatedAt: localRow.updatedAt,
@@ -869,6 +870,7 @@ class WorkoutSyncEngine implements SyncEngine {
                   id: dto.id,
                   routineId: dto.routineId,
                   name: dto.name,
+                  canonicalName: Value(dto.canonicalName),
                   notes: Value(dto.notes),
                   restTimeSeconds: dto.restTimeSeconds,
                   sortOrder: dto.sortOrder,
@@ -906,6 +908,7 @@ class WorkoutSyncEngine implements SyncEngine {
           ExercisesCompanion(
             routineId: Value(dto.routineId),
             name: Value(dto.name),
+            canonicalName: Value(dto.canonicalName),
             notes: Value(dto.notes),
             restTimeSeconds: Value(dto.restTimeSeconds),
             sortOrder: Value(dto.sortOrder),
@@ -1146,8 +1149,7 @@ class WorkoutSyncEngine implements SyncEngine {
                 LibraryExercisesCompanion.insert(
                   id: dto.id,
                   name: dto.name,
-                  nameEn: dto.nameEn,
-                  nameEs: dto.nameEs,
+                  namesJson: Value(dto.names.encode()),
                   isCustom: dto.isCustom,
                   category: const Value(null),
                   updatedAt: Value(dto.updatedAt),
@@ -1183,8 +1185,16 @@ class WorkoutSyncEngine implements SyncEngine {
             .write(
           LibraryExercisesCompanion(
             name: Value(dto.name),
-            nameEn: Value(dto.nameEn),
-            nameEs: Value(dto.nameEs),
+            // Merged rather than overwritten: a document last written by an
+            // older build carries only the languages that build knew about, and
+            // a straight overwrite would drop the newer translations this
+            // device already has. Remote still wins every language it does
+            // carry, so a rename made on another device propagates.
+            namesJson: Value(
+              LocalizedText.decode(localRow.namesJson, fallback: localRow.name)
+                  .mergedWith(dto.names)
+                  .encode(),
+            ),
             isCustom: Value(dto.isCustom),
             updatedAt: Value(dto.updatedAt),
             deletedAt: Value(dto.deletedAt),

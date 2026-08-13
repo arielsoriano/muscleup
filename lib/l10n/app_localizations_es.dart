@@ -189,7 +189,13 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String setsCount(int count) {
-    return '$count series';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count series',
+      one: '1 serie',
+    );
+    return '$_temp0';
   }
 
   @override

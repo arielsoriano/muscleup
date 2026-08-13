@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../core/constants/exercise_library.dart';
 import '../../domain/entities/workout_entities.dart';
 import 'remote_dto_utils.dart';
 
@@ -8,6 +9,7 @@ class ExerciseRemoteDto {
     required this.id,
     required this.routineId,
     required this.name,
+    this.canonicalName,
     required this.sortOrder,
     required this.restTimeSeconds,
     this.notes,
@@ -23,6 +25,7 @@ class ExerciseRemoteDto {
       id: exercise.id,
       routineId: routineId,
       name: exercise.name,
+      canonicalName: exercise.canonicalName,
       sortOrder: exercise.sortOrder,
       notes: exercise.notes,
       restTimeSeconds: exercise.restTimeSeconds,
@@ -35,10 +38,17 @@ class ExerciseRemoteDto {
 
   factory ExerciseRemoteDto.fromFirestore(Map<String, dynamic> map, String docId) {
     final now = DateTime.now();
+    final name = (map['name'] as String?) ?? '';
     return ExerciseRemoteDto(
       id: docId,
       routineId: (map['routineId'] as String?) ?? '',
-      name: (map['name'] as String?) ?? '',
+      name: name,
+      // A document written before the link existed carries only the translated
+      // text. Recovering the catalog entry from that text here means such a
+      // routine starts following the reader's language as soon as it syncs,
+      // instead of staying stuck in the language it was created in.
+      canonicalName: (map['canonicalName'] as String?) ??
+          ExerciseLibrary.canonicalNameFor(name),
       sortOrder: (map['sortOrder'] as num?)?.toInt() ?? 0,
       notes: map['notes'] as String?,
       restTimeSeconds: (map['restTimeSeconds'] as num?)?.toInt() ?? 0,
@@ -52,6 +62,11 @@ class ExerciseRemoteDto {
   final String id;
   final String routineId;
   final String name;
+
+  /// Canonical catalog name, or null for a user-created exercise. See
+  /// [WorkoutExercise.canonicalName].
+  final String? canonicalName;
+
   final int sortOrder;
   final String? notes;
   final int restTimeSeconds;
@@ -64,6 +79,7 @@ class ExerciseRemoteDto {
     return WorkoutExercise(
       id: id,
       name: name,
+      canonicalName: canonicalName,
       sortOrder: sortOrder,
       notes: notes,
       restTimeSeconds: restTimeSeconds,
@@ -81,6 +97,7 @@ class ExerciseRemoteDto {
     return <String, dynamic>{
       'routineId': routineId,
       'name': name,
+      'canonicalName': canonicalName,
       'sortOrder': sortOrder,
       'notes': notes,
       'restTimeSeconds': restTimeSeconds,

@@ -7,6 +7,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl_standalone.dart';
 
 import 'core/di/injection_container.dart' as di;
+import 'core/l10n/supported_languages.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/settings/presentation/cubit/settings_cubit.dart';
@@ -113,7 +114,7 @@ class MuscleupApp extends StatelessWidget {
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en'), Locale('es')],
+            supportedLocales: SupportedLanguages.locales,
             theme: AppTheme.getTheme(
               skin: state.currentSkin,
               isDarkMode: false,

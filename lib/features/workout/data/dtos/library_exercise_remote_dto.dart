@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../core/l10n/localized_text.dart';
 import '../../domain/repositories/workout_repository.dart';
 import 'remote_dto_utils.dart';
 
@@ -7,8 +8,7 @@ class LibraryExerciseRemoteDto {
   LibraryExerciseRemoteDto({
     required this.id,
     required this.name,
-    required this.nameEn,
-    required this.nameEs,
+    required this.names,
     required this.isCustom,
     required this.updatedAt,
     this.deletedAt,
@@ -21,8 +21,7 @@ class LibraryExerciseRemoteDto {
     return LibraryExerciseRemoteDto(
       id: exercise.id,
       name: exercise.name,
-      nameEn: exercise.nameEn,
-      nameEs: exercise.nameEs,
+      names: exercise.names,
       isCustom: exercise.isCustom,
       updatedAt: metadata?.updatedAt ?? DateTime.now(),
       deletedAt: metadata?.deletedAt,
@@ -36,11 +35,11 @@ class LibraryExerciseRemoteDto {
     String docId,
   ) {
     final now = DateTime.now();
+    final name = (map['name'] as String?) ?? '';
     return LibraryExerciseRemoteDto(
       id: docId,
-      name: (map['name'] as String?) ?? '',
-      nameEn: (map['nameEn'] as String?) ?? '',
-      nameEs: (map['nameEs'] as String?) ?? '',
+      name: name,
+      names: _readNames(map, fallback: name),
       isCustom: (map['isCustom'] as bool?) ?? true,
       updatedAt: parseRemoteDateTime(map['updatedAt'], fallback: now),
       deletedAt: parseNullableRemoteDateTime(map['deletedAt']),
@@ -49,10 +48,24 @@ class LibraryExerciseRemoteDto {
     );
   }
 
+  static LocalizedText _readNames(
+    Map<String, dynamic> map, {
+    required String fallback,
+  }) {
+    final names = map['names'];
+    if (names is Map) {
+      final parsed = LocalizedText.fromDynamicMap(names, fallback: fallback);
+      if (parsed.isNotEmpty) {
+        return parsed;
+      }
+    }
+
+    return LocalizedText.single(fallback);
+  }
+
   final String id;
   final String name;
-  final String nameEn;
-  final String nameEs;
+  final LocalizedText names;
   final bool isCustom;
   final DateTime updatedAt;
   final DateTime? deletedAt;
@@ -63,8 +76,7 @@ class LibraryExerciseRemoteDto {
     return LibraryExerciseEntity(
       id: id,
       name: name,
-      nameEn: nameEn,
-      nameEs: nameEs,
+      names: names,
       isCustom: isCustom,
       syncMetadata: parseSyncMetadata(<String, dynamic>{
         'updatedAt': Timestamp.fromDate(updatedAt),
@@ -78,8 +90,7 @@ class LibraryExerciseRemoteDto {
   Map<String, dynamic> toFirestore() {
     return <String, dynamic>{
       'name': name,
-      'nameEn': nameEn,
-      'nameEs': nameEs,
+      'names': names.toMap(),
       'isCustom': isCustom,
       'updatedAt': Timestamp.fromDate(updatedAt),
       'deletedAt': deletedAt == null ? null : Timestamp.fromDate(deletedAt!),

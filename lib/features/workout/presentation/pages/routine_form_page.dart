@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/exercise_library.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/l10n_extension.dart';
 import '../../../../core/utils/ui_helpers.dart';
@@ -322,7 +323,9 @@ class _ExerciseFormItemState extends State<_ExerciseFormItem> {
               vertical: 8,
             ),
             title: Text(
-              widget.exercise.name,
+              widget.exercise.displayName(
+                Localizations.localeOf(context).languageCode,
+              ),
               style: textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -520,7 +523,13 @@ class _ExerciseFormItemState extends State<_ExerciseFormItem> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(context.l10n.removeExercise),
-        content: Text(context.l10n.removeConfirmation(widget.exercise.name)),
+        content: Text(
+          context.l10n.removeConfirmation(
+            widget.exercise.displayName(
+              Localizations.localeOf(context).languageCode,
+            ),
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
@@ -1017,7 +1026,15 @@ class _ExerciseSelectionModalState extends State<_ExerciseSelectionModal> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         onTap: () {
-                          widget.cubit.addExercise(exerciseName);
+                          // The canonical name is what makes this exercise
+                          // follow the app's language later; the displayed text
+                          // is only a snapshot of how it looked when added.
+                          widget.cubit.addExercise(
+                            exerciseName,
+                            canonicalName: ExerciseLibrary.canonicalNameFor(
+                              exercise.name,
+                            ),
+                          );
                           Navigator.pop(context);
                         },
                       );

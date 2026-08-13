@@ -457,11 +457,24 @@ abstract class _WorkoutRoutine implements WorkoutRoutine {
 /// @nodoc
 mixin _$WorkoutExercise {
   String get id => throw _privateConstructorUsedError;
+
+  /// The name as it was stored. For a catalog exercise this is whatever
+  /// language it was added in; [WorkoutExerciseNaming.displayName] is what
+  /// should be shown instead.
   String get name => throw _privateConstructorUsedError;
   int get sortOrder => throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
   int get restTimeSeconds => throw _privateConstructorUsedError;
   List<WorkoutSet> get templateSets => throw _privateConstructorUsedError;
+
+  /// The catalog entry this exercise came from, as its canonical English
+  /// name, or null when the user typed the exercise in themselves.
+  ///
+  /// Storing the link rather than the translated text is what lets a routine
+  /// built in one language read correctly in another: the name is resolved
+  /// against the catalog every time it is shown, instead of being frozen at
+  /// the moment the exercise was added.
+  String? get canonicalName => throw _privateConstructorUsedError;
   SyncMetadata? get syncMetadata => throw _privateConstructorUsedError;
 
   /// Create a copy of WorkoutExercise
@@ -484,6 +497,7 @@ abstract class $WorkoutExerciseCopyWith<$Res> {
       String? notes,
       int restTimeSeconds,
       List<WorkoutSet> templateSets,
+      String? canonicalName,
       SyncMetadata? syncMetadata});
 
   $SyncMetadataCopyWith<$Res>? get syncMetadata;
@@ -510,6 +524,7 @@ class _$WorkoutExerciseCopyWithImpl<$Res, $Val extends WorkoutExercise>
     Object? notes = freezed,
     Object? restTimeSeconds = null,
     Object? templateSets = null,
+    Object? canonicalName = freezed,
     Object? syncMetadata = freezed,
   }) {
     return _then(_value.copyWith(
@@ -537,6 +552,10 @@ class _$WorkoutExerciseCopyWithImpl<$Res, $Val extends WorkoutExercise>
           ? _value.templateSets
           : templateSets // ignore: cast_nullable_to_non_nullable
               as List<WorkoutSet>,
+      canonicalName: freezed == canonicalName
+          ? _value.canonicalName
+          : canonicalName // ignore: cast_nullable_to_non_nullable
+              as String?,
       syncMetadata: freezed == syncMetadata
           ? _value.syncMetadata
           : syncMetadata // ignore: cast_nullable_to_non_nullable
@@ -574,6 +593,7 @@ abstract class _$$WorkoutExerciseImplCopyWith<$Res>
       String? notes,
       int restTimeSeconds,
       List<WorkoutSet> templateSets,
+      String? canonicalName,
       SyncMetadata? syncMetadata});
 
   @override
@@ -599,6 +619,7 @@ class __$$WorkoutExerciseImplCopyWithImpl<$Res>
     Object? notes = freezed,
     Object? restTimeSeconds = null,
     Object? templateSets = null,
+    Object? canonicalName = freezed,
     Object? syncMetadata = freezed,
   }) {
     return _then(_$WorkoutExerciseImpl(
@@ -626,6 +647,10 @@ class __$$WorkoutExerciseImplCopyWithImpl<$Res>
           ? _value._templateSets
           : templateSets // ignore: cast_nullable_to_non_nullable
               as List<WorkoutSet>,
+      canonicalName: freezed == canonicalName
+          ? _value.canonicalName
+          : canonicalName // ignore: cast_nullable_to_non_nullable
+              as String?,
       syncMetadata: freezed == syncMetadata
           ? _value.syncMetadata
           : syncMetadata // ignore: cast_nullable_to_non_nullable
@@ -644,11 +669,16 @@ class _$WorkoutExerciseImpl implements _WorkoutExercise {
       this.notes,
       required this.restTimeSeconds,
       required final List<WorkoutSet> templateSets,
+      this.canonicalName,
       this.syncMetadata})
       : _templateSets = templateSets;
 
   @override
   final String id;
+
+  /// The name as it was stored. For a catalog exercise this is whatever
+  /// language it was added in; [WorkoutExerciseNaming.displayName] is what
+  /// should be shown instead.
   @override
   final String name;
   @override
@@ -665,12 +695,21 @@ class _$WorkoutExerciseImpl implements _WorkoutExercise {
     return EqualUnmodifiableListView(_templateSets);
   }
 
+  /// The catalog entry this exercise came from, as its canonical English
+  /// name, or null when the user typed the exercise in themselves.
+  ///
+  /// Storing the link rather than the translated text is what lets a routine
+  /// built in one language read correctly in another: the name is resolved
+  /// against the catalog every time it is shown, instead of being frozen at
+  /// the moment the exercise was added.
+  @override
+  final String? canonicalName;
   @override
   final SyncMetadata? syncMetadata;
 
   @override
   String toString() {
-    return 'WorkoutExercise(id: $id, name: $name, sortOrder: $sortOrder, notes: $notes, restTimeSeconds: $restTimeSeconds, templateSets: $templateSets, syncMetadata: $syncMetadata)';
+    return 'WorkoutExercise(id: $id, name: $name, sortOrder: $sortOrder, notes: $notes, restTimeSeconds: $restTimeSeconds, templateSets: $templateSets, canonicalName: $canonicalName, syncMetadata: $syncMetadata)';
   }
 
   @override
@@ -687,6 +726,8 @@ class _$WorkoutExerciseImpl implements _WorkoutExercise {
                 other.restTimeSeconds == restTimeSeconds) &&
             const DeepCollectionEquality()
                 .equals(other._templateSets, _templateSets) &&
+            (identical(other.canonicalName, canonicalName) ||
+                other.canonicalName == canonicalName) &&
             (identical(other.syncMetadata, syncMetadata) ||
                 other.syncMetadata == syncMetadata));
   }
@@ -700,6 +741,7 @@ class _$WorkoutExerciseImpl implements _WorkoutExercise {
       notes,
       restTimeSeconds,
       const DeepCollectionEquality().hash(_templateSets),
+      canonicalName,
       syncMetadata);
 
   /// Create a copy of WorkoutExercise
@@ -720,10 +762,15 @@ abstract class _WorkoutExercise implements WorkoutExercise {
       final String? notes,
       required final int restTimeSeconds,
       required final List<WorkoutSet> templateSets,
+      final String? canonicalName,
       final SyncMetadata? syncMetadata}) = _$WorkoutExerciseImpl;
 
   @override
   String get id;
+
+  /// The name as it was stored. For a catalog exercise this is whatever
+  /// language it was added in; [WorkoutExerciseNaming.displayName] is what
+  /// should be shown instead.
   @override
   String get name;
   @override
@@ -734,6 +781,16 @@ abstract class _WorkoutExercise implements WorkoutExercise {
   int get restTimeSeconds;
   @override
   List<WorkoutSet> get templateSets;
+
+  /// The catalog entry this exercise came from, as its canonical English
+  /// name, or null when the user typed the exercise in themselves.
+  ///
+  /// Storing the link rather than the translated text is what lets a routine
+  /// built in one language read correctly in another: the name is resolved
+  /// against the catalog every time it is shown, instead of being frozen at
+  /// the moment the exercise was added.
+  @override
+  String? get canonicalName;
   @override
   SyncMetadata? get syncMetadata;
 

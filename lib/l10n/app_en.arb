@@ -241,9 +241,9 @@
   "@unitIncline": {
     "description": "Treadmill or machine incline"
   },
-  "setsCount": "{count} sets",
+  "setsCount": "{count, plural, =1{1 set} other{{count} sets}}",
   "@setsCount": {
-    "description": "Number of sets in exercise",
+    "description": "Number of sets in exercise. Written as an ICU plural: languages with more than two plural forms (Russian, Polish, Arabic, Czech...) must supply their own categories (one/few/many/other) when translating, not just the two English needs. Zero never reaches this message; it is handled by noSetsAdded.",
     "placeholders": {
       "count": {
         "type": "int"

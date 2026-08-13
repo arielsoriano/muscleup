@@ -2,15 +2,15 @@ import 'dart:ui';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/l10n/supported_languages.dart';
 import '../../../../core/settings/settings_data_source.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../../l10n/app_localizations.dart';
 import 'settings_state.dart';
 
 class SettingsCubit extends Cubit<SettingsState> {
   SettingsCubit(this._settingsDataSource)
       : super(SettingsState(
-          locale: _systemLocaleOrEnglish(),
+          locale: _systemLocaleOrFallback(),
           currentSkin: AppSkin.volt,
           isDarkMode: true,
         ),) {
@@ -19,30 +19,15 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   final SettingsDataSource _settingsDataSource;
 
-  static Locale _systemLocaleOrEnglish() {
+  static Locale _systemLocaleOrFallback() {
     final platformLanguageCode = PlatformDispatcher.instance.locale.languageCode;
-    return _supportedLocaleOrNull(platformLanguageCode) ?? const Locale('en');
-  }
-
-  static Locale? _supportedLocaleOrNull(String languageCode) {
-    final normalizedCode = languageCode.toLowerCase();
-    for (final locale in AppLocalizations.supportedLocales) {
-      if (locale.languageCode.toLowerCase() == normalizedCode) {
-        return locale;
-      }
-    }
-    return null;
+    return SupportedLanguages.resolve(platformLanguageCode) ??
+        SupportedLanguages.fallbackLocale;
   }
 
   Locale _resolveInitialLocale(String? savedLanguageCode) {
-    if (savedLanguageCode != null) {
-      final savedSupportedLocale = _supportedLocaleOrNull(savedLanguageCode);
-      if (savedSupportedLocale != null) {
-        return savedSupportedLocale;
-      }
-    }
-
-    return _systemLocaleOrEnglish();
+    return SupportedLanguages.resolve(savedLanguageCode) ??
+        _systemLocaleOrFallback();
   }
 
   Future<void> _initialize() async {

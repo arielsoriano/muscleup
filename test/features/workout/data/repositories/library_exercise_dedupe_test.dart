@@ -2,12 +2,13 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:muscleup/core/l10n/localized_text.dart';
 import 'package:muscleup/features/workout/data/datasources/local/workout_database.dart';
 import 'package:muscleup/features/workout/data/repositories/workout_repository_impl.dart';
 
 /// Reproduces the duplicated-exercise report from closed testing: a seeded
-/// bilingual row and a legacy custom row that carries the Spanish name in all
-/// three name columns both render as "Elevaciones Laterales" in the picker.
+/// bilingual row and a legacy custom row that carries the Spanish name in every
+/// language both render as "Elevaciones Laterales" in the picker.
 void main() {
   late AppDatabase database;
   late WorkoutRepositoryImpl repository;
@@ -23,13 +24,16 @@ void main() {
     await database.close();
   });
 
+  /// The shape older builds wrote: the name the user saw, stored as if it were
+  /// the name in every language.
   Future<void> insertLegacyCustomRow(String name) async {
     await database.into(database.libraryExercises).insert(
           LibraryExercisesCompanion.insert(
             id: 'legacy_${name.hashCode}',
             name: name,
-            nameEn: name,
-            nameEs: name,
+            namesJson: Value(
+              LocalizedText(<String, String>{'en': name, 'es': name}).encode(),
+            ),
             isCustom: true,
             updatedAt: Value(DateTime.now()),
             syncStatus: const Value(SyncStatus.synced),

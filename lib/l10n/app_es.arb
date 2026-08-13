@@ -58,7 +58,7 @@
   "unitNone": "ninguno",
   "unitLevel": "nivel",
   "unitIncline": "inclinación",
-  "setsCount": "{count} series",
+  "setsCount": "{count, plural, =1{1 serie} other{{count} series}}",
   "language": "Idioma",
   "appSkin": "Tema de la App",
   "skinVolt": "Volt",

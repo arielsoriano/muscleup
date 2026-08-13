@@ -173,7 +173,9 @@ class WorkoutDetailsPage extends StatelessWidget {
                               margin: const EdgeInsets.only(bottom: 12),
                               child: ExpansionTile(
                                 title: Text(
-                                  exercise.name,
+                                  exercise.displayName(
+                                    Localizations.localeOf(context).languageCode,
+                                  ),
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleMedium
@@ -339,7 +341,10 @@ class WorkoutDetailsPage extends StatelessWidget {
                                           AppRoutes.exerciseProgress,
                                           extra: {
                                             'workoutExerciseId': exercise.id,
-                                            'exerciseName': exercise.name,
+                                            'exerciseName': exercise.displayName(
+                                              Localizations.localeOf(context)
+                                                  .languageCode,
+                                            ),
                                           },
                                         ),
                                         icon: const Icon(
@@ -369,10 +374,20 @@ class WorkoutDetailsPage extends StatelessWidget {
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           const Icon(Icons.play_arrow_rounded),
                           const SizedBox(width: 8),
-                          Text(context.l10n.startRoutineName(routine.name)),
+                          // The routine name is user input and the surrounding
+                          // wording is longer in several languages, so the label
+                          // has to be allowed to shrink instead of overflowing
+                          // the row.
+                          Flexible(
+                            child: Text(
+                              context.l10n.startRoutineName(routine.name),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                         ],
                       ),
                     ),

@@ -11,6 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/l10n/supported_languages.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/ui_helpers.dart';
@@ -586,26 +587,23 @@ class _LanguageSection extends StatelessWidget {
     );
   }
 
-  String _languageLabel(String code) {
-    switch (code) {
-      case 'es':
-        return 'Español';
-      case 'en':
-      default:
-        return 'English';
-    }
-  }
+  String _languageLabel(String code) => SupportedLanguages.nativeName(code);
 
   void _showLanguageSelector(BuildContext context, String currentCode) {
     final settingsCubit = context.read<SettingsCubit>();
-    const options = [
-      ('en', 'English'),
-      ('es', 'Español'),
-    ];
+    // Driven by the shipped `.arb` files, so a new language appears here as
+    // soon as its translations land.
+    final options = SupportedLanguages.languageCodes;
 
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: Theme.of(context).colorScheme.surface,
+      // The list scrolls and the sheet is capped, so the picker keeps working
+      // as languages are added instead of overflowing off the screen.
+      isScrollControlled: true,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.7,
+      ),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppTheme.radiusLarge),
@@ -631,65 +629,73 @@ class _LanguageSection extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              ...options.map((option) {
-                final code = option.$1;
-                final label = option.$2;
-                final isSelected = code == currentCode;
+              Flexible(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: options.length,
+                  itemBuilder: (listContext, index) {
+                    final code = options[index];
+                    final label = SupportedLanguages.nativeName(code);
+                    final isSelected = code == currentCode;
 
-                return ListTile(
-                  onTap: () {
-                    settingsCubit.changeLanguage(code);
-                    Navigator.of(sheetContext).pop();
-                  },
-                  leading: CircleAvatar(
-                    radius: 20,
-                    backgroundColor: Theme.of(sheetContext)
-                        .colorScheme
-                        .primary
-                        .withValues(alpha: 0.12),
-                    child: Text(
-                      code.toUpperCase(),
-                      style: Theme.of(sheetContext).textTheme.labelLarge,
-                    ),
-                  ),
-                  title: Text(
-                    label,
-                    style:
-                        Theme.of(sheetContext).textTheme.titleMedium?.copyWith(
+                    return ListTile(
+                      onTap: () {
+                        settingsCubit.changeLanguage(code);
+                        Navigator.of(sheetContext).pop();
+                      },
+                      leading: CircleAvatar(
+                        radius: 20,
+                        backgroundColor: Theme.of(sheetContext)
+                            .colorScheme
+                            .primary
+                            .withValues(alpha: 0.12),
+                        child: Text(
+                          code.toUpperCase(),
+                          style: Theme.of(sheetContext).textTheme.labelLarge,
+                        ),
+                      ),
+                      title: Text(
+                        label,
+                        style: Theme.of(sheetContext)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(
                               fontWeight: isSelected
                                   ? FontWeight.bold
                                   : FontWeight.normal,
                             ),
-                  ),
-                  trailing: isSelected
-                      ? Icon(
-                          Icons.check_circle_rounded,
-                          color: Theme.of(sheetContext).colorScheme.primary,
-                          size: 28,
-                        )
-                      : Icon(
-                          Icons.circle_outlined,
-                          color: Theme.of(sheetContext)
+                      ),
+                      trailing: isSelected
+                          ? Icon(
+                              Icons.check_circle_rounded,
+                              color: Theme.of(sheetContext).colorScheme.primary,
+                              size: 28,
+                            )
+                          : Icon(
+                              Icons.circle_outlined,
+                              color: Theme.of(sheetContext)
+                                  .colorScheme
+                                  .outline
+                                  .withValues(alpha: 0.3),
+                              size: 28,
+                            ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      tileColor: isSelected
+                          ? Theme.of(sheetContext)
                               .colorScheme
-                              .outline
-                              .withValues(alpha: 0.3),
-                          size: 28,
-                        ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  tileColor: isSelected
-                      ? Theme.of(sheetContext)
-                          .colorScheme
-                          .primary
-                          .withValues(alpha: 0.08)
-                      : null,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 8.0,
-                  ),
-                );
-              }),
+                              .primary
+                              .withValues(alpha: 0.08)
+                          : null,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8.0,
+                      ),
+                    );
+                  },
+                ),
+              ),
               const SizedBox(height: 8),
             ],
           ),

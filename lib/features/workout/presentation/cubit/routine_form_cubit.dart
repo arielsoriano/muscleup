@@ -47,11 +47,18 @@ class RoutineFormCubit extends Cubit<RoutineFormState> {
     );
   }
 
-  Future<void> addExercise(String exerciseName) async {
+  /// Adds an exercise to the routine being edited.
+  ///
+  /// [canonicalName] links the exercise to its catalog entry so its name can be
+  /// re-rendered in whatever language the app is set to later. It is null for
+  /// an exercise the user typed in themselves, which keeps [exerciseName] as
+  /// written.
+  Future<void> addExercise(String exerciseName, {String? canonicalName}) async {
     final defaults = await _trainingDefaultsRepository.getLocalDefaults();
     final newExercise = WorkoutExercise(
       id: _uuid.v4(),
       name: exerciseName,
+      canonicalName: canonicalName,
       sortOrder: state.routine.exercises.length,
       notes: null,
       restTimeSeconds: defaults.defaultRestSeconds ?? 0,

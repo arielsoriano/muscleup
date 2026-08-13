@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:muscleup/core/l10n/localized_text.dart';
 import 'package:muscleup/features/workout/data/dtos/exercise_remote_dto.dart';
 import 'package:muscleup/features/workout/data/dtos/library_exercise_remote_dto.dart';
 import 'package:muscleup/features/workout/data/dtos/routine_remote_dto.dart';
@@ -154,9 +155,11 @@ void main() {
       final deletedAt = DateTime(2025, 1, 7, 9, 0);
       final libraryExercise = LibraryExerciseEntity(
         id: 'lib-1',
-        name: 'Dominadas',
-        nameEn: 'Pull-up',
-        nameEs: 'Dominadas',
+        name: 'Pull-up',
+        names: const LocalizedText(<String, String>{
+          'en': 'Pull-up',
+          'es': 'Dominadas',
+        }),
         isCustom: true,
         syncMetadata: SyncMetadata(
           updatedAt: now,
@@ -172,9 +175,87 @@ void main() {
       final backToDomain = fromFirestore.toDomain();
 
       expect(map['deletedAt'], isA<Timestamp>());
-      expect(backToDomain.nameEn, 'Pull-up');
+      expect(backToDomain.getLocalizedName('en'), 'Pull-up');
+      expect(backToDomain.getLocalizedName('es'), 'Dominadas');
       expect(backToDomain.syncMetadata?.deletedAt, deletedAt);
       expect(backToDomain.syncMetadata?.remoteVersion, 11);
+    });
+
+    test('LibraryExerciseRemoteDto carries every translation', () {
+      final dto = LibraryExerciseRemoteDto.fromDomain(
+        LibraryExerciseEntity(
+          id: 'lib-2',
+          name: 'Squat',
+          names: const LocalizedText(<String, String>{
+            'en': 'Squat',
+            'es': 'Sentadilla',
+            'pt': 'Agachamento',
+          }),
+          isCustom: false,
+        ),
+      );
+
+      final map = dto.toFirestore();
+
+      expect(map['names'], containsPair('en', 'Squat'));
+      expect(map['names'], containsPair('pt', 'Agachamento'));
+    });
+
+    test('ExerciseRemoteDto round-trips the catalog link', () {
+      const exercise = WorkoutExercise(
+        id: 'ex-1',
+        name: 'Elevaciones Laterales',
+        canonicalName: 'Lateral Raise',
+        sortOrder: 0,
+        restTimeSeconds: 60,
+        templateSets: <WorkoutSet>[],
+      );
+
+      final map = ExerciseRemoteDto.fromDomain(exercise, 'r1').toFirestore();
+      final back = ExerciseRemoteDto.fromFirestore(map, 'ex-1').toDomain();
+
+      expect(back.canonicalName, 'Lateral Raise');
+      expect(back.displayName('en'), 'Lateral Raise');
+    });
+
+    test('ExerciseRemoteDto recovers the catalog link from a bare name', () {
+      // A document written before the link existed carries only the translated
+      // text; the catalog entry is recovered from it so the routine starts
+      // following the reader's language.
+      final legacyDocument = <String, dynamic>{
+        'routineId': 'r1',
+        'name': 'Peso Muerto',
+        'sortOrder': 0,
+        'restTimeSeconds': 90,
+        'updatedAt': Timestamp.fromDate(DateTime(2025, 1, 6)),
+        'syncStatus': 'synced',
+        'remoteVersion': 1,
+      };
+
+      final exercise =
+          ExerciseRemoteDto.fromFirestore(legacyDocument, 'ex-2').toDomain();
+
+      expect(exercise.canonicalName, 'Deadlift');
+      expect(exercise.displayName('en'), 'Deadlift');
+      expect(exercise.displayName('de'), 'Kreuzheben');
+    });
+
+    test('ExerciseRemoteDto leaves a user-created exercise unlinked', () {
+      final legacyDocument = <String, dynamic>{
+        'routineId': 'r1',
+        'name': 'Remo invertido en anillas',
+        'sortOrder': 0,
+        'restTimeSeconds': 60,
+        'updatedAt': Timestamp.fromDate(DateTime(2025, 1, 6)),
+        'syncStatus': 'synced',
+        'remoteVersion': 1,
+      };
+
+      final exercise =
+          ExerciseRemoteDto.fromFirestore(legacyDocument, 'ex-3').toDomain();
+
+      expect(exercise.canonicalName, isNull);
+      expect(exercise.displayName('en'), 'Remo invertido en anillas');
     });
   });
 }
