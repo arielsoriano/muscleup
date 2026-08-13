@@ -1051,24 +1051,42 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                     try {
                       final now = DateTime.now();
 
-                      await (database.update(database.libraryExercises)
-                            ..where((exercise) => exercise.id.equals(id)))
-                          .write(
-                        LibraryExercisesCompanion(
-                          updatedAt: Value(now),
-                          deletedAt: Value(now),
-                          syncStatus: const Value(SyncStatus.pending),
-                          remoteVersion: const Value(0),
-                        ),
-                      );
+                      final activeRows = await (database.select(
+                        database.libraryExercises,
+                      )
+                            ..where((exercise) => exercise.deletedAt.isNull()))
+                          .get();
 
-                      await _enqueueOutboxChange(
-                        entityType: 'libraryExercise',
-                        entityId: id,
-                        operation: 'delete',
-                        payload: {'id': id},
-                        createdAt: now,
-                      );
+                      // The list shows one entry per name group, so deleting that
+                      // entry has to remove every row behind it. Otherwise a merged
+                      // duplicate would resurface as soon as its twin disappears.
+                      final group = _groupLibraryExercisesByName(activeRows)
+                          .where((rows) => rows.any((row) => row.id == id))
+                          .firstOrNull;
+
+                      final idsToDelete =
+                          group?.map((row) => row.id).toList() ?? <String>[id];
+
+                      for (final exerciseId in idsToDelete) {
+                        await (database.update(database.libraryExercises)
+                              ..where((exercise) => exercise.id.equals(exerciseId)))
+                            .write(
+                          LibraryExercisesCompanion(
+                            updatedAt: Value(now),
+                            deletedAt: Value(now),
+                            syncStatus: const Value(SyncStatus.pending),
+                            remoteVersion: const Value(0),
+                          ),
+                        );
+
+                        await _enqueueOutboxChange(
+                          entityType: 'libraryExercise',
+                          entityId: exerciseId,
+                          operation: 'delete',
+                          payload: {'id': exerciseId},
+                          createdAt: now,
+                        );
+                      }
 
                       _scheduleAutoSync();
 
@@ -1087,16 +1105,19 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                       final allExercises = await (database.select(database.libraryExercises)
                             ..where((exercise) => exercise.deletedAt.isNull()))
                           .get();
-                      final lowerQuery = query.toLowerCase();
+                      final lowerQuery = query.trim().toLowerCase();
 
-                      final filtered = allExercises.where((exercise) {
-                        final searchName = languageCode == 'es'
-                            ? exercise.nameEs.toLowerCase()
-                            : exercise.nameEn.toLowerCase();
-                        return searchName.contains(lowerQuery);
-                      }).toList();
-
-                      final exercises = _mapAndDedupeLibraryExercises(filtered);
+                      // Merge first, then match on the name the picker will actually
+                      // render, so a hit on a duplicate row cannot surface it as a
+                      // separate result.
+                      final exercises = _mapAndDedupeLibraryExercises(allExercises)
+                          .where(
+                            (exercise) => exercise
+                                .getLocalizedName(languageCode)
+                                .toLowerCase()
+                                .contains(lowerQuery),
+                          )
+                          .toList();
 
                       return Either<Failure, List<LibraryExerciseEntity>>.right(exercises);
                     } catch (e) {
@@ -1125,42 +1146,119 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
                         );
                   }
 
+                  /// Returns one entity per exercise, merging rows that describe the
+                  /// same movement.
+                  ///
+                  /// Older builds created a custom row every time an exercise was
+                  /// added to a routine, storing the localized name in all three name
+                  /// columns. Such a row overlaps the seeded catalog entry on a single
+                  /// field only — "Elevaciones Laterales" three times, against
+                  /// "Lateral Raise"/"Lateral Raise"/"Elevaciones Laterales" — so
+                  /// keying the dedupe on the whole name triple left both rows visible
+                  /// and the picker showed the exercise twice.
                   List<LibraryExerciseEntity> _mapAndDedupeLibraryExercises(
                     List<LibraryExerciseData> rows,
                   ) {
-                    final dedupedByName = <String, LibraryExerciseEntity>{};
-
-                    final sortedRows = [...rows]
-                      ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
-
-                    for (final exerciseData in sortedRows) {
-                      final entity = LibraryExerciseEntity(
-                        id: exerciseData.id,
-                        name: exerciseData.name,
-                        nameEn: exerciseData.nameEn,
-                        nameEs: exerciseData.nameEs,
-                        isCustom: exerciseData.isCustom,
-                        syncMetadata: _mapSyncMetadata(
-                          updatedAt: exerciseData.updatedAt,
-                          deletedAt: exerciseData.deletedAt,
-                          syncStatus: exerciseData.syncStatus,
-                          remoteVersion: exerciseData.remoteVersion,
-                        ),
+                    final entities = _groupLibraryExercisesByName(rows)
+                        .map(_pickLibraryExerciseRepresentative)
+                        .map(_mapLibraryExerciseDataToEntity)
+                        .toList()
+                      ..sort(
+                        (a, b) =>
+                            a.nameEs.toLowerCase().compareTo(b.nameEs.toLowerCase()),
                       );
 
-                      final dedupeKey = [
-                        _normalizeLibraryExerciseName(entity.name),
-                        _normalizeLibraryExerciseName(entity.nameEn),
-                        _normalizeLibraryExerciseName(entity.nameEs),
-                      ].join('|');
+                    return entities;
+                  }
 
-                      dedupedByName.putIfAbsent(dedupeKey, () => entity);
+                  /// Buckets rows that share at least one name, in any language. Rows
+                  /// link transitively: if A shares a name with B and B with C, all
+                  /// three name the same exercise and collapse into one entry.
+                  List<List<LibraryExerciseData>> _groupLibraryExercisesByName(
+                    List<LibraryExerciseData> rows,
+                  ) {
+                    // Union-find over row positions, joined through shared names.
+                    final parent = List<int>.generate(rows.length, (index) => index);
+
+                    int findRoot(int index) {
+                      var current = index;
+                      while (parent[current] != current) {
+                        parent[current] = parent[parent[current]];
+                        current = parent[current];
+                      }
+                      return current;
                     }
 
-                    final entities = dedupedByName.values.toList()
-                      ..sort((a, b) => a.nameEs.toLowerCase().compareTo(b.nameEs.toLowerCase()));
+                    void union(int a, int b) {
+                      final rootA = findRoot(a);
+                      final rootB = findRoot(b);
+                      if (rootA != rootB) {
+                        parent[rootB] = rootA;
+                      }
+                    }
 
-                    return entities;
+                    final firstRowByName = <String, int>{};
+                    for (var index = 0; index < rows.length; index++) {
+                      for (final key in _libraryExerciseNameKeys(rows[index])) {
+                        final owner = firstRowByName[key];
+                        if (owner == null) {
+                          firstRowByName[key] = index;
+                        } else {
+                          union(owner, index);
+                        }
+                      }
+                    }
+
+                    final groupsByRoot = <int, List<LibraryExerciseData>>{};
+                    for (var index = 0; index < rows.length; index++) {
+                      groupsByRoot
+                          .putIfAbsent(findRoot(index), () => <LibraryExerciseData>[])
+                          .add(rows[index]);
+                    }
+
+                    return groupsByRoot.values.toList();
+                  }
+
+                  /// Picks the row that stands for a group: the seeded catalog entry
+                  /// when there is one, because it is the only row carrying both
+                  /// translations, otherwise the most recently updated row.
+                  LibraryExerciseData _pickLibraryExerciseRepresentative(
+                    List<LibraryExerciseData> group,
+                  ) {
+                    final sorted = [...group]..sort((a, b) {
+                        if (a.isCustom != b.isCustom) {
+                          return a.isCustom ? 1 : -1;
+                        }
+                        return b.updatedAt.compareTo(a.updatedAt);
+                      });
+
+                    return sorted.first;
+                  }
+
+                  Set<String> _libraryExerciseNameKeys(LibraryExerciseData row) {
+                    return <String>{
+                      _normalizeLibraryExerciseName(row.name),
+                      _normalizeLibraryExerciseName(row.nameEn),
+                      _normalizeLibraryExerciseName(row.nameEs),
+                    }..removeWhere((key) => key.isEmpty);
+                  }
+
+                  LibraryExerciseEntity _mapLibraryExerciseDataToEntity(
+                    LibraryExerciseData row,
+                  ) {
+                    return LibraryExerciseEntity(
+                      id: row.id,
+                      name: row.name,
+                      nameEn: row.nameEn,
+                      nameEs: row.nameEs,
+                      isCustom: row.isCustom,
+                      syncMetadata: _mapSyncMetadata(
+                        updatedAt: row.updatedAt,
+                        deletedAt: row.deletedAt,
+                        syncStatus: row.syncStatus,
+                        remoteVersion: row.remoteVersion,
+                      ),
+                    );
                   }
 
                   String _normalizeLibraryExerciseName(String value) {
