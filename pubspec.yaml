@@ -1,7 +1,7 @@
 name: muscleup
 description: A minimalist open-source gym tracking application
 publish_to: 'none'
-version: 1.0.0+15
+version: 1.0.1+16
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
