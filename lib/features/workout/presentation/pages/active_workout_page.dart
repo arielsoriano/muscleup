@@ -722,6 +722,13 @@ class _ActiveWorkoutPageContentState extends State<_ActiveWorkoutPageContent> {
     final textTheme = Theme.of(context).textTheme;
     final cubit = context.read<ActiveWorkoutCubit>();
 
+    // Both hints are conditional, so the spacing below them has to be too;
+    // otherwise an untouched set carries dead space above its value boxes.
+    final hints = <Widget?>[
+      _buildTargetHint(context, log, templateSet),
+      if (!isViewingHistory) _buildPreviousHint(context, log, templateSet),
+    ].whereType<Widget>().toList();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -752,15 +759,8 @@ class _ActiveWorkoutPageContentState extends State<_ActiveWorkoutPageContent> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  _formatTargetValues(context, templateSet, log),
-                  style: textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                if (!isViewingHistory)
-                  _buildPreviousHint(context, log, templateSet),
-                const SizedBox(height: 8),
+                ...hints,
+                if (hints.isNotEmpty) const SizedBox(height: 8),
                 Row(
                   children: [
                     if (log.unit1 != null && log.unit1 != WorkoutUnit.none) ...[
@@ -825,7 +825,45 @@ class _ActiveWorkoutPageContentState extends State<_ActiveWorkoutPageContent> {
     );
   }
 
-  Widget _buildPreviousHint(
+  /// Shows the routine target above the value boxes, but only when it adds
+  /// something.
+  ///
+  /// The boxes already fall back to the target while a set is untouched, so
+  /// repeating it there just duplicates what is right below it. Mirroring
+  /// [_buildPreviousHint], surface it once the logged values drift from the
+  /// plan — that is the only moment the reference matters.
+  Widget? _buildTargetHint(
+    BuildContext context,
+    SetLog log,
+    WorkoutSet? templateSet,
+  ) {
+    if (templateSet == null) {
+      return null;
+    }
+
+    final loggedValue1 = log.actualValue1;
+    final loggedValue2 = log.actualValue2;
+    if (loggedValue1 == null && loggedValue2 == null) {
+      return null;
+    }
+
+    final matchesTarget =
+        (loggedValue1 ?? templateSet.targetValue1) == templateSet.targetValue1 &&
+            (loggedValue2 ?? templateSet.targetValue2) ==
+                templateSet.targetValue2;
+    if (matchesTarget) {
+      return null;
+    }
+
+    return Text(
+      _formatTargetValues(context, templateSet, log),
+      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+    );
+  }
+
+  Widget? _buildPreviousHint(
     BuildContext context,
     SetLog log,
     WorkoutSet? templateSet,
@@ -834,7 +872,7 @@ class _ActiveWorkoutPageContentState extends State<_ActiveWorkoutPageContent> {
         .read<ActiveWorkoutCubit>()
         .previousLogFor(log.workoutExerciseId, log.setNumber);
     if (previous == null) {
-      return const SizedBox.shrink();
+      return null;
     }
 
     // Only surface "last time" when it differs from the current target;
@@ -843,12 +881,12 @@ class _ActiveWorkoutPageContentState extends State<_ActiveWorkoutPageContent> {
     final targetValue2 = templateSet?.targetValue2 ?? log.actualValue2;
     if (previous.actualValue1 == targetValue1 &&
         previous.actualValue2 == targetValue2) {
-      return const SizedBox.shrink();
+      return null;
     }
 
     final formatted = _formatPerformedValues(previous);
     if (formatted.isEmpty) {
-      return const SizedBox.shrink();
+      return null;
     }
 
     final colorScheme = Theme.of(context).colorScheme;
