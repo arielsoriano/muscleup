@@ -10,6 +10,9 @@ const Map<String, String> exerciseNamesRu = <String, String>{
   'Dumbbell Fly': 'Разведение гантелей лёжа',
   'Push-ups': 'Отжимания',
   'Chest Dips': 'Отжимания на брусьях для груди',
+  'Machine Chest Press': 'Жим в тренажёре на грудь',
+  'Cable Crossover': 'Сведение рук в кроссовере',
+  'Pec Deck': 'Сведение рук в тренажёре',
 
   // Back
   'Pull-up': 'Подтягивания',
@@ -19,6 +22,11 @@ const Map<String, String> exerciseNamesRu = <String, String>{
   'Lat Pulldown': 'Тяга верхнего блока',
   'Deadlift': 'Становая тяга',
   'T-Bar Row': 'Тяга Т-грифа',
+  'Seated Cable Row': 'Тяга нижнего блока',
+  'Chest-Supported Row': 'Тяга с упором в грудь',
+  'Straight-Arm Pulldown': 'Тяга прямыми руками',
+  'Inverted Row': 'Австралийские подтягивания',
+  'Sumo Deadlift': 'Становая тяга сумо',
 
   // Shoulders
   'Overhead Press': 'Жим стоя',
@@ -27,6 +35,10 @@ const Map<String, String> exerciseNamesRu = <String, String>{
   'Rear Delt Fly': 'Разведение на заднюю дельту',
   'Arnold Press': 'Жим Арнольда',
   'Shrugs': 'Шраги',
+  'Face Pull': 'Тяга к лицу',
+  'Machine Shoulder Press': 'Жим в тренажёре на плечи',
+  'Cable Lateral Raise': 'Махи в стороны на блоке',
+  'Upright Row': 'Тяга штанги к подбородку',
 
   // Arms
   'Barbell Curl': 'Подъём штанги на бицепс',
@@ -37,6 +49,11 @@ const Map<String, String> exerciseNamesRu = <String, String>{
   'Overhead Triceps Extension': 'Разгибание рук из-за головы',
   'Triceps Dips': 'Отжимания на брусьях для трицепса',
   'Close-Grip Bench Press': 'Жим узким хватом',
+  'Cable Curl': 'Сгибание рук на блоке',
+  'Concentration Curl': 'Концентрированный подъём',
+  'Skull Crusher': 'Французский жим',
+  'Reverse Curl': 'Подъём обратным хватом',
+  'Wrist Curl': 'Сгибание кистей',
 
   // Legs
   'Squat': 'Приседания',
@@ -49,6 +66,13 @@ const Map<String, String> exerciseNamesRu = <String, String>{
   'Bulgarian Split Squat': 'Болгарские выпады',
   'Calf Raise': 'Подъёмы на носки',
   'Hip Thrust': 'Ягодичный мост со штангой',
+  'Hack Squat': 'Гакк-приседания',
+  'Goblet Squat': 'Приседания с гантелью у груди',
+  'Step-up': 'Зашагивания на платформу',
+  'Good Morning': 'Наклоны со штангой',
+  'Hip Abduction': 'Разведение ног в тренажёре',
+  'Hip Adduction': 'Сведение ног в тренажёре',
+  'Glute Kickback': 'Отведение ноги назад',
 
   // Core
   'Plank': 'Планка',
@@ -57,16 +81,31 @@ const Map<String, String> exerciseNamesRu = <String, String>{
   'Leg Raise': 'Подъём ног',
   'Mountain Climbers': 'Скалолаз',
   'Bicycle Crunches': 'Скручивания «велосипед»',
+  'Cable Crunch': 'Скручивания на блоке',
+  'Dead Bug': 'Мёртвый жук',
+  'Side Plank': 'Боковая планка',
+  'Hanging Leg Raise': 'Подъём ног в висе',
+  'Ab Wheel Rollout': 'Ролик для пресса',
+  'Sit-ups': 'Подъём туловища',
+  'Bird Dog': 'Птица-собака',
 
   // Cardio
   'Running': 'Бег',
   'Cycling': 'Велотренажёр',
   'Rowing': 'Гребной тренажёр',
   'Jump Rope': 'Прыжки со скакалкой',
+  'Walking': 'Ходьба',
+  'Elliptical': 'Эллиптический тренажёр',
+  'Stair Climber': 'Степпер',
+  'Swimming': 'Плавание',
 
   // Full body
   'Burpees': 'Бёрпи',
   'Thrusters': 'Трастеры',
   'Clean and Jerk': 'Толчок',
   'Snatch': 'Рывок',
+  'Kettlebell Swing': 'Махи гирей',
+  'Farmer\'s Walk': 'Прогулка фермера',
+  'Box Jump': 'Прыжки на тумбу',
+  'Battle Ropes': 'Канаты',
 };

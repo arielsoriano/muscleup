@@ -52,6 +52,9 @@ class ExerciseLibrary {
     ('Dumbbell Fly', ExerciseCategory.chest),
     ('Push-ups', ExerciseCategory.chest),
     ('Chest Dips', ExerciseCategory.chest),
+    ('Machine Chest Press', ExerciseCategory.chest),
+    ('Cable Crossover', ExerciseCategory.chest),
+    ('Pec Deck', ExerciseCategory.chest),
     ('Pull-up', ExerciseCategory.back),
     ('Chin-up', ExerciseCategory.back),
     ('Barbell Row', ExerciseCategory.back),
@@ -59,12 +62,21 @@ class ExerciseLibrary {
     ('Lat Pulldown', ExerciseCategory.back),
     ('Deadlift', ExerciseCategory.back),
     ('T-Bar Row', ExerciseCategory.back),
+    ('Seated Cable Row', ExerciseCategory.back),
+    ('Chest-Supported Row', ExerciseCategory.back),
+    ('Straight-Arm Pulldown', ExerciseCategory.back),
+    ('Inverted Row', ExerciseCategory.back),
+    ('Sumo Deadlift', ExerciseCategory.back),
     ('Overhead Press', ExerciseCategory.shoulders),
     ('Lateral Raise', ExerciseCategory.shoulders),
     ('Front Raise', ExerciseCategory.shoulders),
     ('Rear Delt Fly', ExerciseCategory.shoulders),
     ('Arnold Press', ExerciseCategory.shoulders),
     ('Shrugs', ExerciseCategory.shoulders),
+    ('Face Pull', ExerciseCategory.shoulders),
+    ('Machine Shoulder Press', ExerciseCategory.shoulders),
+    ('Cable Lateral Raise', ExerciseCategory.shoulders),
+    ('Upright Row', ExerciseCategory.shoulders),
     ('Barbell Curl', ExerciseCategory.arms),
     ('Dumbbell Curl', ExerciseCategory.arms),
     ('Hammer Curl', ExerciseCategory.arms),
@@ -73,6 +85,11 @@ class ExerciseLibrary {
     ('Overhead Triceps Extension', ExerciseCategory.arms),
     ('Triceps Dips', ExerciseCategory.arms),
     ('Close-Grip Bench Press', ExerciseCategory.arms),
+    ('Cable Curl', ExerciseCategory.arms),
+    ('Concentration Curl', ExerciseCategory.arms),
+    ('Skull Crusher', ExerciseCategory.arms),
+    ('Reverse Curl', ExerciseCategory.arms),
+    ('Wrist Curl', ExerciseCategory.arms),
     ('Squat', ExerciseCategory.legs),
     ('Front Squat', ExerciseCategory.legs),
     ('Leg Press', ExerciseCategory.legs),
@@ -83,20 +100,42 @@ class ExerciseLibrary {
     ('Bulgarian Split Squat', ExerciseCategory.legs),
     ('Calf Raise', ExerciseCategory.legs),
     ('Hip Thrust', ExerciseCategory.legs),
+    ('Hack Squat', ExerciseCategory.legs),
+    ('Goblet Squat', ExerciseCategory.legs),
+    ('Step-up', ExerciseCategory.legs),
+    ('Good Morning', ExerciseCategory.legs),
+    ('Hip Abduction', ExerciseCategory.legs),
+    ('Hip Adduction', ExerciseCategory.legs),
+    ('Glute Kickback', ExerciseCategory.legs),
     ('Plank', ExerciseCategory.core),
     ('Crunches', ExerciseCategory.core),
     ('Russian Twist', ExerciseCategory.core),
     ('Leg Raise', ExerciseCategory.core),
     ('Mountain Climbers', ExerciseCategory.core),
     ('Bicycle Crunches', ExerciseCategory.core),
+    ('Cable Crunch', ExerciseCategory.core),
+    ('Dead Bug', ExerciseCategory.core),
+    ('Side Plank', ExerciseCategory.core),
+    ('Hanging Leg Raise', ExerciseCategory.core),
+    ('Ab Wheel Rollout', ExerciseCategory.core),
+    ('Sit-ups', ExerciseCategory.core),
+    ('Bird Dog', ExerciseCategory.core),
     ('Running', ExerciseCategory.cardio),
     ('Cycling', ExerciseCategory.cardio),
     ('Rowing', ExerciseCategory.cardio),
     ('Jump Rope', ExerciseCategory.cardio),
+    ('Walking', ExerciseCategory.cardio),
+    ('Elliptical', ExerciseCategory.cardio),
+    ('Stair Climber', ExerciseCategory.cardio),
+    ('Swimming', ExerciseCategory.cardio),
     ('Burpees', ExerciseCategory.fullBody),
     ('Thrusters', ExerciseCategory.fullBody),
     ('Clean and Jerk', ExerciseCategory.fullBody),
     ('Snatch', ExerciseCategory.fullBody),
+    ('Kettlebell Swing', ExerciseCategory.fullBody),
+    ("Farmer's Walk", ExerciseCategory.fullBody),
+    ('Box Jump', ExerciseCategory.fullBody),
+    ('Battle Ropes', ExerciseCategory.fullBody),
   ];
 
   /// The catalog with every available translation attached. Built once.
@@ -128,13 +167,15 @@ class ExerciseLibrary {
     return _canonicalByAnyName[_normalize(name)];
   }
 
+  /// Indexed rather than scanned: every routine exercise resolves its display
+  /// name through here on each rebuild, and the catalog is long enough now that
+  /// a linear scan per name would be doing real work for nothing.
+  static final Map<String, ExerciseLibraryEntry> _byCanonicalName = {
+    for (final entry in exercises) entry.canonicalName: entry,
+  };
+
   static ExerciseLibraryEntry? entryFor(String canonicalName) {
-    for (final entry in exercises) {
-      if (entry.canonicalName == canonicalName) {
-        return entry;
-      }
-    }
-    return null;
+    return _byCanonicalName[canonicalName];
   }
 
   static String _normalize(String value) => value.trim().toLowerCase();

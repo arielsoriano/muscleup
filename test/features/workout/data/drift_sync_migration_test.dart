@@ -148,6 +148,73 @@ void main() {
       await database.close();
       await tempDirectory.delete(recursive: true);
     });
+
+    test('seeds exercises the catalog gained after the install', () async {
+      final tempDirectory =
+          await Directory.systemTemp.createTemp('muscleup_db_v4_newseed_');
+      final databaseFile = await createV4Database(tempDirectory);
+
+      final sqlite = sqlite3.open(databaseFile.path);
+      // A device from a build whose catalog had none of today's additions. The
+      // legacy id is deliberate: early builds did not derive it from the name.
+      sqlite.execute("INSERT INTO library_exercises (id, name, name_en, name_es, is_custom, category, updated_at, sync_status, remote_version) VALUES ('lib_7', 'Bench Press', 'Bench Press', 'Press de Banca', 0, 0, 100, 1, 0);");
+      sqlite.execute("INSERT INTO library_exercises (id, name, name_en, name_es, is_custom, category, updated_at, sync_status, remote_version) VALUES ('custom_face', 'Face Pull', 'Face Pull', 'Face Pull', 1, NULL, 100, 1, 0);");
+      sqlite.dispose();
+
+      final database = AppDatabase.forExecutor(NativeDatabase(databaseFile));
+      await database.customSelect('SELECT 1;').get();
+
+      final rows = await database.select(database.libraryExercises).get();
+      Iterable<LibraryExerciseData> named(String name) =>
+          rows.where((row) => row.name == name);
+
+      // Seeding only ever ran in onCreate, so an exercise added to the catalog
+      // later used to reach new installs and nobody else.
+      expect(named('Cable Crunch'), hasLength(1));
+      expect(named('Hack Squat'), hasLength(1));
+      expect(
+        LocalizedText.decode(named('Cable Crunch').single.namesJson)
+            .resolve('es'),
+        'Crunch en Polea',
+      );
+
+      // Matching is by name, not id, so a row seeded under a legacy id is not
+      // duplicated by the entry it already represents.
+      expect(named('Bench Press'), hasLength(1));
+      expect(named('Bench Press').single.id, 'lib_7');
+
+      // The user got there first with their own copy; leaving it alone keeps
+      // one entry in the picker instead of two.
+      expect(named('Face Pull'), hasLength(1));
+      expect(named('Face Pull').single.isCustom, isTrue);
+
+      await database.close();
+      await tempDirectory.delete(recursive: true);
+    });
+
+    test('leaves a deleted exercise deleted', () async {
+      final tempDirectory =
+          await Directory.systemTemp.createTemp('muscleup_db_v4_deleted_');
+      final databaseFile = await createV4Database(tempDirectory);
+
+      final sqlite = sqlite3.open(databaseFile.path);
+      sqlite.execute("INSERT INTO library_exercises (id, name, name_en, name_es, is_custom, category, updated_at, deleted_at, sync_status, remote_version) VALUES ('burpees', 'Burpees', 'Burpees', 'Burpees', 0, 7, 100, 200, 1, 0);");
+      sqlite.dispose();
+
+      final database = AppDatabase.forExecutor(NativeDatabase(databaseFile));
+      await database.customSelect('SELECT 1;').get();
+
+      final rows = await (database.select(database.libraryExercises)
+            ..where((row) => row.name.equals('Burpees')))
+          .get();
+
+      // Re-seeding on every launch must not resurrect what the user removed.
+      expect(rows, hasLength(1));
+      expect(rows.single.deletedAt, isNotNull);
+
+      await database.close();
+      await tempDirectory.delete(recursive: true);
+    });
   });
 
   group('Drift migration v5 to v6', () {

@@ -14,6 +14,9 @@ const Map<String, String> exerciseNamesFr = <String, String>{
   'Dumbbell Fly': 'Écarté avec haltères',
   'Push-ups': 'Pompes',
   'Chest Dips': 'Dips pectoraux',
+  'Machine Chest Press': 'Développé poitrine à la machine',
+  'Cable Crossover': 'Écarté à la poulie',
+  'Pec Deck': 'Pec deck',
 
   // Back
   'Pull-up': 'Traction pronation',
@@ -23,6 +26,11 @@ const Map<String, String> exerciseNamesFr = <String, String>{
   'Lat Pulldown': 'Tirage vertical',
   'Deadlift': 'Soulevé de terre',
   'T-Bar Row': 'Rowing T-bar',
+  'Seated Cable Row': 'Rowing à la poulie basse',
+  'Chest-Supported Row': 'Rowing buste appuyé',
+  'Straight-Arm Pulldown': 'Tirage bras tendus',
+  'Inverted Row': 'Rowing inversé',
+  'Sumo Deadlift': 'Soulevé de terre sumo',
 
   // Shoulders
   'Overhead Press': 'Développé militaire',
@@ -31,6 +39,10 @@ const Map<String, String> exerciseNamesFr = <String, String>{
   'Rear Delt Fly': 'Oiseau',
   'Arnold Press': 'Développé Arnold',
   'Shrugs': 'Haussements d\'épaules',
+  'Face Pull': 'Face pull',
+  'Machine Shoulder Press': 'Développé épaules à la machine',
+  'Cable Lateral Raise': 'Élévations latérales à la poulie',
+  'Upright Row': 'Rowing menton',
 
   // Arms
   'Barbell Curl': 'Curl barre',
@@ -41,6 +53,11 @@ const Map<String, String> exerciseNamesFr = <String, String>{
   'Overhead Triceps Extension': 'Extension triceps au-dessus de la tête',
   'Triceps Dips': 'Dips triceps',
   'Close-Grip Bench Press': 'Développé couché prise serrée',
+  'Cable Curl': 'Curl à la poulie',
+  'Concentration Curl': 'Curl concentré',
+  'Skull Crusher': 'Barre au front',
+  'Reverse Curl': 'Curl inversé',
+  'Wrist Curl': 'Curl poignet',
 
   // Legs
   'Squat': 'Squat',
@@ -53,6 +70,13 @@ const Map<String, String> exerciseNamesFr = <String, String>{
   'Bulgarian Split Squat': 'Squat bulgare',
   'Calf Raise': 'Extension des mollets',
   'Hip Thrust': 'Hip thrust',
+  'Hack Squat': 'Hack squat',
+  'Goblet Squat': 'Goblet squat',
+  'Step-up': 'Step-up',
+  'Good Morning': 'Good morning',
+  'Hip Abduction': 'Abduction de la hanche',
+  'Hip Adduction': 'Adduction de la hanche',
+  'Glute Kickback': 'Kickback fessier',
 
   // Core
   'Plank': 'Gainage',
@@ -61,16 +85,31 @@ const Map<String, String> exerciseNamesFr = <String, String>{
   'Leg Raise': 'Relevé de jambes',
   'Mountain Climbers': 'Mountain climbers',
   'Bicycle Crunches': 'Crunchs bicyclette',
+  'Cable Crunch': 'Crunch à la poulie',
+  'Dead Bug': 'Dead bug',
+  'Side Plank': 'Gainage latéral',
+  'Hanging Leg Raise': 'Relevé de jambes suspendu',
+  'Ab Wheel Rollout': 'Roulette abdominale',
+  'Sit-ups': 'Redressements assis',
+  'Bird Dog': 'Bird dog',
 
   // Cardio
   'Running': 'Course à pied',
   'Cycling': 'Vélo',
   'Rowing': 'Rameur',
   'Jump Rope': 'Corde à sauter',
+  'Walking': 'Marche',
+  'Elliptical': 'Vélo elliptique',
+  'Stair Climber': 'Simulateur d\'escalier',
+  'Swimming': 'Natation',
 
   // Full body
   'Burpees': 'Burpees',
   'Thrusters': 'Thrusters',
   'Clean and Jerk': 'Épaulé-jeté',
   'Snatch': 'Arraché',
+  'Kettlebell Swing': 'Swing kettlebell',
+  'Farmer\'s Walk': 'Marche du fermier',
+  'Box Jump': 'Saut sur box',
+  'Battle Ropes': 'Battle ropes',
 };

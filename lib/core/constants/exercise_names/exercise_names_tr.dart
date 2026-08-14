@@ -16,6 +16,9 @@ const Map<String, String> exerciseNamesTr = <String, String>{
   'Dumbbell Fly': 'Dumbbell Fly',
   'Push-ups': 'Şınav',
   'Chest Dips': 'Göğüs için Dips',
+  'Machine Chest Press': 'Makinede Göğüs Press',
+  'Cable Crossover': 'Cable Crossover',
+  'Pec Deck': 'Pec Deck',
 
   // Back
   'Pull-up': 'Barfiks',
@@ -25,6 +28,11 @@ const Map<String, String> exerciseNamesTr = <String, String>{
   'Lat Pulldown': 'Lat Pulldown',
   'Deadlift': 'Deadlift',
   'T-Bar Row': 'T-Bar Kürek Çekişi',
+  'Seated Cable Row': 'Oturarak Cable Row',
+  'Chest-Supported Row': 'Göğüs Destekli Kürek Çekişi',
+  'Straight-Arm Pulldown': 'Düz Kol Pulldown',
+  'Inverted Row': 'Ters Kürek Çekişi',
+  'Sumo Deadlift': 'Sumo Deadlift',
 
   // Shoulders
   'Overhead Press': 'Omuz Press',
@@ -33,6 +41,10 @@ const Map<String, String> exerciseNamesTr = <String, String>{
   'Rear Delt Fly': 'Arka Omuz Fly',
   'Arnold Press': 'Arnold Press',
   'Shrugs': 'Trapez Silkme',
+  'Face Pull': 'Face Pull',
+  'Machine Shoulder Press': 'Makinede Omuz Press',
+  'Cable Lateral Raise': 'Cable Yan Omuz Kaldırış',
+  'Upright Row': 'Dikey Kürek Çekişi',
 
   // Arms
   'Barbell Curl': 'Barbell Curl',
@@ -43,6 +55,11 @@ const Map<String, String> exerciseNamesTr = <String, String>{
   'Overhead Triceps Extension': 'Baş Üstü Triceps Açışı',
   'Triceps Dips': 'Triceps için Dips',
   'Close-Grip Bench Press': 'Dar Tutuş Bench Press',
+  'Cable Curl': 'Cable Curl',
+  'Concentration Curl': 'Konsantre Curl',
+  'Skull Crusher': 'Skull Crusher',
+  'Reverse Curl': 'Ters Curl',
+  'Wrist Curl': 'El Bileği Curl',
 
   // Legs
   'Squat': 'Squat',
@@ -55,6 +72,13 @@ const Map<String, String> exerciseNamesTr = <String, String>{
   'Bulgarian Split Squat': 'Bulgar Split Squat',
   'Calf Raise': 'Baldır Kaldırış',
   'Hip Thrust': 'Hip Thrust',
+  'Hack Squat': 'Hack Squat',
+  'Goblet Squat': 'Goblet Squat',
+  'Step-up': 'Step-up',
+  'Good Morning': 'Good Morning',
+  'Hip Abduction': 'Makinede Kalça Açma',
+  'Hip Adduction': 'Makinede Kalça Kapama',
+  'Glute Kickback': 'Kalça Kickback',
 
   // Core
   'Plank': 'Plank',
@@ -63,16 +87,31 @@ const Map<String, String> exerciseNamesTr = <String, String>{
   'Leg Raise': 'Bacak Kaldırış',
   'Mountain Climbers': 'Mountain Climber',
   'Bicycle Crunches': 'Bisiklet Mekiği',
+  'Cable Crunch': 'Cable Mekik',
+  'Dead Bug': 'Dead Bug',
+  'Side Plank': 'Yan Plank',
+  'Hanging Leg Raise': 'Barfikste Bacak Kaldırış',
+  'Ab Wheel Rollout': 'Karın Tekerleği',
+  'Sit-ups': 'Tam Mekik',
+  'Bird Dog': 'Bird Dog',
 
   // Cardio
   'Running': 'Koşu',
   'Cycling': 'Bisiklet',
   'Rowing': 'Kürek Çekme',
   'Jump Rope': 'İp Atlama',
+  'Walking': 'Yürüyüş',
+  'Elliptical': 'Eliptik Bisiklet',
+  'Stair Climber': 'Merdiven Tırmanma',
+  'Swimming': 'Yüzme',
 
   // Full body
   'Burpees': 'Burpee',
   'Thrusters': 'Thruster',
   'Clean and Jerk': 'Silkme',
   'Snatch': 'Koparma',
+  'Kettlebell Swing': 'Kettlebell Swing',
+  'Farmer\'s Walk': 'Çiftçi Yürüyüşü',
+  'Box Jump': 'Kutu Sıçraması',
+  'Battle Ropes': 'Battle Rope',
 };

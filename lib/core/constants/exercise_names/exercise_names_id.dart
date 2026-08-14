@@ -15,6 +15,9 @@ const Map<String, String> exerciseNamesId = <String, String>{
   'Dumbbell Fly': 'Dumbbell Fly',
   'Push-ups': 'Push-up',
   'Chest Dips': 'Dip untuk Dada',
+  'Machine Chest Press': 'Chest Press Mesin',
+  'Cable Crossover': 'Cable Crossover',
+  'Pec Deck': 'Pec Deck',
 
   // Back
   'Pull-up': 'Pull-up',
@@ -24,6 +27,11 @@ const Map<String, String> exerciseNamesId = <String, String>{
   'Lat Pulldown': 'Lat Pulldown',
   'Deadlift': 'Deadlift',
   'T-Bar Row': 'T-Bar Row',
+  'Seated Cable Row': 'Seated Cable Row',
+  'Chest-Supported Row': 'Row dengan Sandaran Dada',
+  'Straight-Arm Pulldown': 'Straight-Arm Pulldown',
+  'Inverted Row': 'Inverted Row',
+  'Sumo Deadlift': 'Sumo Deadlift',
 
   // Shoulders
   'Overhead Press': 'Overhead Press',
@@ -32,6 +40,10 @@ const Map<String, String> exerciseNamesId = <String, String>{
   'Rear Delt Fly': 'Rear Delt Fly',
   'Arnold Press': 'Arnold Press',
   'Shrugs': 'Shrug Bahu',
+  'Face Pull': 'Face Pull',
+  'Machine Shoulder Press': 'Shoulder Press Mesin',
+  'Cable Lateral Raise': 'Lateral Raise Cable',
+  'Upright Row': 'Upright Row',
 
   // Arms
   'Barbell Curl': 'Barbell Curl',
@@ -42,6 +54,11 @@ const Map<String, String> exerciseNamesId = <String, String>{
   'Overhead Triceps Extension': 'Triceps Extension di Atas Kepala',
   'Triceps Dips': 'Dip untuk Trisep',
   'Close-Grip Bench Press': 'Bench Press Pegangan Sempit',
+  'Cable Curl': 'Cable Curl',
+  'Concentration Curl': 'Concentration Curl',
+  'Skull Crusher': 'Skull Crusher',
+  'Reverse Curl': 'Reverse Curl',
+  'Wrist Curl': 'Wrist Curl',
 
   // Legs
   'Squat': 'Squat',
@@ -54,6 +71,13 @@ const Map<String, String> exerciseNamesId = <String, String>{
   'Bulgarian Split Squat': 'Bulgarian Split Squat',
   'Calf Raise': 'Calf Raise',
   'Hip Thrust': 'Hip Thrust',
+  'Hack Squat': 'Hack Squat',
+  'Goblet Squat': 'Goblet Squat',
+  'Step-up': 'Step-up',
+  'Good Morning': 'Good Morning',
+  'Hip Abduction': 'Hip Abduction',
+  'Hip Adduction': 'Hip Adduction',
+  'Glute Kickback': 'Glute Kickback',
 
   // Core
   'Plank': 'Plank',
@@ -62,16 +86,31 @@ const Map<String, String> exerciseNamesId = <String, String>{
   'Leg Raise': 'Angkat Kaki',
   'Mountain Climbers': 'Mountain Climber',
   'Bicycle Crunches': 'Crunch Sepeda',
+  'Cable Crunch': 'Cable Crunch',
+  'Dead Bug': 'Dead Bug',
+  'Side Plank': 'Plank Samping',
+  'Hanging Leg Raise': 'Hanging Leg Raise',
+  'Ab Wheel Rollout': 'Ab Wheel',
+  'Sit-ups': 'Sit-up',
+  'Bird Dog': 'Bird Dog',
 
   // Cardio
   'Running': 'Lari',
   'Cycling': 'Bersepeda',
   'Rowing': 'Mesin Dayung',
   'Jump Rope': 'Lompat Tali',
+  'Walking': 'Jalan Kaki',
+  'Elliptical': 'Mesin Elliptical',
+  'Stair Climber': 'Stair Climber',
+  'Swimming': 'Berenang',
 
   // Full body
   'Burpees': 'Burpee',
   'Thrusters': 'Thruster',
   'Clean and Jerk': 'Clean and Jerk',
   'Snatch': 'Snatch',
+  'Kettlebell Swing': 'Kettlebell Swing',
+  'Farmer\'s Walk': 'Farmer\'s Walk',
+  'Box Jump': 'Box Jump',
+  'Battle Ropes': 'Battle Rope',
 };

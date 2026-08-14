@@ -207,7 +207,7 @@ class AppDatabase extends _$AppDatabase {
         }
       },
       beforeOpen: (details) async {
-        await refreshSeededExerciseTranslations();
+        await syncSeededExerciseCatalog();
       },
     );
   }
@@ -411,35 +411,61 @@ class AppDatabase extends _$AppDatabase {
   /// list and its translations are defined.
   Future<void> _seedLibraryExercises() async {
     for (final exercise in ExerciseLibrary.exercises) {
-      await into(libraryExercises).insert(
-        LibraryExercisesCompanion.insert(
-          id: exercise.id,
-          name: exercise.canonicalName,
-          namesJson: Value(exercise.names.encode()),
-          isCustom: false,
-          category: Value(exercise.category),
-          updatedAt: Value(DateTime.now()),
-          syncStatus: const Value(SyncStatus.synced),
-          remoteVersion: const Value(0),
-        ),
-        mode: InsertMode.insertOrIgnore,
-      );
+      await _insertSeededExercise(exercise);
     }
   }
 
-  /// Adds translations that landed after a device already seeded its catalog.
+  Future<void> _insertSeededExercise(ExerciseLibraryEntry exercise) {
+    return into(libraryExercises).insert(
+      LibraryExercisesCompanion.insert(
+        id: exercise.id,
+        name: exercise.canonicalName,
+        namesJson: Value(exercise.names.encode()),
+        isCustom: false,
+        category: Value(exercise.category),
+        updatedAt: Value(DateTime.now()),
+        syncStatus: const Value(SyncStatus.synced),
+        remoteVersion: const Value(0),
+      ),
+      mode: InsertMode.insertOrIgnore,
+    );
+  }
+
+  /// Brings the stored catalog in line with the one this build ships.
   ///
-  /// Shipping a new language must reach users who installed an earlier build:
-  /// their seeded rows carry only the languages that existed back then, so on
-  /// every launch the stored names are merged with the current catalog. Rows
-  /// the user edited keep their own values, since the merge only fills in
-  /// languages that are missing.
-  Future<void> refreshSeededExerciseTranslations() async {
-    final seededRows = await (select(libraryExercises)
-          ..where((row) => row.isCustom.equals(false)))
-        .get();
-    if (seededRows.isEmpty) {
-      return;
+  /// Two things drift apart between releases, and neither can be repaired at
+  /// install time, so this runs on every launch:
+  ///
+  /// - **Translations.** A device seeded before a language existed carries only
+  ///   the languages of that build, so stored names are merged with the current
+  ///   catalog. The merge only fills in languages that are missing, which
+  ///   leaves an exercise the user renamed alone.
+  /// - **Whole exercises.** Seeding runs in `onCreate` only, so an exercise
+  ///   added to the catalog in a later release used to reach new installs and
+  ///   stay invisible to everyone who already had the app.
+  ///
+  /// Presence is decided by name rather than by id, in any language: early
+  /// builds generated ids differently, and a row the user deleted has to stay
+  /// deleted. So a name already stored — under any id, seeded or custom,
+  /// deleted or not — is left exactly as it is.
+  Future<void> syncSeededExerciseCatalog() async {
+    final rows = await select(libraryExercises).get();
+
+    final storedNames = <String>{};
+    for (final row in rows) {
+      storedNames.add(row.name.trim().toLowerCase());
+      final names = LocalizedText.decode(row.namesJson, fallback: row.name);
+      for (final name in names.values) {
+        storedNames.add(name.trim().toLowerCase());
+      }
+    }
+
+    for (final entry in ExerciseLibrary.exercises) {
+      final isStored = entry.names.values
+          .any((name) => storedNames.contains(name.trim().toLowerCase()));
+      if (!isStored) {
+        await _insertSeededExercise(entry);
+      }
     }
 
     final catalogByName = <String, ExerciseLibraryEntry>{
@@ -447,7 +473,11 @@ class AppDatabase extends _$AppDatabase {
         entry.canonicalName.toLowerCase(): entry,
     };
 
-    for (final row in seededRows) {
+    for (final row in rows) {
+      if (row.isCustom) {
+        continue;
+      }
+
       final entry = catalogByName[row.name.toLowerCase()];
       if (entry == null) {
         continue;

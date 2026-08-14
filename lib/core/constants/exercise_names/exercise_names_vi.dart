@@ -16,6 +16,9 @@ const Map<String, String> exerciseNamesVi = <String, String>{
   'Dumbbell Fly': 'Ép Ngực Với Tạ Đơn',
   'Push-ups': 'Hít Đất',
   'Chest Dips': 'Chống Xà Kép Cho Ngực',
+  'Machine Chest Press': 'Đẩy Ngực Máy',
+  'Cable Crossover': 'Ép Ngực Cáp Chéo',
+  'Pec Deck': 'Máy Ép Ngực',
 
   // Back
   'Pull-up': 'Hít Xà Đơn',
@@ -25,6 +28,11 @@ const Map<String, String> exerciseNamesVi = <String, String>{
   'Lat Pulldown': 'Kéo Xô',
   'Deadlift': 'Deadlift',
   'T-Bar Row': 'Chèo Thuyền T-Bar',
+  'Seated Cable Row': 'Chèo Thuyền Cáp Ngồi',
+  'Chest-Supported Row': 'Chèo Thuyền Tựa Ngực',
+  'Straight-Arm Pulldown': 'Kéo Cáp Tay Thẳng',
+  'Inverted Row': 'Chèo Thuyền Ngược',
+  'Sumo Deadlift': 'Deadlift Sumo',
 
   // Shoulders
   'Overhead Press': 'Đẩy Vai Qua Đầu',
@@ -33,6 +41,10 @@ const Map<String, String> exerciseNamesVi = <String, String>{
   'Rear Delt Fly': 'Ép Vai Sau',
   'Arnold Press': 'Arnold Press',
   'Shrugs': 'Nhún Vai',
+  'Face Pull': 'Kéo Cáp Vào Mặt',
+  'Machine Shoulder Press': 'Đẩy Vai Máy',
+  'Cable Lateral Raise': 'Nâng Tạ Sang Ngang Với Cáp',
+  'Upright Row': 'Kéo Tạ Lên Cằm',
 
   // Arms
   'Barbell Curl': 'Cuốn Tay Với Tạ Đòn',
@@ -43,6 +55,11 @@ const Map<String, String> exerciseNamesVi = <String, String>{
   'Overhead Triceps Extension': 'Duỗi Tay Sau Qua Đầu',
   'Triceps Dips': 'Chống Xà Kép Cho Tay Sau',
   'Close-Grip Bench Press': 'Đẩy Ngực Tay Hẹp',
+  'Cable Curl': 'Cuốn Tay Với Cáp',
+  'Concentration Curl': 'Cuốn Tay Tập Trung',
+  'Skull Crusher': 'Skull Crusher',
+  'Reverse Curl': 'Cuốn Tay Ngược',
+  'Wrist Curl': 'Cuốn Cổ Tay',
 
   // Legs
   'Squat': 'Squat',
@@ -55,6 +72,13 @@ const Map<String, String> exerciseNamesVi = <String, String>{
   'Bulgarian Split Squat': 'Squat Bulgaria',
   'Calf Raise': 'Nhón Bắp Chân',
   'Hip Thrust': 'Đẩy Hông',
+  'Hack Squat': 'Hack Squat',
+  'Goblet Squat': 'Goblet Squat',
+  'Step-up': 'Bước Lên Bục',
+  'Good Morning': 'Good Morning',
+  'Hip Abduction': 'Máy Đẩy Hông Ra',
+  'Hip Adduction': 'Máy Kẹp Hông Vào',
+  'Glute Kickback': 'Đạp Chân Sau Cho Cơ Mông',
 
   // Core
   'Plank': 'Plank',
@@ -63,16 +87,31 @@ const Map<String, String> exerciseNamesVi = <String, String>{
   'Leg Raise': 'Nâng Chân',
   'Mountain Climbers': 'Leo Núi Tại Chỗ',
   'Bicycle Crunches': 'Gập Bụng Đạp Xe',
+  'Cable Crunch': 'Gập Bụng Với Cáp',
+  'Dead Bug': 'Dead Bug',
+  'Side Plank': 'Plank Ngang',
+  'Hanging Leg Raise': 'Nâng Chân Treo Người',
+  'Ab Wheel Rollout': 'Con Lăn Tập Bụng',
+  'Sit-ups': 'Gập Người Toàn Phần',
+  'Bird Dog': 'Bird Dog',
 
   // Cardio
   'Running': 'Chạy Bộ',
   'Cycling': 'Đạp Xe',
   'Rowing': 'Máy Chèo Thuyền',
   'Jump Rope': 'Nhảy Dây',
+  'Walking': 'Đi Bộ',
+  'Elliptical': 'Máy Elliptical',
+  'Stair Climber': 'Máy Leo Cầu Thang',
+  'Swimming': 'Bơi',
 
   // Full body
   'Burpees': 'Burpee',
   'Thrusters': 'Thruster',
   'Clean and Jerk': 'Cử Đẩy',
   'Snatch': 'Cử Giật',
+  'Kettlebell Swing': 'Vung Tạ Ấm',
+  'Farmer\'s Walk': 'Đi Bộ Mang Tạ',
+  'Box Jump': 'Nhảy Bục',
+  'Battle Ropes': 'Dây Battle Rope',
 };

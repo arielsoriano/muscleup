@@ -45,6 +45,33 @@ void main() {
     );
   });
 
+  test('no two exercises share a name in any language', () {
+    final languageCodes = <String>{
+      LocalizedText.baseLanguageCode,
+      ...exerciseNameTranslations.keys,
+    };
+
+    for (final code in languageCodes) {
+      final byName = <String, List<String>>{};
+      for (final exercise in ExerciseLibrary.exercises) {
+        final name = exercise.getLocalizedName(code).trim().toLowerCase();
+        (byName[name] ??= <String>[]).add(exercise.canonicalName);
+      }
+
+      final collisions = byName.entries.where((e) => e.value.length > 1);
+
+      // The exercise picker shows one entry per name, so two exercises that
+      // translate to the same string would merge into one and the user could
+      // never pick the other. `canonicalNameFor` would also resolve that name
+      // to whichever entry the index happened to build last.
+      expect(
+        collisions.map((e) => '"${e.key}" <- ${e.value}'),
+        isEmpty,
+        reason: 'colliding names in "$code"',
+      );
+    }
+  });
+
   test('every exercise resolves a name in every supported language', () {
     final languageCodes = <String>{
       LocalizedText.baseLanguageCode,
