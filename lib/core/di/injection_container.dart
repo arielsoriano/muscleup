@@ -57,6 +57,11 @@ Future<void> initialize() async {
   await _initializeAuth();
   await _initializeDomain();
   await _initializePresentation();
+  // Before the first cycle can run: installs carrying checkpoints from the
+  // versions with the broken pull paging have to re-pull once to recover the
+  // documents those versions skipped.
+  await serviceLocator<SyncCheckpointStore>().repairCheckpointsIfNeeded();
+
   await serviceLocator<SyncEngine>().startAutoSync();
 }
 
