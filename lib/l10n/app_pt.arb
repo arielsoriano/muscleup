@@ -229,5 +229,14 @@
   "importNoticeSkippedRoutines": "Entradas ignoradas por não ter nome: {count}.",
   "importNoticeSkippedExercises": "Exercícios ignorados em “{name}” por não ter nome: {count}.",
   "importNoticeDuplicateName": "Você já tem uma rotina chamada “{name}”. Esta é adicionada também.",
-  "importSettingsSubtitle": "Cole um plano e crie todas as rotinas de uma vez"
+  "importSettingsSubtitle": "Cole um plano e crie todas as rotinas de uma vez",
+  "exportTitle": "Exportar rotinas",
+  "exportSettingsSubtitle": "Salve uma cópia que você pode colar de volta",
+  "exportIntro": "Estas são todas as suas rotinas, no mesmo formato que a tela de importar lê. Guarde em uma nota ou um arquivo: ao colar de volta, elas são recriadas com seus exercícios, séries, pesos e notas, aqui ou em um celular novo.",
+  "exportHistoryNote": "Os treinos registrados não estão incluídos: aqui estão só as suas rotinas.",
+  "exportSummary": "Rotinas: {routineCount} · Exercícios: {exerciseCount} · Séries: {setCount}",
+  "exportCopy": "Copiar JSON",
+  "exportCopied": "Rotinas copiadas. Cole em algum lugar onde possa guardá-las.",
+  "exportEmpty": "Você ainda não tem rotinas para exportar.",
+  "exportError": "Não foi possível ler suas rotinas. Tente de novo."
 }

@@ -229,5 +229,14 @@
   "importNoticeSkippedRoutines": "Mục bị bỏ qua vì không có tên: {count}.",
   "importNoticeSkippedExercises": "Bài tập bị bỏ qua trong “{name}” vì không có tên: {count}.",
   "importNoticeDuplicateName": "Bạn đã có lịch tập tên “{name}”. Lịch này vẫn được thêm vào.",
-  "importSettingsSubtitle": "Dán một kế hoạch và tạo tất cả lịch tập cùng lúc"
+  "importSettingsSubtitle": "Dán một kế hoạch và tạo tất cả lịch tập cùng lúc",
+  "exportTitle": "Xuất lịch tập",
+  "exportSettingsSubtitle": "Lưu một bản sao bạn có thể dán lại",
+  "exportIntro": "Đây là toàn bộ lịch tập của bạn, theo đúng định dạng mà màn hình nhập đọc được. Hãy giữ nó trong một ghi chú hoặc một tệp: dán lại là chúng được tạo lại cùng bài tập, set, mức tạ và ghi chú — ở đây hoặc trên một điện thoại mới.",
+  "exportHistoryNote": "Các buổi tập đã ghi lại không được bao gồm: đây chỉ là lịch tập của bạn.",
+  "exportSummary": "Lịch tập: {routineCount} · Bài tập: {exerciseCount} · Set: {setCount}",
+  "exportCopy": "Sao chép JSON",
+  "exportCopied": "Đã sao chép lịch tập. Dán vào nơi bạn có thể lưu giữ.",
+  "exportEmpty": "Bạn chưa có lịch tập nào để xuất.",
+  "exportError": "Không đọc được lịch tập của bạn. Hãy thử lại."
 }

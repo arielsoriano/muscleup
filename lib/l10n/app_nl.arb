@@ -229,5 +229,14 @@
   "importNoticeSkippedRoutines": "Overgeslagen omdat er geen naam was: {count}.",
   "importNoticeSkippedExercises": "Oefeningen in “{name}” overgeslagen omdat er geen naam was: {count}.",
   "importNoticeDuplicateName": "Je hebt al een routine met de naam “{name}”. Deze wordt er extra bij gezet.",
-  "importSettingsSubtitle": "Plak een schema en maak alle routines in één keer"
+  "importSettingsSubtitle": "Plak een schema en maak alle routines in één keer",
+  "exportTitle": "Routines exporteren",
+  "exportSettingsSubtitle": "Bewaar een kopie die je terug kunt plakken",
+  "exportIntro": "Dit zijn al je routines, in dezelfde opmaak die het importscherm leest. Bewaar het in een notitie of een bestand: terugplakken maakt ze opnieuw aan, met hun oefeningen, sets, gewichten en notities — hier of op een nieuwe telefoon.",
+  "exportHistoryNote": "Vastgelegde workouts zitten er niet in: dit zijn alleen je routines.",
+  "exportSummary": "Routines: {routineCount} · Oefeningen: {exerciseCount} · Sets: {setCount}",
+  "exportCopy": "JSON kopiëren",
+  "exportCopied": "Routines gekopieerd. Plak ze ergens waar je ze kunt bewaren.",
+  "exportEmpty": "Je hebt nog geen routines om te exporteren.",
+  "exportError": "Je routines konden niet worden gelezen. Probeer het opnieuw."
 }

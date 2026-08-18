@@ -784,4 +784,37 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get importSettingsSubtitle =>
       'Bir program yapıştır, tüm rutinleri tek seferde oluştur';
+
+  @override
+  String get exportTitle => 'Rutinleri dışa aktar';
+
+  @override
+  String get exportSettingsSubtitle =>
+      'Geri yapıştırabileceğin bir kopya kaydet';
+
+  @override
+  String get exportIntro =>
+      'Bunlar tüm rutinlerin; içe aktarma ekranının okuduğu biçimde. Bir notta ya da dosyada sakla: geri yapıştırdığında egzersizleri, setleri, ağırlıkları ve notlarıyla yeniden oluşurlar — burada ya da yeni bir telefonda.';
+
+  @override
+  String get exportHistoryNote =>
+      'Kaydedilen antrenmanlar dahil değildir; burada yalnızca rutinlerin var.';
+
+  @override
+  String exportSummary(int routineCount, int exerciseCount, int setCount) {
+    return 'Rutin: $routineCount · Egzersiz: $exerciseCount · Set: $setCount';
+  }
+
+  @override
+  String get exportCopy => 'JSON\'u kopyala';
+
+  @override
+  String get exportCopied =>
+      'Rutinler kopyalandı. Saklayabileceğin bir yere yapıştır.';
+
+  @override
+  String get exportEmpty => 'Dışa aktaracak henüz bir rutinin yok.';
+
+  @override
+  String get exportError => 'Rutinlerin okunamadı. Tekrar dene.';
 }

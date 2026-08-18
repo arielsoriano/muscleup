@@ -783,4 +783,38 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get importSettingsSubtitle =>
       'प्लान पेस्ट करें और सारे रूटीन एक बार में बनाएँ';
+
+  @override
+  String get exportTitle => 'रूटीन एक्सपोर्ट करें';
+
+  @override
+  String get exportSettingsSubtitle =>
+      'एक कॉपी सेव करें जिसे आप वापस पेस्ट कर सकें';
+
+  @override
+  String get exportIntro =>
+      'ये आपके सारे रूटीन हैं, उसी फ़ॉर्मैट में जिसे इंपोर्ट स्क्रीन पढ़ती है। इसे किसी नोट या फ़ाइल में रखें: वापस पेस्ट करने पर ये अपनी एक्सरसाइज़, सेट, वज़न और नोट्स के साथ दोबारा बन जाते हैं — यहाँ या किसी नए फ़ोन पर।';
+
+  @override
+  String get exportHistoryNote =>
+      'रिकॉर्ड किए गए वर्कआउट इसमें शामिल नहीं हैं: यहाँ सिर्फ़ आपके रूटीन हैं।';
+
+  @override
+  String exportSummary(int routineCount, int exerciseCount, int setCount) {
+    return 'रूटीन: $routineCount · एक्सरसाइज़: $exerciseCount · सेट: $setCount';
+  }
+
+  @override
+  String get exportCopy => 'JSON कॉपी करें';
+
+  @override
+  String get exportCopied =>
+      'रूटीन कॉपी हो गए। इन्हें कहीं ऐसी जगह पेस्ट करें जहाँ आप रख सकें।';
+
+  @override
+  String get exportEmpty =>
+      'आपके पास एक्सपोर्ट करने के लिए अभी कोई रूटीन नहीं है।';
+
+  @override
+  String get exportError => 'आपके रूटीन पढ़े नहीं जा सके। फिर कोशिश करें।';
 }

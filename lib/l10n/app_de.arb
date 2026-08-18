@@ -229,5 +229,14 @@
   "importNoticeSkippedRoutines": "Wegen fehlendem Namen übersprungen: {count}.",
   "importNoticeSkippedExercises": "In „{name}“ wegen fehlendem Namen übersprungene Übungen: {count}.",
   "importNoticeDuplicateName": "Du hast schon eine Routine namens „{name}“. Diese wird zusätzlich angelegt.",
-  "importSettingsSubtitle": "Plan einfügen und alle Routinen auf einmal erstellen"
+  "importSettingsSubtitle": "Plan einfügen und alle Routinen auf einmal erstellen",
+  "exportTitle": "Routinen exportieren",
+  "exportSettingsSubtitle": "Eine Kopie sichern, die du wieder einfügen kannst",
+  "exportIntro": "Das sind alle deine Routinen, in demselben Format, das der Import liest. Bewahre es in einer Notiz oder Datei auf: Wieder eingefügt entstehen sie neu, mit ihren Übungen, Sätzen, Gewichten und Notizen – hier oder auf einem neuen Handy.",
+  "exportHistoryNote": "Aufgezeichnete Workouts sind nicht enthalten – hier stehen nur deine Routinen.",
+  "exportSummary": "Routinen: {routineCount} · Übungen: {exerciseCount} · Sätze: {setCount}",
+  "exportCopy": "JSON kopieren",
+  "exportCopied": "Routinen kopiert. Füge sie dort ein, wo du sie aufbewahren kannst.",
+  "exportEmpty": "Du hast noch keine Routinen zum Exportieren.",
+  "exportError": "Deine Routinen konnten nicht gelesen werden. Versuche es erneut."
 }

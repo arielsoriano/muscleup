@@ -791,4 +791,37 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get importSettingsSubtitle =>
       'Pegá un plan y creá todas las rutinas de una vez';
+
+  @override
+  String get exportTitle => 'Exportar rutinas';
+
+  @override
+  String get exportSettingsSubtitle =>
+      'Guardá una copia que puedas volver a pegar';
+
+  @override
+  String get exportIntro =>
+      'Estas son todas tus rutinas, en el mismo formato que lee la pantalla de importar. Guardalo en una nota o un archivo: al pegarlo de vuelta se recrean con sus ejercicios, series, pesos y notas, acá o en un celular nuevo.';
+
+  @override
+  String get exportHistoryNote =>
+      'Los entrenamientos registrados no se incluyen: esto son solo tus rutinas.';
+
+  @override
+  String exportSummary(int routineCount, int exerciseCount, int setCount) {
+    return 'Rutinas: $routineCount · Ejercicios: $exerciseCount · Series: $setCount';
+  }
+
+  @override
+  String get exportCopy => 'Copiar JSON';
+
+  @override
+  String get exportCopied =>
+      'Rutinas copiadas. Pegalas en algún lado donde las puedas guardar.';
+
+  @override
+  String get exportEmpty => 'Todavía no tenés rutinas para exportar.';
+
+  @override
+  String get exportError => 'No se pudieron leer tus rutinas. Probá de nuevo.';
 }

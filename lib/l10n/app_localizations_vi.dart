@@ -784,4 +784,36 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get importSettingsSubtitle =>
       'Dán một kế hoạch và tạo tất cả lịch tập cùng lúc';
+
+  @override
+  String get exportTitle => 'Xuất lịch tập';
+
+  @override
+  String get exportSettingsSubtitle => 'Lưu một bản sao bạn có thể dán lại';
+
+  @override
+  String get exportIntro =>
+      'Đây là toàn bộ lịch tập của bạn, theo đúng định dạng mà màn hình nhập đọc được. Hãy giữ nó trong một ghi chú hoặc một tệp: dán lại là chúng được tạo lại cùng bài tập, set, mức tạ và ghi chú — ở đây hoặc trên một điện thoại mới.';
+
+  @override
+  String get exportHistoryNote =>
+      'Các buổi tập đã ghi lại không được bao gồm: đây chỉ là lịch tập của bạn.';
+
+  @override
+  String exportSummary(int routineCount, int exerciseCount, int setCount) {
+    return 'Lịch tập: $routineCount · Bài tập: $exerciseCount · Set: $setCount';
+  }
+
+  @override
+  String get exportCopy => 'Sao chép JSON';
+
+  @override
+  String get exportCopied =>
+      'Đã sao chép lịch tập. Dán vào nơi bạn có thể lưu giữ.';
+
+  @override
+  String get exportEmpty => 'Bạn chưa có lịch tập nào để xuất.';
+
+  @override
+  String get exportError => 'Không đọc được lịch tập của bạn. Hãy thử lại.';
 }

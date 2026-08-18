@@ -1499,6 +1499,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Paste a plan and create every routine at once'**
   String get importSettingsSubtitle;
+
+  /// Title of the export routines screen
+  ///
+  /// In en, this message translates to:
+  /// **'Export routines'**
+  String get exportTitle;
+
+  /// Subtitle of the export entry in settings
+  ///
+  /// In en, this message translates to:
+  /// **'Save a copy you can paste back in'**
+  String get exportSettingsSubtitle;
+
+  /// Explains what the exported JSON is and what pasting it back does
+  ///
+  /// In en, this message translates to:
+  /// **'These are all your routines, in the same format the import screen reads. Keep it in a note or a file: pasting it back recreates them with their exercises, sets, weights and notes, here or on a new phone.'**
+  String get exportIntro;
+
+  /// Warns that logged workout history is not part of the export
+  ///
+  /// In en, this message translates to:
+  /// **'Logged workouts are not included — this is your routines only.'**
+  String get exportHistoryNote;
+
+  /// Totals of what the export contains
+  ///
+  /// In en, this message translates to:
+  /// **'Routines: {routineCount} · Exercises: {exerciseCount} · Sets: {setCount}'**
+  String exportSummary(int routineCount, int exerciseCount, int setCount);
+
+  /// Button that copies the exported JSON to the clipboard
+  ///
+  /// In en, this message translates to:
+  /// **'Copy JSON'**
+  String get exportCopy;
+
+  /// Confirmation shown after the export is copied
+  ///
+  /// In en, this message translates to:
+  /// **'Routines copied. Paste them somewhere you can keep.'**
+  String get exportCopied;
+
+  /// Shown when the user has no routines to export
+  ///
+  /// In en, this message translates to:
+  /// **'You have no routines to export yet.'**
+  String get exportEmpty;
+
+  /// Shown when the routines could not be read for export
+  ///
+  /// In en, this message translates to:
+  /// **'Your routines could not be read. Try again.'**
+  String get exportError;
 }
 
 class _AppLocalizationsDelegate

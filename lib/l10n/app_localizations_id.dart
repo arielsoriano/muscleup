@@ -784,4 +784,37 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get importSettingsSubtitle =>
       'Tempel satu program dan buat semua rutinitas sekaligus';
+
+  @override
+  String get exportTitle => 'Ekspor rutinitas';
+
+  @override
+  String get exportSettingsSubtitle =>
+      'Simpan salinan yang bisa kamu tempel kembali';
+
+  @override
+  String get exportIntro =>
+      'Ini semua rutinitasmu, dalam format yang sama dengan yang dibaca layar impor. Simpan di catatan atau berkas: menempelkannya kembali akan membuat ulang semuanya, lengkap dengan latihan, set, beban, dan catatannya — di sini atau di ponsel baru.';
+
+  @override
+  String get exportHistoryNote =>
+      'Latihan yang sudah tercatat tidak termasuk: ini hanya rutinitasmu.';
+
+  @override
+  String exportSummary(int routineCount, int exerciseCount, int setCount) {
+    return 'Rutinitas: $routineCount · Latihan: $exerciseCount · Set: $setCount';
+  }
+
+  @override
+  String get exportCopy => 'Salin JSON';
+
+  @override
+  String get exportCopied =>
+      'Rutinitas disalin. Tempel di tempat yang bisa kamu simpan.';
+
+  @override
+  String get exportEmpty => 'Kamu belum punya rutinitas untuk diekspor.';
+
+  @override
+  String get exportError => 'Rutinitasmu tidak bisa dibaca. Coba lagi.';
 }

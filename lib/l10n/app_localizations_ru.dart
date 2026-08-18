@@ -794,4 +794,38 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get importSettingsSubtitle =>
       'Вставьте план и создайте все программы сразу';
+
+  @override
+  String get exportTitle => 'Экспорт программ';
+
+  @override
+  String get exportSettingsSubtitle =>
+      'Сохраните копию, которую можно вставить обратно';
+
+  @override
+  String get exportIntro =>
+      'Это все ваши программы в том же формате, который читает экран импорта. Сохраните его в заметке или файле: вставив обратно, вы получите их снова — с упражнениями, подходами, весами и заметками, здесь или на новом телефоне.';
+
+  @override
+  String get exportHistoryNote =>
+      'Записанные тренировки не включены: здесь только ваши программы.';
+
+  @override
+  String exportSummary(int routineCount, int exerciseCount, int setCount) {
+    return 'Программ: $routineCount · Упражнений: $exerciseCount · Подходов: $setCount';
+  }
+
+  @override
+  String get exportCopy => 'Скопировать JSON';
+
+  @override
+  String get exportCopied =>
+      'Программы скопированы. Вставьте их туда, где сможете сохранить.';
+
+  @override
+  String get exportEmpty => 'У вас пока нет программ для экспорта.';
+
+  @override
+  String get exportError =>
+      'Не удалось прочитать ваши программы. Попробуйте ещё раз.';
 }

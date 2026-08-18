@@ -229,5 +229,14 @@
   "importNoticeSkippedRoutines": "Entrées ignorées faute de nom : {count}.",
   "importNoticeSkippedExercises": "Exercices ignorés dans « {name} » faute de nom : {count}.",
   "importNoticeDuplicateName": "Vous avez déjà une routine nommée « {name} ». Celle-ci est ajoutée quand même.",
-  "importSettingsSubtitle": "Collez un programme et créez toutes les routines d'un coup"
+  "importSettingsSubtitle": "Collez un programme et créez toutes les routines d'un coup",
+  "exportTitle": "Exporter des routines",
+  "exportSettingsSubtitle": "Enregistrez une copie que vous pourrez recoller",
+  "exportIntro": "Voici toutes vos routines, dans le format que lit l'écran d'import. Conservez-le dans une note ou un fichier : en le recollant, elles sont recréées avec leurs exercices, séries, charges et notes, ici ou sur un nouveau téléphone.",
+  "exportHistoryNote": "Les séances enregistrées ne sont pas incluses : il n'y a ici que vos routines.",
+  "exportSummary": "Routines : {routineCount} · Exercices : {exerciseCount} · Séries : {setCount}",
+  "exportCopy": "Copier le JSON",
+  "exportCopied": "Routines copiées. Collez-les quelque part où vous pourrez les garder.",
+  "exportEmpty": "Vous n'avez pas encore de routines à exporter.",
+  "exportError": "Impossible de lire vos routines. Réessayez."
 }

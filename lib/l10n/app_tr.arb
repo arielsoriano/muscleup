@@ -229,5 +229,14 @@
   "importNoticeSkippedRoutines": "Adı olmadığı için atlanan kayıtlar: {count}.",
   "importNoticeSkippedExercises": "“{name}” içinde adı olmadığı için atlanan egzersizler: {count}.",
   "importNoticeDuplicateName": "“{name}” adında bir rutinin zaten var. Bu da ayrıca ekleniyor.",
-  "importSettingsSubtitle": "Bir program yapıştır, tüm rutinleri tek seferde oluştur"
+  "importSettingsSubtitle": "Bir program yapıştır, tüm rutinleri tek seferde oluştur",
+  "exportTitle": "Rutinleri dışa aktar",
+  "exportSettingsSubtitle": "Geri yapıştırabileceğin bir kopya kaydet",
+  "exportIntro": "Bunlar tüm rutinlerin; içe aktarma ekranının okuduğu biçimde. Bir notta ya da dosyada sakla: geri yapıştırdığında egzersizleri, setleri, ağırlıkları ve notlarıyla yeniden oluşurlar — burada ya da yeni bir telefonda.",
+  "exportHistoryNote": "Kaydedilen antrenmanlar dahil değildir; burada yalnızca rutinlerin var.",
+  "exportSummary": "Rutin: {routineCount} · Egzersiz: {exerciseCount} · Set: {setCount}",
+  "exportCopy": "JSON'u kopyala",
+  "exportCopied": "Rutinler kopyalandı. Saklayabileceğin bir yere yapıştır.",
+  "exportEmpty": "Dışa aktaracak henüz bir rutinin yok.",
+  "exportError": "Rutinlerin okunamadı. Tekrar dene."
 }

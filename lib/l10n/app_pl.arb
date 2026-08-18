@@ -229,5 +229,14 @@
   "importNoticeSkippedRoutines": "Pominięte wpisy bez nazwy: {count}.",
   "importNoticeSkippedExercises": "Ćwiczenia pominięte w „{name}” z powodu braku nazwy: {count}.",
   "importNoticeDuplicateName": "Masz już rutynę o nazwie „{name}”. Ta zostanie dodana obok niej.",
-  "importSettingsSubtitle": "Wklej plan i utwórz wszystkie rutyny naraz"
+  "importSettingsSubtitle": "Wklej plan i utwórz wszystkie rutyny naraz",
+  "exportTitle": "Eksportuj rutyny",
+  "exportSettingsSubtitle": "Zapisz kopię, którą możesz wkleić z powrotem",
+  "exportIntro": "To wszystkie twoje rutyny, w tym samym formacie, który czyta ekran importu. Zachowaj to w notatce lub pliku: po wklejeniu z powrotem powstaną na nowo, wraz z ćwiczeniami, seriami, ciężarami i notatkami — tutaj albo na nowym telefonie.",
+  "exportHistoryNote": "Zapisane treningi nie są uwzględnione: tutaj są tylko twoje rutyny.",
+  "exportSummary": "Rutyny: {routineCount} · Ćwiczenia: {exerciseCount} · Serie: {setCount}",
+  "exportCopy": "Kopiuj JSON",
+  "exportCopied": "Rutyny skopiowane. Wklej je tam, gdzie możesz je zachować.",
+  "exportEmpty": "Nie masz jeszcze rutyn do wyeksportowania.",
+  "exportError": "Nie udało się odczytać twoich rutyn. Spróbuj ponownie."
 }

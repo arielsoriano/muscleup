@@ -793,4 +793,38 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get importSettingsSubtitle =>
       'Plak een schema en maak alle routines in één keer';
+
+  @override
+  String get exportTitle => 'Routines exporteren';
+
+  @override
+  String get exportSettingsSubtitle =>
+      'Bewaar een kopie die je terug kunt plakken';
+
+  @override
+  String get exportIntro =>
+      'Dit zijn al je routines, in dezelfde opmaak die het importscherm leest. Bewaar het in een notitie of een bestand: terugplakken maakt ze opnieuw aan, met hun oefeningen, sets, gewichten en notities — hier of op een nieuwe telefoon.';
+
+  @override
+  String get exportHistoryNote =>
+      'Vastgelegde workouts zitten er niet in: dit zijn alleen je routines.';
+
+  @override
+  String exportSummary(int routineCount, int exerciseCount, int setCount) {
+    return 'Routines: $routineCount · Oefeningen: $exerciseCount · Sets: $setCount';
+  }
+
+  @override
+  String get exportCopy => 'JSON kopiëren';
+
+  @override
+  String get exportCopied =>
+      'Routines gekopieerd. Plak ze ergens waar je ze kunt bewaren.';
+
+  @override
+  String get exportEmpty => 'Je hebt nog geen routines om te exporteren.';
+
+  @override
+  String get exportError =>
+      'Je routines konden niet worden gelezen. Probeer het opnieuw.';
 }

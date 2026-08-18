@@ -791,4 +791,38 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get importSettingsSubtitle =>
       'Wklej plan i utwórz wszystkie rutyny naraz';
+
+  @override
+  String get exportTitle => 'Eksportuj rutyny';
+
+  @override
+  String get exportSettingsSubtitle =>
+      'Zapisz kopię, którą możesz wkleić z powrotem';
+
+  @override
+  String get exportIntro =>
+      'To wszystkie twoje rutyny, w tym samym formacie, który czyta ekran importu. Zachowaj to w notatce lub pliku: po wklejeniu z powrotem powstaną na nowo, wraz z ćwiczeniami, seriami, ciężarami i notatkami — tutaj albo na nowym telefonie.';
+
+  @override
+  String get exportHistoryNote =>
+      'Zapisane treningi nie są uwzględnione: tutaj są tylko twoje rutyny.';
+
+  @override
+  String exportSummary(int routineCount, int exerciseCount, int setCount) {
+    return 'Rutyny: $routineCount · Ćwiczenia: $exerciseCount · Serie: $setCount';
+  }
+
+  @override
+  String get exportCopy => 'Kopiuj JSON';
+
+  @override
+  String get exportCopied =>
+      'Rutyny skopiowane. Wklej je tam, gdzie możesz je zachować.';
+
+  @override
+  String get exportEmpty => 'Nie masz jeszcze rutyn do wyeksportowania.';
+
+  @override
+  String get exportError =>
+      'Nie udało się odczytać twoich rutyn. Spróbuj ponownie.';
 }

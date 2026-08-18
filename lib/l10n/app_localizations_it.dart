@@ -793,4 +793,38 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get importSettingsSubtitle =>
       'Incolla un programma e crea tutte le routine in una volta';
+
+  @override
+  String get exportTitle => 'Esporta routine';
+
+  @override
+  String get exportSettingsSubtitle =>
+      'Salva una copia che puoi incollare di nuovo';
+
+  @override
+  String get exportIntro =>
+      'Queste sono tutte le tue routine, nello stesso formato che legge la schermata di importazione. Conservalo in una nota o in un file: incollandolo di nuovo vengono ricreate con i loro esercizi, serie, pesi e note, qui o su un telefono nuovo.';
+
+  @override
+  String get exportHistoryNote =>
+      'Gli allenamenti registrati non sono inclusi: qui ci sono solo le tue routine.';
+
+  @override
+  String exportSummary(int routineCount, int exerciseCount, int setCount) {
+    return 'Routine: $routineCount · Esercizi: $exerciseCount · Serie: $setCount';
+  }
+
+  @override
+  String get exportCopy => 'Copia JSON';
+
+  @override
+  String get exportCopied =>
+      'Routine copiate. Incollale dove puoi conservarle.';
+
+  @override
+  String get exportEmpty => 'Non hai ancora routine da esportare.';
+
+  @override
+  String get exportError =>
+      'Non è stato possibile leggere le tue routine. Riprova.';
 }
