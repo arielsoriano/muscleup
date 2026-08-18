@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android 12+ (API 31): separa la copia a la nube de la transferencia
+  dispositivo-a-dispositivo. Hay que desactivar las dos, porque
+  android:allowBackup="false" ya no cubre <device-transfer>.
+
+  Ver backup_rules.xml para el porque.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="file" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="external" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="file" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="external" />
+    </device-transfer>
+</data-extraction-rules>

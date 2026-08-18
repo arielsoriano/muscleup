@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Reglas de Auto Backup para Android 11 y anteriores (fullBackupContent).
+
+  Muscleup es offline-first: la base Drift local es la fuente de verdad y la
+  copia en la nube es opt-in detrás de una cuenta de Google. Dejar que Android
+  suba y restaure el directorio de datos por su cuenta rompe ese modelo: al
+  instalar desde Play Store en un teléfono nuevo la app aparecía con las
+  rutinas, el historial y el idioma de otro dispositivo sin haber iniciado
+  sesión, y sin forma de limpiarlo (borrar datos o desinstalar no toca la copia
+  de Drive, que se vuelve a aplicar en la siguiente instalacion).
+
+  Ademas restaurar shared_prefs traeria la sesion persistida de Firebase Auth,
+  que Firebase desaconseja explicitamente copiar entre instalaciones.
+-->
+<full-backup-content>
+    <exclude domain="file" />
+    <exclude domain="database" />
+    <exclude domain="sharedpref" />
+</full-backup-content>
