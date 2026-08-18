@@ -44,7 +44,7 @@ void main() {
         workoutRemoteDataSource: programmableWorkoutRemoteDataSource,
         cloudAuthRepository: fakeCloudAuthRepository,
         syncCheckpointStore: syncCheckpointStore,
-        pushBatchSize: 10,
+        pullPageSize: 10,
         syncSleep: (duration) async {
           sleepDurations.add(duration);
         },
@@ -443,7 +443,7 @@ class _ProgrammableWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   Future<List<RoutineRemoteDto>> fetchRoutinesUpdatedSince(
     String uid,
     DateTime? updatedSince, {
-    int limit = 500,
+    int pageSize = 500,
   }) async {
     final handler = routinePullHandler;
     if (handler == null) {
@@ -491,7 +491,7 @@ class _ProgrammableWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   Future<List<ExerciseRemoteDto>> fetchExercisesUpdatedSince(
     String uid,
     DateTime? updatedSince, {
-    int limit = 500,
+    int pageSize = 500,
   }) async {
     return <ExerciseRemoteDto>[];
   }
@@ -500,7 +500,7 @@ class _ProgrammableWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   Future<List<SetRemoteDto>> fetchSetsUpdatedSince(
     String uid,
     DateTime? updatedSince, {
-    int limit = 500,
+    int pageSize = 500,
   }) async {
     return <SetRemoteDto>[];
   }
@@ -509,7 +509,7 @@ class _ProgrammableWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   Future<List<SessionRemoteDto>> fetchSessionsUpdatedSince(
     String uid,
     DateTime? updatedSince, {
-    int limit = 500,
+    int pageSize = 500,
   }) async {
     return <SessionRemoteDto>[];
   }
@@ -518,7 +518,7 @@ class _ProgrammableWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   Future<List<SetLogRemoteDto>> fetchSetLogsUpdatedSince(
     String uid,
     DateTime? updatedSince, {
-    int limit = 500,
+    int pageSize = 500,
   }) async {
     return <SetLogRemoteDto>[];
   }
@@ -527,7 +527,7 @@ class _ProgrammableWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   Future<List<LibraryExerciseRemoteDto>> fetchLibraryExercisesUpdatedSince(
     String uid,
     DateTime? updatedSince, {
-    int limit = 500,
+    int pageSize = 500,
   }) async {
     return <LibraryExerciseRemoteDto>[];
   }

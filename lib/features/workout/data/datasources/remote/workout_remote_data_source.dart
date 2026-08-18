@@ -71,12 +71,19 @@ abstract class WorkoutRemoteDataSource {
   /// fall back to per-item processing.
   Future<void> commitBatch(String uid, List<RemoteWriteOp> operations);
 
-  Future<List<RoutineRemoteDto>> fetchRoutinesUpdatedSince(String uid, DateTime? updatedSince, {int limit = 500});
-  Future<List<ExerciseRemoteDto>> fetchExercisesUpdatedSince(String uid, DateTime? updatedSince, {int limit = 500});
-  Future<List<SetRemoteDto>> fetchSetsUpdatedSince(String uid, DateTime? updatedSince, {int limit = 500});
-  Future<List<SessionRemoteDto>> fetchSessionsUpdatedSince(String uid, DateTime? updatedSince, {int limit = 500});
-  Future<List<SetLogRemoteDto>> fetchSetLogsUpdatedSince(String uid, DateTime? updatedSince, {int limit = 500});
-  Future<List<LibraryExerciseRemoteDto>> fetchLibraryExercisesUpdatedSince(String uid, DateTime? updatedSince, {int limit = 500});
+  /// Every document of this type changed since [updatedSince], not just the
+  /// first page of them.
+  ///
+  /// [pageSize] is how many are read per round trip, never a cap on the result:
+  /// the implementation keeps paging until the collection is exhausted. It has
+  /// to, because a cap would be indistinguishable from "nothing more to sync"
+  /// to the caller, and the documents past it would never be asked for again.
+  Future<List<RoutineRemoteDto>> fetchRoutinesUpdatedSince(String uid, DateTime? updatedSince, {int pageSize = 500});
+  Future<List<ExerciseRemoteDto>> fetchExercisesUpdatedSince(String uid, DateTime? updatedSince, {int pageSize = 500});
+  Future<List<SetRemoteDto>> fetchSetsUpdatedSince(String uid, DateTime? updatedSince, {int pageSize = 500});
+  Future<List<SessionRemoteDto>> fetchSessionsUpdatedSince(String uid, DateTime? updatedSince, {int pageSize = 500});
+  Future<List<SetLogRemoteDto>> fetchSetLogsUpdatedSince(String uid, DateTime? updatedSince, {int pageSize = 500});
+  Future<List<LibraryExerciseRemoteDto>> fetchLibraryExercisesUpdatedSince(String uid, DateTime? updatedSince, {int pageSize = 500});
 
   Future<void> upsertTrainingDefaults(
     String uid, {

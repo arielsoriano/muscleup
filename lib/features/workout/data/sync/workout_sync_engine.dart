@@ -32,7 +32,14 @@ class WorkoutSyncEngine implements SyncEngine {
     SyncConflictPolicy? syncConflictPolicy,
     Duration pushBaseBackoff = const Duration(seconds: 1),
     Duration pushMaxBackoff = const Duration(seconds: 30),
-    int pushBatchSize = 25,
+    /// Documents read per round trip while pulling. Not a cap on how much a
+    /// pull returns — the data source keeps paging past it.
+    ///
+    /// It was called pushBatchSize and defaulted to 25, but it never had
+    /// anything to do with the push, which chunks by _pushCommitChunkSize. All
+    /// it ever did was make the pull page small enough that page boundaries
+    /// kept landing inside groups of documents sharing one updatedAt.
+    int pullPageSize = 500,
     int maxRetryCount = 5,
     SyncSleep? syncSleep,
   })  : _database = database,
@@ -42,7 +49,7 @@ class WorkoutSyncEngine implements SyncEngine {
         _syncConflictPolicy = syncConflictPolicy ?? SyncConflictPolicy(),
         _pushBaseBackoff = pushBaseBackoff,
         _pushMaxBackoff = pushMaxBackoff,
-        _pushBatchSize = pushBatchSize,
+        _pullPageSize = pullPageSize,
         _maxRetryCount = maxRetryCount,
         _syncSleep = syncSleep ?? _defaultSyncSleep {
     _stateController.add(const SyncIdle());
@@ -55,7 +62,7 @@ class WorkoutSyncEngine implements SyncEngine {
   final SyncConflictPolicy _syncConflictPolicy;
   final Duration _pushBaseBackoff;
   final Duration _pushMaxBackoff;
-  final int _pushBatchSize;
+  final int _pullPageSize;
   final int _maxRetryCount;
   final SyncSleep _syncSleep;
 
@@ -658,98 +665,45 @@ class WorkoutSyncEngine implements SyncEngine {
 
   Future<void> _pullIncremental(String uid, _MutableSyncMetrics mutableMetrics) async {
     // ── Phase 1: fetch every entity type from Firebase (network-only, no DB) ──
-    // For each entity type, paginate until we get fewer than batchSize results.
+    // Each call returns everything changed since that type's checkpoint; the
+    // data source does the paging, because getting it right depends on how
+    // Firestore orders documents that share an updatedAt.
 
-    final routineDtos = <RoutineRemoteDto>[];
-    {
-      DateTime? checkpoint =
-          _syncCheckpointStore.getCheckpoint(uid: uid, entityType: 'routine');
-      while (true) {
-        final batch = await _workoutRemoteDataSource.fetchRoutinesUpdatedSince(
-          uid, checkpoint, limit: _pushBatchSize,
-        );
-        if (batch.isEmpty) break;
-        routineDtos.addAll(batch);
-        if (batch.length < _pushBatchSize) break;
-        checkpoint = _maxRoutineUpdatedAt(batch);
-      }
-    }
+    final routineDtos = await _workoutRemoteDataSource.fetchRoutinesUpdatedSince(
+      uid,
+      _syncCheckpointStore.getCheckpoint(uid: uid, entityType: 'routine'),
+      pageSize: _pullPageSize,
+    );
 
-    final exerciseDtos = <ExerciseRemoteDto>[];
-    {
-      DateTime? checkpoint =
-          _syncCheckpointStore.getCheckpoint(uid: uid, entityType: 'exercise');
-      while (true) {
-        final batch = await _workoutRemoteDataSource.fetchExercisesUpdatedSince(
-          uid, checkpoint, limit: _pushBatchSize,
-        );
-        if (batch.isEmpty) break;
-        exerciseDtos.addAll(batch);
-        if (batch.length < _pushBatchSize) break;
-        checkpoint = _maxExerciseUpdatedAt(batch);
-      }
-    }
+    final exerciseDtos = await _workoutRemoteDataSource.fetchExercisesUpdatedSince(
+      uid,
+      _syncCheckpointStore.getCheckpoint(uid: uid, entityType: 'exercise'),
+      pageSize: _pullPageSize,
+    );
 
-    final setDtos = <SetRemoteDto>[];
-    {
-      DateTime? checkpoint =
-          _syncCheckpointStore.getCheckpoint(uid: uid, entityType: 'set');
-      while (true) {
-        final batch = await _workoutRemoteDataSource.fetchSetsUpdatedSince(
-          uid, checkpoint, limit: _pushBatchSize,
-        );
-        if (batch.isEmpty) break;
-        setDtos.addAll(batch);
-        if (batch.length < _pushBatchSize) break;
-        checkpoint = _maxSetUpdatedAt(batch);
-      }
-    }
+    final setDtos = await _workoutRemoteDataSource.fetchSetsUpdatedSince(
+      uid,
+      _syncCheckpointStore.getCheckpoint(uid: uid, entityType: 'set'),
+      pageSize: _pullPageSize,
+    );
 
-    final sessionDtos = <SessionRemoteDto>[];
-    {
-      DateTime? checkpoint =
-          _syncCheckpointStore.getCheckpoint(uid: uid, entityType: 'session');
-      while (true) {
-        final batch = await _workoutRemoteDataSource.fetchSessionsUpdatedSince(
-          uid, checkpoint, limit: _pushBatchSize,
-        );
-        if (batch.isEmpty) break;
-        sessionDtos.addAll(batch);
-        if (batch.length < _pushBatchSize) break;
-        checkpoint = _maxSessionUpdatedAt(batch);
-      }
-    }
+    final sessionDtos = await _workoutRemoteDataSource.fetchSessionsUpdatedSince(
+      uid,
+      _syncCheckpointStore.getCheckpoint(uid: uid, entityType: 'session'),
+      pageSize: _pullPageSize,
+    );
 
-    final setLogDtos = <SetLogRemoteDto>[];
-    {
-      DateTime? checkpoint =
-          _syncCheckpointStore.getCheckpoint(uid: uid, entityType: 'setLog');
-      while (true) {
-        final batch = await _workoutRemoteDataSource.fetchSetLogsUpdatedSince(
-          uid, checkpoint, limit: _pushBatchSize,
-        );
-        if (batch.isEmpty) break;
-        setLogDtos.addAll(batch);
-        if (batch.length < _pushBatchSize) break;
-        checkpoint = _maxSetLogUpdatedAt(batch);
-      }
-    }
+    final setLogDtos = await _workoutRemoteDataSource.fetchSetLogsUpdatedSince(
+      uid,
+      _syncCheckpointStore.getCheckpoint(uid: uid, entityType: 'setLog'),
+      pageSize: _pullPageSize,
+    );
 
-    final libraryExerciseDtos = <LibraryExerciseRemoteDto>[];
-    {
-      DateTime? checkpoint =
-          _syncCheckpointStore.getCheckpoint(uid: uid, entityType: 'libraryExercise');
-      while (true) {
-        final batch =
-            await _workoutRemoteDataSource.fetchLibraryExercisesUpdatedSince(
-          uid, checkpoint, limit: _pushBatchSize,
-        );
-        if (batch.isEmpty) break;
-        libraryExerciseDtos.addAll(batch);
-        if (batch.length < _pushBatchSize) break;
-        checkpoint = _maxLibraryExerciseUpdatedAt(batch);
-      }
-    }
+    final libraryExerciseDtos = await _workoutRemoteDataSource.fetchLibraryExercisesUpdatedSince(
+      uid,
+      _syncCheckpointStore.getCheckpoint(uid: uid, entityType: 'libraryExercise'),
+      pageSize: _pullPageSize,
+    );
 
     // ── Phase 2: apply all fetched data in a single flat DB transaction ──
     await _database.transaction(() async {

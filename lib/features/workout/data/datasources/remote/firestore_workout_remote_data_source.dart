@@ -98,9 +98,9 @@ class FirestoreWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   Future<List<RoutineRemoteDto>> fetchRoutinesUpdatedSince(
     String uid,
     DateTime? updatedSince, {
-    int limit = 500,
+    int pageSize = 500,
   }) async {
-    final docs = await _fetchUpdatedSince(uid, 'routines', updatedSince, limit: limit);
+    final docs = await _fetchUpdatedSince(uid, 'routines', updatedSince, pageSize: pageSize);
     return docs
         .map((doc) => RoutineRemoteDto.fromFirestore(doc.data(), doc.id))
         .toList(growable: false);
@@ -110,9 +110,9 @@ class FirestoreWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   Future<List<ExerciseRemoteDto>> fetchExercisesUpdatedSince(
     String uid,
     DateTime? updatedSince, {
-    int limit = 500,
+    int pageSize = 500,
   }) async {
-    final docs = await _fetchUpdatedSince(uid, 'exercises', updatedSince, limit: limit);
+    final docs = await _fetchUpdatedSince(uid, 'exercises', updatedSince, pageSize: pageSize);
     return docs
         .map((doc) => ExerciseRemoteDto.fromFirestore(doc.data(), doc.id))
         .toList(growable: false);
@@ -122,9 +122,9 @@ class FirestoreWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   Future<List<SetRemoteDto>> fetchSetsUpdatedSince(
     String uid,
     DateTime? updatedSince, {
-    int limit = 500,
+    int pageSize = 500,
   }) async {
-    final docs = await _fetchUpdatedSince(uid, 'sets', updatedSince, limit: limit);
+    final docs = await _fetchUpdatedSince(uid, 'sets', updatedSince, pageSize: pageSize);
     return docs
         .map((doc) => SetRemoteDto.fromFirestore(doc.data(), doc.id))
         .toList(growable: false);
@@ -134,9 +134,9 @@ class FirestoreWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   Future<List<SessionRemoteDto>> fetchSessionsUpdatedSince(
     String uid,
     DateTime? updatedSince, {
-    int limit = 500,
+    int pageSize = 500,
   }) async {
-    final docs = await _fetchUpdatedSince(uid, 'sessions', updatedSince, limit: limit);
+    final docs = await _fetchUpdatedSince(uid, 'sessions', updatedSince, pageSize: pageSize);
     return docs
         .map((doc) => SessionRemoteDto.fromFirestore(doc.data(), doc.id))
         .toList(growable: false);
@@ -146,9 +146,9 @@ class FirestoreWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   Future<List<SetLogRemoteDto>> fetchSetLogsUpdatedSince(
     String uid,
     DateTime? updatedSince, {
-    int limit = 500,
+    int pageSize = 500,
   }) async {
-    final docs = await _fetchUpdatedSince(uid, 'setLogs', updatedSince, limit: limit);
+    final docs = await _fetchUpdatedSince(uid, 'setLogs', updatedSince, pageSize: pageSize);
     return docs
         .map((doc) => SetLogRemoteDto.fromFirestore(doc.data(), doc.id))
         .toList(growable: false);
@@ -158,9 +158,9 @@ class FirestoreWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   Future<List<LibraryExerciseRemoteDto>> fetchLibraryExercisesUpdatedSince(
     String uid,
     DateTime? updatedSince, {
-    int limit = 500,
+    int pageSize = 500,
   }) async {
-    final docs = await _fetchUpdatedSince(uid, 'libraryExercises', updatedSince, limit: limit);
+    final docs = await _fetchUpdatedSince(uid, 'libraryExercises', updatedSince, pageSize: pageSize);
     return docs
         .map((doc) => LibraryExerciseRemoteDto.fromFirestore(doc.data(), doc.id))
         .toList(growable: false);
@@ -434,22 +434,97 @@ class FirestoreWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
     }
   }
 
+  /// How far the page is allowed to grow while trying to get past a group of
+  /// documents that all share one updatedAt. Far above any real group: a single
+  /// save stamps its timestamp on one routine and everything under it, which
+  /// the import parser itself caps at 120 exercises of 40 sets.
+  static const int _maxPageSize = 10000;
+
+  /// Reads every document of [collection] changed after [updatedSince] — all of
+  /// them, paging until the collection is exhausted.
+  ///
+  /// The paging is the delicate part, because updatedAt is not unique.
+  /// saveRoutine stamps a single DateTime.now() on a routine and on every
+  /// exercise and set under it, so one save writes dozens of documents sharing
+  /// one timestamp to the millisecond.
+  ///
+  /// This used to resume each page at `updatedAt > last one I saw`. Whenever a
+  /// page boundary fell inside such a group, the rest of that group was skipped
+  /// — and skipped for good, because the sync checkpoint then advanced past it
+  /// as well. That is what restored a routine with some of its sets, or with
+  /// none of them, after a reinstall.
+  ///
+  /// So each page after the first resumes *inclusively*, at `>= the last
+  /// timestamp of the previous page`, and the overlap it re-reads is discarded
+  /// by id. A page that turns out to be entirely documents already seen means
+  /// one group is larger than the page itself, and advancing at all would step
+  /// over the remainder — so the page grows instead of moving.
+  ///
+  /// A document cursor would be the tidier way to say this, but only Firestore
+  /// itself implements cursors faithfully enough to rely on; this stays on
+  /// plain range queries so it behaves the same in tests.
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> _fetchUpdatedSince(
     String uid,
     String collection,
     DateTime? updatedSince, {
-    required int limit,
+    required int pageSize,
   }) async {
     try {
-      Query<Map<String, dynamic>> query =
-          _collection(uid, collection).orderBy('updatedAt').limit(limit);
+      final collectionReference = _collection(uid, collection);
+      final docs = <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+      final seenIds = <String>{};
 
-      if (updatedSince != null) {
-        query = query.where('updatedAt', isGreaterThan: Timestamp.fromDate(updatedSince));
+      // Exclusive while it holds the caller's checkpoint — work already synced
+      // must not come back — and inclusive once it is a page boundary.
+      Timestamp? boundary =
+          updatedSince == null ? null : Timestamp.fromDate(updatedSince);
+      var boundaryIsInclusive = false;
+      var currentPageSize = pageSize;
+
+      while (true) {
+        Query<Map<String, dynamic>> query =
+            collectionReference.orderBy('updatedAt');
+
+        if (boundary != null) {
+          query = boundaryIsInclusive
+              ? query.where('updatedAt', isGreaterThanOrEqualTo: boundary)
+              : query.where('updatedAt', isGreaterThan: boundary);
+        }
+
+        final snapshot =
+            await query.limit(currentPageSize).get().timeout(_operationTimeout);
+        final page = snapshot.docs;
+
+        var addedFromThisPage = 0;
+        for (final doc in page) {
+          if (seenIds.add(doc.id)) {
+            docs.add(doc);
+            addedFromThisPage++;
+          }
+        }
+
+        // A short page is the end of the collection, whatever else happened.
+        if (page.length < currentPageSize) {
+          return docs;
+        }
+
+        if (addedFromThisPage == 0) {
+          if (currentPageSize >= _maxPageSize) {
+            return docs;
+          }
+          final grown = currentPageSize * 2;
+          currentPageSize = grown > _maxPageSize ? _maxPageSize : grown;
+          continue;
+        }
+
+        final lastUpdatedAt = page.last.data()['updatedAt'];
+        if (lastUpdatedAt is! Timestamp) {
+          return docs;
+        }
+
+        boundary = lastUpdatedAt;
+        boundaryIsInclusive = true;
       }
-
-      final snapshot = await query.get().timeout(_operationTimeout);
-      return snapshot.docs;
     } on FirebaseException catch (error) {
       _logFirebaseError('fetchUpdatedSince', collection, error);
       throw DatabaseException(_firebaseErrorMessage(error, collection));
@@ -543,7 +618,7 @@ class NoopWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   Future<List<RoutineRemoteDto>> fetchRoutinesUpdatedSince(
     String uid,
     DateTime? updatedSince, {
-    int limit = 500,
+    int pageSize = 500,
   }) {
     return _notConfigured();
   }
@@ -552,7 +627,7 @@ class NoopWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   Future<List<ExerciseRemoteDto>> fetchExercisesUpdatedSince(
     String uid,
     DateTime? updatedSince, {
-    int limit = 500,
+    int pageSize = 500,
   }) {
     return _notConfigured();
   }
@@ -561,7 +636,7 @@ class NoopWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   Future<List<SetRemoteDto>> fetchSetsUpdatedSince(
     String uid,
     DateTime? updatedSince, {
-    int limit = 500,
+    int pageSize = 500,
   }) {
     return _notConfigured();
   }
@@ -570,7 +645,7 @@ class NoopWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   Future<List<SessionRemoteDto>> fetchSessionsUpdatedSince(
     String uid,
     DateTime? updatedSince, {
-    int limit = 500,
+    int pageSize = 500,
   }) {
     return _notConfigured();
   }
@@ -579,7 +654,7 @@ class NoopWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   Future<List<SetLogRemoteDto>> fetchSetLogsUpdatedSince(
     String uid,
     DateTime? updatedSince, {
-    int limit = 500,
+    int pageSize = 500,
   }) {
     return _notConfigured();
   }
@@ -588,7 +663,7 @@ class NoopWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   Future<List<LibraryExerciseRemoteDto>> fetchLibraryExercisesUpdatedSince(
     String uid,
     DateTime? updatedSince, {
-    int limit = 500,
+    int pageSize = 500,
   }) {
     return _notConfigured();
   }

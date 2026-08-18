@@ -14,6 +14,86 @@ void main() {
       dataSource = FirestoreWorkoutRemoteDataSource(firestore);
     });
 
+    /// Reproduces the shape of a real import: saveRoutine stamps one
+    /// DateTime.now() on the whole routine, so every exercise and set it writes
+    /// shares one identical updatedAt. Four saved routines therefore produce
+    /// four large groups of documents with four distinct timestamps between
+    /// them — and any pagination that resumes from "updatedAt greater than the
+    /// last one I saw" silently drops whatever is left of a group when a page
+    /// boundary lands inside it.
+    Future<void> seedSets({
+      required int groups,
+      required int perGroup,
+    }) async {
+      for (var group = 0; group < groups; group++) {
+        final sharedUpdatedAt = DateTime(2025, 1, 1, 10, group);
+        for (var index = 0; index < perGroup; index++) {
+          await firestore
+              .collection('users')
+              .doc('user-a')
+              .collection('sets')
+              .doc('set-$group-$index')
+              .set(<String, Object?>{
+            'exerciseId': 'exercise-$group',
+            'sortOrder': index,
+            'targetValue1': 60,
+            'targetValue2': 12,
+            'unit1': 'kilograms',
+            'unit2': 'repetitions',
+            'updatedAt': Timestamp.fromDate(sharedUpdatedAt),
+            'deletedAt': null,
+            'syncStatus': 'synced',
+            'remoteVersion': 1,
+          });
+        }
+      }
+    }
+
+    test('fetches every document when many share one updatedAt', () async {
+      await seedSets(groups: 4, perGroup: 18);
+
+      final fetched = await dataSource.fetchSetsUpdatedSince(
+        'user-a',
+        null,
+        pageSize: 25,
+      );
+
+      expect(fetched, hasLength(72));
+      expect(
+        fetched.map((dto) => dto.id).toSet(),
+        hasLength(72),
+        reason: 'no document may be returned twice',
+      );
+    });
+
+    test('a page boundary inside a timestamp group loses nothing', () async {
+      // 25 documents on one timestamp with a page size of 10: the boundary
+      // falls inside the group twice over.
+      await seedSets(groups: 1, perGroup: 25);
+
+      final fetched = await dataSource.fetchSetsUpdatedSince(
+        'user-a',
+        null,
+        pageSize: 10,
+      );
+
+      expect(fetched, hasLength(25));
+    });
+
+    test('updatedSince still excludes everything already seen', () async {
+      await seedSets(groups: 4, perGroup: 18);
+
+      final fetched = await dataSource.fetchSetsUpdatedSince(
+        'user-a',
+        DateTime(2025, 1, 1, 10, 1),
+        pageSize: 25,
+      );
+
+      // The first two groups are at 10:00 and 10:01, so only the last two
+      // remain.
+      expect(fetched, hasLength(36));
+    });
+
     test('upsertRoutine writes under users/{uid}/routines/{id}', () async {
       const uid = 'user-a';
       final routine = WorkoutRoutine(
