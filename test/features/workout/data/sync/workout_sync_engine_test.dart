@@ -51,8 +51,10 @@ void main() {
       );
 
       await workoutSyncEngine.startAutoSync();
+      // Not anonymous: the engine only syncs for a linked Google account, so an
+      // anonymous user leaves it with no active uid and every cycle short-circuits.
       fakeCloudAuthRepository.emitUser(
-        const CloudUser(uid: 'uid-1', isAnonymous: true),
+        const CloudUser(uid: 'uid-1', isAnonymous: false),
       );
       await Future<void>.delayed(Duration.zero);
     });
@@ -207,6 +209,77 @@ void main() {
       expect(sleepDurations, isEmpty);
     });
 
+    test('a stale local edit does not overwrite a newer remote one', () async {
+      // Two devices touched the same routine: this one edited it while offline
+      // at 09:00, the other one pushed a newer edit at 10:00.
+      //
+      // The push writes to Firestore unconditionally — it never reads the
+      // remote document and never consults SyncConflictPolicy, which only runs
+      // on the pull side. So the cycle has to pull first: that lets the newer
+      // remote edit land locally before the outbox is drained, and the push
+      // then re-reads the row and sends the winning value back. Pushing first
+      // would blindly overwrite the newer remote edit with this stale one, and
+      // there would be nothing left to recover it from.
+      final staleTimestamp = DateTime(2025, 1, 1, 9, 0);
+      final remoteTimestamp = DateTime(2025, 1, 1, 10, 0);
+
+      await database.into(database.routines).insert(
+            RoutinesCompanion.insert(
+              id: 'routine-1',
+              name: 'Stale local name',
+              sortOrder: 0,
+              isDeleted: const Value(false),
+              updatedAt: Value(staleTimestamp),
+              deletedAt: const Value(null),
+              syncStatus: const Value(SyncStatus.pending),
+              remoteVersion: const Value(0),
+            ),
+          );
+
+      await database.into(database.outboxChanges).insert(
+            OutboxChangesCompanion.insert(
+              id: 'event-1',
+              entityType: 'routine',
+              entityId: 'routine-1',
+              operation: 'update',
+              payloadJson: '{}',
+              createdAt: staleTimestamp,
+            ),
+          );
+
+      programmableWorkoutRemoteDataSource.routinePullHandler = (DateTime? checkpoint) {
+        if (checkpoint != null && !checkpoint.isBefore(remoteTimestamp)) {
+          return <RoutineRemoteDto>[];
+        }
+        return <RoutineRemoteDto>[
+          RoutineRemoteDto(
+            id: 'routine-1',
+            name: 'Newer remote name',
+            sortOrder: 0,
+            updatedAt: remoteTimestamp,
+            deletedAt: null,
+            syncStatus: 'synced',
+            remoteVersion: 5,
+          ),
+        ];
+      };
+
+      final result = await workoutSyncEngine.triggerManualSync();
+
+      final localRoutine = await (database.select(database.routines)
+            ..where((tbl) => tbl.id.equals('routine-1')))
+          .getSingle();
+
+      expect(result.success, isTrue);
+      expect(localRoutine.name, 'Newer remote name');
+      expect(
+        programmableWorkoutRemoteDataSource.pushedRoutines
+            .map((routine) => routine.name),
+        isNot(contains('Stale local name')),
+        reason: 'the stale local edit must never reach the remote',
+      );
+    });
+
     test('pull applies incremental changes and advances checkpoint', () async {
       final firstTimestamp = DateTime(2025, 1, 1, 9, 0);
       final secondTimestamp = DateTime(2025, 1, 1, 9, 1);
@@ -339,6 +412,7 @@ class _ProgrammableWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
   int maxConcurrentPushCalls = 0;
 
   final List<String> pushOrder = <String>[];
+  final List<WorkoutRoutine> pushedRoutines = <WorkoutRoutine>[];
   List<RoutineRemoteDto> Function(DateTime? checkpoint)? routinePullHandler;
 
   @override
@@ -359,6 +433,7 @@ class _ProgrammableWorkoutRemoteDataSource implements WorkoutRemoteDataSource {
         throw Exception('Forced routine push failure');
       }
       pushOrder.add(routine.id);
+      pushedRoutines.add(routine);
     } finally {
       _concurrentPushCalls -= 1;
     }

@@ -147,10 +147,19 @@ class WorkoutSyncEngine implements SyncEngine {
     final mutableMetrics = _MutableSyncMetrics(startedAt: startedAt);
 
     try {
-      _ensureUidStable(uid);
-      await _pushPendingOutbox(uid, mutableMetrics);
+      // Pull first, then push. The order is load-bearing: the push writes to
+      // Firestore unconditionally (a batched set with merge, no read of the
+      // remote document) and SyncConflictPolicy only runs on the pull side, so
+      // a push that goes first overwrites whatever another device wrote in the
+      // meantime — silently, with no copy left to recover from.
+      //
+      // Pulling first closes that: a newer remote edit lands locally and wins
+      // the conflict before the outbox is drained, and _buildRemoteOp re-reads
+      // the row at push time, so what finally goes up is the winning value.
       _ensureUidStable(uid);
       await _pullIncremental(uid, mutableMetrics);
+      _ensureUidStable(uid);
+      await _pushPendingOutbox(uid, mutableMetrics);
 
       final endedAt = DateTime.now();
       final metrics = mutableMetrics.toFinalMetrics(endedAt: endedAt);
