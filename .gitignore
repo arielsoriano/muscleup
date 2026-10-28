@@ -1,13 +1,15 @@
 # Miscellaneous
 *.class
-*.lock
 *.log
 *.pyc
 *.swp
 .buildlog/
 .history
+.DS_Store
 
-
+# IDE (shared .idea run configurations stay tracked)
+*.iml
+.idea/workspace.xml
 
 # Flutter repo-specific
 /bin/cache/
@@ -118,7 +120,16 @@ app.*.symbols
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 !/dev/ci/**/Gemfile.lock
 
+# Kotlin compiler daemon state
+**/android/.kotlin/
+
 # Firebase & Credentials - NEVER commit
-android/app/google-services.json
-android/google-services.json
-ios/GoogleService-Info.plist
+**/google-services.json
+**/GoogleService-Info.plist
+lib/firebase_options.dart
+android/firebase_sha_fingerprints.txt
+**/*.keystore
+*.p12
+*.pem
+.env
+.env.*
