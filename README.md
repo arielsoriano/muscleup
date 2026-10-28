@@ -13,12 +13,9 @@ series y pesos, y ver mi progreso. Como no la encontré, la construí.
 
 ## Capturas
 
-<!-- Sustituir por capturas reales (recomendado: 1080×2400, en docs/screenshots/) -->
-| Hoy | Rutinas | Entrenamiento activo | Progreso |
-|-----|---------|----------------------|----------|
-| ![Dashboard](docs/screenshots/dashboard.png) | ![Rutinas](docs/screenshots/routines.png) | ![Entrenamiento](docs/screenshots/active-workout.png) | ![Progreso](docs/screenshots/progress.png) |
-
-<!-- Opcional: un GIF corto registrando una serie con el temporizador de descanso -->
+| Hoy | Entrenamiento activo | Rutinas | Historial | Ajustes |
+|-----|----------------------|---------|-----------|---------|
+| ![Hoy](docs/screenshots/dashboard.jpg) | ![Entrenamiento activo](docs/screenshots/active-workout.jpg) | ![Rutinas](docs/screenshots/routines.jpg) | ![Historial](docs/screenshots/history.jpg) | ![Ajustes](docs/screenshots/settings.jpg) |
 
 ## Funciones
 
