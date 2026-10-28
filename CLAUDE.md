@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Muscleup is a Flutter workout-tracking app for Android, published on the Play Store (`version: 1.0.1+16` in `pubspec.yaml`). Offline-first: everything works on-device, and cloud sync to Firebase is opt-in behind a Google account link. Ad-free, no analytics, GPL v3.
+Muscleup is a Flutter workout-tracking app for Android, published on the Play Store (`version: 1.0.4+19` in `pubspec.yaml`). Offline-first: everything works on-device, and cloud sync to Firebase is opt-in behind a Google account link. Ad-free, no analytics, GPL v3.
 
 `README.md` covers features and stack. `ARCHITECTURE.md` (~2000 lines) documents the Clean Architecture layers phase by phase — read it for layer-level detail rather than re-deriving it.
 
