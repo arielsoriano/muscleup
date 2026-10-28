@@ -1,152 +1,123 @@
-# Muscleup
+# MuscleUp
 
-A minimalist, privacy-focused workout tracking application built with Flutter. Open source, ad-free, and designed for lifters who value simplicity and data ownership.
+Registro de entrenamientos para Android: simple, sin anuncios, sin suscripción y sin analítica.
+Funciona completamente sin conexión; la sincronización en la nube es opcional.
 
-## Features
+[<img src="https://play.google.com/intl/en_us/badges/static/images/badges/es_badge_web_generic.png" height="60">](https://play.google.com/store/apps/details?id=com.arielsoriano.muscleup)
 
-- **Minimalist UI**: Clean, distraction-free interface focused on tracking workouts efficiently
-- **Multi-language Support**: Native internationalization with English and Spanish (EN/ES)
-- **Dark/Light Mode**: Adaptive theming with custom color schemes optimized for readability
-- **Offline-First**: Local-first architecture ensuring your data remains private and accessible
+## Por qué la hice
 
-## Tech Stack
+Buscaba una app para anotar mis entrenamientos y todas tenían anuncios, pedían suscripción
+o estaban llenas de funciones que no usaba. Quería algo simple: armar mis rutinas, registrar
+series y pesos, y ver mi progreso. Como no la encontré, la construí.
 
-| Category | Technology | Purpose |
-|----------|-----------|----------|
-| **Framework** | Flutter | Cross-platform mobile development |
-| **State Management** | BLoC/Cubit | Predictable state management with separation of concerns |
-| **Dependency Injection** | Get_It | Service locator pattern for loose coupling |
-| **Theming** | FlexColorScheme | Professional, consistent color schemes |
-| **Database** | Drift | Type-safe SQL with reactive queries |
-| **Localization** | Native Flutter Localization (ARB) with Custom Context Extensions | Type-safe i18n with ergonomic BuildContext access |
-| **Data Modeling** | Freezed | Type-safe data modeling and immutability |
+## Capturas
 
-## Project Status
+<!-- Sustituir por capturas reales (recomendado: 1080×2400, en docs/screenshots/) -->
+| Hoy | Rutinas | Entrenamiento activo | Progreso |
+|-----|---------|----------------------|----------|
+| ![Dashboard](docs/screenshots/dashboard.png) | ![Rutinas](docs/screenshots/routines.png) | ![Entrenamiento](docs/screenshots/active-workout.png) | ![Progreso](docs/screenshots/progress.png) |
 
-### Phase 1: Foundations & Configuration ✅
+<!-- Opcional: un GIF corto registrando una serie con el temporizador de descanso -->
 
-- Clean Architecture structure established
-- Dependency injection configured
-- Theme system with dark/light modes implemented
-- Internationalization infrastructure (EN/ES)
-- Error handling patterns defined
-- Core utilities and constants
+## Funciones
 
-### Phase 2: Domain Layer ✅
+- **Rutinas a medida**: series con hasta dos objetivos (peso × repeticiones, distancia × tiempo, nivel, inclinación…), en kg o lb.
+- **Entrenamiento guiado**: registro de cada serie frente a su objetivo y temporizador de descanso flotante con inicio automático.
+- **Historial y progreso**: calendario semanal, varias sesiones por día y evolución de cada ejercicio.
+- **Biblioteca de ejercicios** con categorías y ejercicios personalizados.
+- **Importar rutinas desde texto**: la app genera un prompt para pegar junto a tus notas en un asistente de IA y lee el resultado. También exporta rutinas en el mismo formato.
+- **13 idiomas**: español, inglés, portugués, alemán, francés, italiano, turco, ruso, polaco, neerlandés, indonesio, vietnamita e hindi.
+- **Temas**: 5 paletas de color con modo claro y oscuro.
+- **Offline-first**: todo funciona en el dispositivo; la sincronización con la nube se activa al vincular una cuenta de Google.
 
-- Immutable entities with Freezed (WorkoutRoutine, WorkoutExercise, WorkoutSet, WorkoutSession, SetLog)
-- WorkoutUnit enum for type-safe unit handling (kilograms, pounds, repetitions, seconds, etc.)
-- Flexible unit design supporting weight training, cardio, and bodyweight exercises
-- Repository contract with Stream-based reactivity for routines and sessions
-- Nine use cases implementing complete workout lifecycle (planning, execution, tracking)
-- Complete SOLID compliance with Dependency Inversion
-- Session/Log architecture for progress tracking without modifying templates
+## Stack
 
-### Phase 3: Data Layer (Persistence) ✅
+| Área | Tecnología |
+|------|------------|
+| Framework | Flutter / Dart 3 |
+| Estado | flutter_bloc (Cubit) |
+| Inyección de dependencias | get_it |
+| Navegación | go_router |
+| Base de datos local | Drift (SQLite) |
+| Modelos inmutables | Freezed |
+| Nube (opcional) | Firebase Auth (anónimo + Google) y Cloud Firestore |
+| Temas | flex_color_scheme |
+| Localización | ARB / intl con plurales ICU |
+| Tests | flutter_test, fake_cloud_firestore |
 
-- Drift database with 5 relational tables (Routines, Exercises, Sets, Sessions, SetLogs)
-- Foreign key cascades ensuring referential integrity
-- Type-safe enum mapping (WorkoutUnit as intEnum)
-- Transaction-based saving strategy for atomicity
-- Reactive SQL queries with Drift's watch() for automatic UI updates
-- WorkoutRepositoryImpl with bidirectional data mapping
-- Complete error handling with Either<Failure, T> pattern
-- Nested data fetching with proper sortOrder enforcement
+## Arquitectura
 
-### Phase 4: Presentation Layer (UI Logic) ✅
+Clean Architecture organizada por funcionalidad:
 
-- Reactive UI with WorkoutCubit managing routine list state
-- Freezed state classes with pattern matching (initial, loading, success, error)
-- Type-safe navigation with GoRouter and parameterized routes
-- Custom Material 3 transitions with fade animations
-- BlocProvider/BlocBuilder pattern isolating UI from business logic
-- Automatic UI updates via Stream subscription to domain use cases
-- Error recovery with retry functionality
-- Full Material 3 component integration (Card, ListTile, FilledButton)
-- Localized UI with empty states and error messages
-- Memory-safe Stream management with proper disposal
+```
+lib/
+├── core/            # DI, router, tema, localización, errores, catálogo de ejercicios
+└── features/
+    ├── workout/     # rutinas, sesiones, registro, sincronización, import/export
+    │   ├── domain/        # entidades, contratos de repositorio, casos de uso
+    │   ├── data/          # Drift, DTOs, repositorios, motor de sincronización
+    │   └── presentation/  # Cubits, páginas, widgets
+    ├── auth/        # sesión anónima y vinculación con Google
+    └── settings/    # preferencias, valores por defecto de entrenamiento
+```
 
-### Phase 5: UI & Core Functionalities ✅
+**Algunos puntos destacados**
 
-**Reactive Dashboard (DashboardPage)**:
-- Weekly calendar strip with horizontal scrolling and date selection via DashboardCubit.selectDate()
-- Multi-session support per day with ListView.builder for session cards
-- Session deletion with confirmation dialog calling DashboardCubit.deleteSession()
-- Real-time updates via BlocBuilder<DashboardCubit, DashboardState>
-- Empty state with context.l10n.noWorkoutToday when sessions list is empty
-- Start button docked at bottom (hidden for future dates)
+- **Offline-first con patrón outbox**: cada cambio se guarda en SQLite y se encola. Un motor de sincronización lo sube a Firestore, descarga los cambios remotos y resuelve conflictos por *last-write-wins* con marcas de borrado.
+- **Historial inmutable**: las sesiones guardan una copia del nombre de la rutina, así que editar o borrar una rutina no altera el pasado.
+- **Nombres de ejercicio independientes del idioma**: las rutinas guardan una referencia canónica y la traducen al mostrarla, de modo que una rutina creada en español se lee en alemán.
+- **Migraciones de esquema idempotentes y testeadas** (v1 → v6).
 
-**Historical Integrity (Snapshot Architecture)**:
-- Sessions.routineName column stores routine name at workout time
-- Preserves historical accuracy when routines are renamed or deleted
-- WorkoutSession.routineName field maintains snapshot of original routine name
-- ActiveWorkoutCubit.displayTitle differentiates historical vs. template-based workouts
-- Session logs (SetLogs table) survive routine modifications via foreign key to Sessions only
+Más detalle en [ARCHITECTURE.md](ARCHITECTURE.md).
 
-**Professional Routine Form (RoutineFormPage)**:
-- Exercise selection via _ExerciseSelectionModal (showModalBottomSheet with SearchBar)
-- Real-time search through LibraryExercises with RoutineFormCubit.searchLibraryExercises()
-- Custom exercise creation with RoutineFormCubit.addExercise() accepting user input
-- Hint-based input for sets: empty TextEditingController when targetValue is null/0 (no hardcoded "0.0")
-- _SetFormRow with dynamic TextField controllers showing empty string instead of zero
-- Rest time configuration per exercise with _restTimeController
-- Expandable/collapsible exercise cards with _isExpanded state
+## Cómo ejecutarla
 
-**Active Workout Ergonomics (ActiveWorkoutPage)**:
-- Dynamic title logic: displays WorkoutSession.routineName for historical sessions, WorkoutRoutine.name for templates
-- ActiveWorkoutState.isViewingHistory flag controls UI behavior (hides finish button for historical views)
-- Bottom-docked finish button using bottomNavigationBar with SafeArea wrapping
-- Automated log synchronization: ActiveWorkoutCubit._saveAllSetLogs() iterates through SetLog list
-- Data merging in _loadExistingSession(): filters exercises by exerciseIdsWithLogs, updates templateSets with log values
-- SetLog pre-population in _createNewSession() generates logs from routine template
-
-**Centralized Messaging System (BuildContextSnackBarExtension)**:
-- Extension method context.showAppSnackBar(message, isError: bool)
-- Tonal colors: colorScheme.secondaryContainer for success, colorScheme.errorContainer for errors
-- Consistent across all pages: RoutineFormPage, ActiveWorkoutPage, DashboardPage
-
-## Getting Started
-
-### Prerequisites
-
-- Flutter SDK 3.0+
-- Dart 3.0+
-
-### Installation
+Requisitos: Flutter estable (probado con 3.44) y Android SDK.
 
 ```bash
-git clone https://github.com/yourusername/muscleup.git
+git clone https://github.com/arielsoriano/muscleup.git
 cd muscleup
 flutter pub get
 flutter run
 ```
 
-### Code Quality
+No hace falta configurar nada más: sin Firebase la app funciona en modo solo local.
+
+El código generado (Drift, Freezed y traducciones) está incluido en el repositorio. Solo hay que regenerarlo al modificar sus fuentes:
+
+```bash
+dart run build_runner build --delete-conflicting-outputs   # tras tocar tablas Drift o clases @freezed
+flutter gen-l10n                                           # tras tocar lib/l10n/app_*.arb
+```
+
+### Sincronización en la nube (opcional)
+
+El repositorio no incluye credenciales de Firebase. Si `android/app/google-services.json` no existe, el plugin de Google Services no se aplica y la app compila sin sincronización. Para activarla:
+
+1. Crea un proyecto en Firebase y añade una app Android con el paquete `com.arielsoriano.muscleup` (o cambia el `applicationId`).
+2. Activa en Authentication los proveedores *Anónimo* y *Google*, y registra la huella SHA‑1 de tu keystore de debug (`cd android && ./gradlew signingReport`).
+3. Descarga `google-services.json` en `android/app/`.
+4. Crea Cloud Firestore y despliega las reglas de `firebase/firestore.rules`.
+
+### Build de release
+
+`flutter build apk --release` funciona sin configuración: si no existe `android/key.properties`, el APK se firma con la clave de debug. Sirve para instalarlo y probarlo, pero no para publicarlo.
+
+Para firmar con tu propia clave, crea `android/key.properties` con `storeFile` (ruta relativa a `android/app/`), `storePassword`, `keyAlias` y `keyPassword`. Nunca lo subas al repositorio: ya está en `.gitignore`.
+
+### Tests y análisis
 
 ```bash
 flutter analyze
 flutter test
 ```
 
-## Architecture
+## Privacidad
 
-Muscleup follows Clean Architecture principles with MVVM presentation pattern. See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed documentation.
+Sin anuncios, sin analítica y sin rastreo. Los datos viven en tu dispositivo y solo se suben a la nube si vinculas una cuenta de Google.
+[Política de privacidad](docs/privacy-policy.html) · [Eliminación de cuenta](docs/account-deletion.html)
 
-## Contributing
+## Licencia
 
-This project follows strict code quality standards:
-
-- No comments (self-documenting code only)
-- Comprehensive naming conventions
-- Test coverage required for all features
-- Clean Architecture boundaries enforced
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-## License
-
-GPL v3 - See [LICENSE](LICENSE) for details.
-
-## Acknowledgments
-
-Built with privacy and simplicity in mind. No analytics, no ads, no compromises.
+[GPL v3](LICENSE)
